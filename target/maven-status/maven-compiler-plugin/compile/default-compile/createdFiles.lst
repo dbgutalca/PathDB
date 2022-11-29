@@ -1,0 +1,8 @@
+com\gdblab\pathdatabase\schema\Graph.class
+com\gdblab\pathdatabase\schema\Node.class
+com\gdblab\pathdatabase\Main.class
+com\gdblab\pathdatabase\schema\Path.class
+com\gdblab\pathdatabase\schema\Database.class
+com\gdblab\pathdatabase\schema\GraphObject.class
+com\gdblab\pathdatabase\schema\Next.class
+com\gdblab\pathdatabase\schema\Edge.class
