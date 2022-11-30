@@ -5,6 +5,9 @@
  */
 package com.gdblab.pathdatabase.schema;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 /**
  *
  * @author ramhg
@@ -16,7 +19,7 @@ public class Database {
         graph = new Graph("test1");
         GenerateDemoDatabase(this.graph);
         System.out.println(graph.getName());
-        GetEdgeX(graph.getPath("p1"), 0);
+        SubPath(graph.getPath("p1"), 0, 1);
         
         
     }
@@ -65,6 +68,33 @@ public class Database {
             edge = next.getEdge();
         }
         return edge;
+    }
+    
+    public Path SubPath(Path p, int i, int j){
+        Node first = GetNodeX(p, i);
+        Node last = GetNodeX(p, j);
+        Path new_path = null;
+        Next next = p.getFirst_next();
+        ArrayList<Next> nexts = new ArrayList<>();
+        boolean last_reached = false;
+        boolean first_reached = true;
+        while (next !=null  && !last_reached){
+            if(next.getSource().getId().equals(first.getId()))
+                first_reached=true;
+            
+            if (next.getTarget().getId().equals(last.getId()))
+                last_reached = true;
+                
+            if(first_reached && !last_reached)
+                nexts.add(new Next(next.getId(), next.getSource(), next.getEdge(), next.getTarget(), next.getNext()));
+            else
+                nexts.add(new Next(next.getId(), next.getSource(), next.getEdge(), next.getTarget(), null));
+            next = next.getNext();
+        }
+        
+        new_path= new Path(UUID.randomUUID().toString(), "path", nexts.get(0), nexts.get(nexts.size()-1));
+        
+        return new_path;
     }
     
     
