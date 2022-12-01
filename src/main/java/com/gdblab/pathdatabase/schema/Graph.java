@@ -5,6 +5,7 @@
  */
 package com.gdblab.pathdatabase.schema;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -60,6 +61,9 @@ public class Graph {
     
     public Path getPath(String id) {
         return (Path) paths.get(id);
+    }
+    public ArrayList<GraphObject> getPaths() {
+        return new ArrayList<>(paths.values());
     }
 
     public void setPath(String id, GraphObject path) {

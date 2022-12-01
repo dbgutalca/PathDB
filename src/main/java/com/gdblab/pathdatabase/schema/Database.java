@@ -20,8 +20,8 @@ public class Database {
         graph = new Graph("test1");
         GenerateDemoDatabase(this.graph);
         System.out.println(graph.getName());
-        SubPath(graph.getPath("p1"), 0, 2);
-        
+        ArrayList<Path> paths = NodeJoin(graph.getPaths(), graph.getPaths());
+        System.out.println("");
         
     }
     
@@ -94,6 +94,24 @@ public class Database {
                 return false;
         
         return true;
+    }
+    
+    public ArrayList<Path> NodeJoin (ArrayList<GraphObject> pathsA, ArrayList<GraphObject> pathsB){
+        ArrayList<Path> join_path = new ArrayList<>();
+        for (GraphObject path1 : pathsA) {
+            for (GraphObject path2 : pathsB) {
+                if(Last((Path)path1).getId().equals(First((Path)path2).getId())){
+                    Path p = new Path(UUID.randomUUID().toString());
+                    for (GraphObject go : ((Path)path1).getSequence())
+                        p.insert(go);
+                    for (int i = 1; i < ((Path)path2).getSequence().size(); i++) {
+                        p.insert(((Path)path2).getSequence().get(i));
+                    }
+                    join_path.add(p);
+                }
+            } 
+        }
+        return join_path;
     }
     
     
