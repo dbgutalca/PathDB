@@ -18,6 +18,12 @@ public class Edge extends GraphObject{
         this.source = source;
         this.target = target;
     }
+    
+    public Edge(String id, Node source, Node target) {
+        super(id);
+        this.source = source;
+        this.target = target;
+    }
 
     public Node getSource() {
         return source;

@@ -5,35 +5,70 @@
  */
 package com.gdblab.pathdatabase.schema;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  *
  * @author ramhg
  */
 public class Path extends GraphObject{
-    private Next first_next;
-    private Next last_next;
+    private ArrayList<GraphObject> sequence;
+    
 
-    public Path(String id, String label, Next first_next, Next last_next) {
+    public Path(String id, String label) {
         super(id, label);
-        this.first_next = first_next;
-        this.last_next = last_next;
+        this.sequence = new ArrayList<>();
+    }
+    
+    public Path(String id) {
+        super(id);
+        this.sequence = new ArrayList<>();
     }
 
-    public Next getFirst_next() {
-        return first_next;
+    public ArrayList<GraphObject> getSequence() {
+        return sequence;
+    }
+    
+    public void insertEdge(Edge edge){
+        if (sequence.isEmpty()){
+            sequence.add(edge.getSource());
+            sequence.add(edge);
+            sequence.add(edge.getTarget());
+        }
+        else{
+            sequence.add(edge);
+            sequence.add(edge.getTarget());
+        }
+    }
+    
+     public void insert(GraphObject go){
+        sequence.add(go);
+    }
+    
+    
+ 
+    
+    public ArrayList<Node> getNodeSequence() {
+        ArrayList<Node> nodes = new ArrayList<>();
+         for (int i = 0; i < sequence.size(); i++) {
+             if(sequence.get(i) instanceof Node node)
+                 nodes.add(node);
+        }
+        return nodes;
+    }
+    
+    public ArrayList<Edge> getEdgeSequence() {
+        ArrayList<Edge> edges = new ArrayList<>();
+         for (int i = 0; i < sequence.size(); i++) {
+             if(sequence.get(i) instanceof Edge edge)
+                 edges.add(edge);
+        }
+        return edges;
     }
 
-    public void setFirst_next(Next first_next) {
-        this.first_next = first_next;
-    }
-
-    public Next getLast_next() {
-        return last_next;
-    }
-
-    public void setLast_next(Next last_next) {
-        this.last_next = last_next;
-    }
+    
     
     
     

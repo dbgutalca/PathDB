@@ -14,5 +14,9 @@ public class Node extends GraphObject{
     public Node(String id, String label) {
         super(id, label);
     } 
+    
+    public Node(String id) {
+        super(id);
+    } 
         
 }

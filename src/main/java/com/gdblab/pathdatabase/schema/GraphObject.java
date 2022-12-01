@@ -18,6 +18,10 @@ public class GraphObject {
         this.id = id;
         this.label = label;
     }
+    
+    public GraphObject(String id) {
+        this.id = id;
+    }
 
     public String getId() {
         return id;
