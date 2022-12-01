@@ -20,7 +20,7 @@ public class Database {
         graph = new Graph("test1");
         GenerateDemoDatabase(this.graph);
         System.out.println(graph.getName());
-        ArrayList<Path> paths = NodeJoin(graph.getPaths(), graph.getPaths());
+        ArrayList<Path> paths = EdgeJoin(graph.getPaths(), graph.getPaths());
         System.out.println("");
         
     }
@@ -96,17 +96,47 @@ public class Database {
         return true;
     }
     
+    public boolean isNodeLinkable(Path path1,Path path2){
+        return Last((Path)path1).getId().equals(First((Path)path2).getId());
+    }
+    
+    public Edge isEdgeLinkable(Path path1,Path path2){
+        String node1_id = Last((Path)path1).getId();
+        String node2_id = First((Path)path2).getId();
+        
+        return graph.getEdge(node1_id, node2_id);
+    }
+    
     public ArrayList<Path> NodeJoin (ArrayList<GraphObject> pathsA, ArrayList<GraphObject> pathsB){
         ArrayList<Path> join_path = new ArrayList<>();
         for (GraphObject path1 : pathsA) {
             for (GraphObject path2 : pathsB) {
-                if(Last((Path)path1).getId().equals(First((Path)path2).getId())){
+                if(isNodeLinkable((Path)path1, (Path)path2)){
                     Path p = new Path(UUID.randomUUID().toString());
                     for (GraphObject go : ((Path)path1).getSequence())
                         p.insert(go);
                     for (int i = 1; i < ((Path)path2).getSequence().size(); i++) {
                         p.insert(((Path)path2).getSequence().get(i));
                     }
+                    join_path.add(p);
+                }
+            } 
+        }
+        return join_path;
+    }
+    
+    public ArrayList<Path> EdgeJoin (ArrayList<GraphObject> pathsA, ArrayList<GraphObject> pathsB){
+        ArrayList<Path> join_path = new ArrayList<>();
+        for (GraphObject path1 : pathsA) {
+            for (GraphObject path2 : pathsB) {
+                Edge edge = isEdgeLinkable((Path)path1, (Path)path2);
+                if(edge != null){
+                    Path p = new Path(UUID.randomUUID().toString());
+                    for (GraphObject go : ((Path)path1).getSequence())
+                        p.insert(go);
+                    p.insert(edge);
+                    for (GraphObject go : ((Path)path2).getSequence())
+                        p.insert(go);
                     join_path.add(p);
                 }
             } 

@@ -49,6 +49,16 @@ public class Graph {
     public Edge getEdge(String id) {
         return (Edge) edges.get(id);
     }
+    
+     public Edge getEdge(String source_id, String target_id) {
+        for (GraphObject go : edges.values()){
+            Edge edge = (Edge)go;
+            if (edge.getSource().getId().equals(source_id) && edge.getTarget().getId().equals(target_id))
+                return edge;
+        }
+         
+        return null;
+    }
 
     public void setEdge(String id, GraphObject edge) {
         edges.remove(id);
