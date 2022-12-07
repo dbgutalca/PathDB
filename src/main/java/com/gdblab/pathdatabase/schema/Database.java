@@ -97,27 +97,26 @@ public class Database {
     }
     
     public boolean isNodeLinkable(Path path1,Path path2){
-        return Last((Path)path1).getId().equals(First((Path)path2).getId());
+        return Last(path1).getId().equals(First(path2).getId());
     }
     
     public Edge isEdgeLinkable(Path path1,Path path2){
-        String node1_id = Last((Path)path1).getId();
-        String node2_id = First((Path)path2).getId();
+        String node1_id = Last(path1).getId();
+        String node2_id = First(path2).getId();
         
         return graph.getEdge(node1_id, node2_id);
     }
     
-    public ArrayList<Path> NodeJoin (ArrayList<GraphObject> pathsA, ArrayList<GraphObject> pathsB){
+    public ArrayList<Path> NodeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> join_path = new ArrayList<>();
-        for (GraphObject path1 : pathsA) {
-            for (GraphObject path2 : pathsB) {
-                if(isNodeLinkable((Path)path1, (Path)path2)){
+        for (Path path1 : pathsA) {
+            for (Path path2 : pathsB) {
+                if(isNodeLinkable(path1, path2)){
                     Path p = new Path(UUID.randomUUID().toString());
-                    for (GraphObject go : ((Path)path1).getSequence())
+                    for (GraphObject go : path1.getSequence())
                         p.insert(go);
-                    for (int i = 1; i < ((Path)path2).getSequence().size(); i++) {
-                        p.insert(((Path)path2).getSequence().get(i));
-                    }
+                    for (int i = 1; i < path2.getSequence().size(); i++)
+                        p.insert(path2.getSequence().get(i));
                     join_path.add(p);
                 }
             } 
@@ -125,17 +124,17 @@ public class Database {
         return join_path;
     }
     
-    public ArrayList<Path> EdgeJoin (ArrayList<GraphObject> pathsA, ArrayList<GraphObject> pathsB){
+    public ArrayList<Path> EdgeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> join_path = new ArrayList<>();
-        for (GraphObject path1 : pathsA) {
-            for (GraphObject path2 : pathsB) {
-                Edge edge = isEdgeLinkable((Path)path1, (Path)path2);
+        for (Path path1 : pathsA) {
+            for (Path path2 : pathsB) {
+                Edge edge = isEdgeLinkable(path1, path2);
                 if(edge != null){
                     Path p = new Path(UUID.randomUUID().toString());
-                    for (GraphObject go : ((Path)path1).getSequence())
+                    for (GraphObject go : path1.getSequence())
                         p.insert(go);
                     p.insert(edge);
-                    for (GraphObject go : ((Path)path2).getSequence())
+                    for (GraphObject go : path2.getSequence())
                         p.insert(go);
                     join_path.add(p);
                 }
@@ -143,6 +142,52 @@ public class Database {
         }
         return join_path;
     }
+    
+    public ArrayList<Path> Union (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+        ArrayList<Path> union_path = new ArrayList<>();
+        union_path.addAll(pathsA);
+        for (Path path2 : pathsB) {
+            boolean equal = false;
+             for (Path path1 : pathsA) {
+                 if(equalPath(path1, path2)){
+                     equal = true;
+                     break;
+                 }
+            }
+            if(!equal)
+                union_path.add(path2);
+        }
+        return union_path;
+    }
+    public ArrayList<Path> Intersection (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+        ArrayList<Path> intersection_path = new ArrayList<>();
+        for (Path path1 : pathsA) {
+            for (Path path2 : pathsB) {
+                if(equalPath(path1, path2)){
+                    intersection_path.add(path1);
+                }
+            } 
+        }
+        return intersection_path;
+    }
+    
+    public ArrayList<Path> Difference (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+        ArrayList<Path> difference_path = new ArrayList<>();
+        for (Path path1 : pathsA) {
+            boolean equal = false;
+            for (Path path2 : pathsB) {
+                if(equalPath(path1, path2)){
+                    equal = true;
+                    break;
+                }
+            } 
+            if (!equal)
+                difference_path.add(path1);
+        }
+        return difference_path;
+    }
+    
+    
     
     
     private void GenerateDemoDatabase(Graph graph){
