@@ -14,9 +14,9 @@ import java.util.HashMap;
  */
 public class Graph {
     private String name;
-    private HashMap<String,GraphObject> nodes;
-    private HashMap<String,GraphObject> edges;
-    private HashMap<String,GraphObject> paths;
+    private HashMap<String,Node> nodes;
+    private HashMap<String,Edge> edges;
+    private HashMap<String,Path> paths;
 
     public Graph(String name) {
         this.name = name;
@@ -37,12 +37,12 @@ public class Graph {
         return (Node) nodes.get(id);
     }
 
-    public void setNode(String id, GraphObject node) {
+    public void setNode(String id, Node node) {
         nodes.remove(id);
         insertNode(id, node);
     }
     
-    public void insertNode(String id, GraphObject node) {
+    public void insertNode(String id, Node node) {
         nodes.put(id,node);
     }
     
@@ -60,12 +60,12 @@ public class Graph {
         return null;
     }
 
-    public void setEdge(String id, GraphObject edge) {
+    public void setEdge(String id, Edge edge) {
         edges.remove(id);
         insertEdge(id, edge);
     }
     
-    public void insertEdge(String id, GraphObject edge) {
+    public void insertEdge(String id, Edge edge) {
         edges.put(id,edge);
     }
     
@@ -76,12 +76,12 @@ public class Graph {
         return new ArrayList<>(paths.values());
     }
 
-    public void setPath(String id, GraphObject path) {
+    public void setPath(String id, Path path) {
         paths.remove(id);
         insertPath(id, path);
     }
     
-    public void insertPath(String id, GraphObject path) {
+    public void insertPath(String id, Path path) {
         paths.put(id,path);
     }
 
