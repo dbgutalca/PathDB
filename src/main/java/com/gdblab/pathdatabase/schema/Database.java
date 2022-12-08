@@ -20,7 +20,8 @@ public class Database {
         graph = new Graph("test1");
         GenerateDemoDatabase(this.graph);
         System.out.println(graph.getName());
-        ArrayList<Path> paths = EdgeJoin(graph.getPaths(), graph.getPaths());
+        ArrayList<Path> p= NodeJoin(graph.getPaths(), graph.getPaths());
+        ArrayList<Path> paths = RightSubPaths(p);
         System.out.println("");
         
     }
@@ -33,18 +34,16 @@ public class Database {
     }
     
     public Node GetNodeX (Path p, int pos){
-        ArrayList<GraphObject> sequence = p.getSequence();
+        ArrayList<Node> sequence = p.getNodeSequence();
         if(sequence.size()>= pos)
-            if (sequence.get(pos) instanceof Node node)
-                return node;
+                return sequence.get(pos);
         return null;
     }
     
     public Edge GetEdgeX (Path p, int pos){
-        ArrayList<GraphObject> sequence = p.getSequence();
+      ArrayList<Edge> sequence = p.getEdgeSequence();
         if(sequence.size()>= pos)
-            if (sequence.get(pos) instanceof Edge edge)
-                return edge;
+                return sequence.get(pos);
         return null;
     }
     
@@ -54,7 +53,7 @@ public class Database {
         ArrayList<GraphObject> sequence = p .getSequence();
         Path new_path = new Path(UUID.randomUUID().toString(), "path");
         boolean last_reached = false;
-        boolean first_reached = true;
+        boolean first_reached = false;
        
         for (int k = 0; k < sequence.size() && !last_reached; k++) {
             if (sequence.get(k) instanceof Node node){
@@ -75,7 +74,7 @@ public class Database {
     }
     
     public Path RightSubPath (Path p, int j){
-        return SubPath(p, j, p.getSequence().size());
+        return SubPath(p, j, p.getNodeNumber()-1);
     }
     
     public String Label (GraphObject go){
@@ -186,6 +185,63 @@ public class Database {
         }
         return difference_path;
     }
+    
+    public ArrayList<Path> LeftSubPaths (ArrayList<Path> paths){
+        ArrayList<Path> left_sub_paths = new ArrayList<>();
+        for (Path path : paths){
+            for (int i = 0; i < path.getNodeNumber(); i++) {
+                Path lsp = LeftSubPath(path, i);
+                boolean contains = false;
+                for (Path elsp : left_sub_paths) 
+                    if(equalPath(lsp, elsp))
+                        contains=true;
+                if (!contains)
+                    left_sub_paths.add(lsp);
+            }
+        }
+        return left_sub_paths;
+    }
+    
+    public ArrayList<Path> RightSubPaths (ArrayList<Path> paths){
+        ArrayList<Path> right_sub_paths = new ArrayList<>();
+        for (Path path : paths){
+            for (int i = 0; i < path.getNodeNumber(); i++) {
+                Path rsp = RightSubPath(path, i);
+                boolean contains = false;
+                for (Path elsp : right_sub_paths) 
+                    if(equalPath(rsp, elsp))
+                        contains=true;
+                if (!contains)
+                    right_sub_paths.add(rsp);
+            }
+        }
+        return right_sub_paths;
+    }
+    
+     public ArrayList<Path> NodeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+        ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
+        ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
+        return RemoveRepeatedPaths(NodeJoin(left_sub_paths, right_sub_paths));
+     }
+     
+     public ArrayList<Path> EdgeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+        ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
+        ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
+        return RemoveRepeatedPaths (EdgeJoin(left_sub_paths, right_sub_paths));
+     }
+     
+     public ArrayList<Path> RemoveRepeatedPaths (ArrayList<Path> paths){
+        ArrayList<Path> no_repeated_paths = new ArrayList<>();
+        for (Path p : paths){
+            boolean contains = false;
+            for (Path nrp: no_repeated_paths)
+                if(equalPath(p, nrp))
+                    contains = true;
+            if(!contains)
+                no_repeated_paths.add(p);
+         }
+        return no_repeated_paths;
+     }
     
     
     

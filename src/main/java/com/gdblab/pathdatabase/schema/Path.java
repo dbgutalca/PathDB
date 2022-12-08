@@ -68,6 +68,9 @@ public class Path extends GraphObject{
         return edges;
     }
 
+    public int getNodeNumber(){
+        return getNodeSequence().size();
+    }
     
     
     
