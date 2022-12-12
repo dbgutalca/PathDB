@@ -106,37 +106,55 @@ public class Database {
         return graph.getEdge(node1_id, node2_id);
     }
     
+     public Path NodeLink (Path pathA, Path pathB){
+        Path join_path = null;
+            if(isNodeLinkable(pathA, pathB)){
+                join_path = new Path(UUID.randomUUID().toString());
+                for (GraphObject go : pathA.getSequence())
+                    join_path.insert(go);
+                for (int i = 1; i < pathB.getSequence().size(); i++)
+                    join_path.insert(pathB.getSequence().get(i));
+            }
+        return join_path;
+    }
+    
     public ArrayList<Path> NodeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> join_path = new ArrayList<>();
         for (Path path1 : pathsA) {
             for (Path path2 : pathsB) {
-                if(isNodeLinkable(path1, path2)){
-                    Path p = new Path(UUID.randomUUID().toString());
-                    for (GraphObject go : path1.getSequence())
-                        p.insert(go);
-                    for (int i = 1; i < path2.getSequence().size(); i++)
-                        p.insert(path2.getSequence().get(i));
+                Path p = NodeLink(path1, path2);
+                if(p != null)
                     join_path.add(p);
-                }
             } 
         }
         return join_path;
     }
     
+    
+    public Path EdgeLink (Path pathA, Path pathB){
+        Path join_path = null;
+        Edge edge = isEdgeLinkable(pathA, pathB);
+        if(edge != null){
+            join_path = new Path(UUID.randomUUID().toString());
+            for (GraphObject go : pathA.getSequence())
+                join_path.insert(go);
+            join_path.insert(edge);
+            for (GraphObject go : pathB.getSequence())
+                join_path.insert(go);
+        }
+      
+        return join_path;
+    }
+    
+
+    
     public ArrayList<Path> EdgeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> join_path = new ArrayList<>();
         for (Path path1 : pathsA) {
             for (Path path2 : pathsB) {
-                Edge edge = isEdgeLinkable(path1, path2);
-                if(edge != null){
-                    Path p = new Path(UUID.randomUUID().toString());
-                    for (GraphObject go : path1.getSequence())
-                        p.insert(go);
-                    p.insert(edge);
-                    for (GraphObject go : path2.getSequence())
-                        p.insert(go);
+                Path p = EdgeLink(path1, path2);
+                if(p != null)
                     join_path.add(p);
-                }
             } 
         }
         return join_path;
@@ -221,13 +239,29 @@ public class Database {
      public ArrayList<Path> NodeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
         ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
-        return RemoveRepeatedPaths(NodeJoin(left_sub_paths, right_sub_paths));
+        ArrayList<Path> join_path = new ArrayList<>();
+        for (Path path1 : left_sub_paths) {
+            for (Path path2 : right_sub_paths) {
+                Path p = NodeLink(path1, path2);
+                if(p != null)
+                    join_path.add(p);
+            } 
+        }
+        return RemoveRepeatedPaths(join_path);
      }
      
      public ArrayList<Path> EdgeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
         ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
-        return RemoveRepeatedPaths (EdgeJoin(left_sub_paths, right_sub_paths));
+        ArrayList<Path> join_path = new ArrayList<>();
+        for (Path path1 : left_sub_paths) {
+            for (Path path2 : right_sub_paths) {
+                Path p = EdgeLink(path1, path2);
+                if(p != null)
+                    join_path.add(p);
+            } 
+        }
+        return RemoveRepeatedPaths(join_path);
      }
      
      public ArrayList<Path> RemoveRepeatedPaths (ArrayList<Path> paths){
