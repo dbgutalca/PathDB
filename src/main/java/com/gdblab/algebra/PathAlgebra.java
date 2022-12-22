@@ -176,8 +176,7 @@ public class PathAlgebra {
        }
        return join_path;
     }
-     
-     
+ 
     private boolean IsPathInSet (ArrayList<Path> paths, Path path){
         for (Path p : paths)
             if(p.equals(path))
