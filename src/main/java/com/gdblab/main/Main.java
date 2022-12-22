@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.gdblab.pathdatabase;
+package com.gdblab.main;
 
-import com.gdblab.pathdatabase.schema.Database;
+import com.gdblab.database.Database;
 
 /**
  *
