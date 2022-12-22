@@ -147,44 +147,41 @@ public class PathAlgebra {
         return right_sub_paths;
     }
     
-     public ArrayList<Path> NodeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
-        ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
-        ArrayList<Path> join_path = new ArrayList<>();
-        for (Path path1 : left_sub_paths) {
-            for (Path path2 : right_sub_paths) {
-                Path p = NodeLink(path1, path2);
-                if(p != null)
-                    join_path.add(p);
-            } 
-        }
-        return RemoveRepeatedPaths(join_path);
-     }
+    public ArrayList<Path> NodeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+       ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
+       ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
+       ArrayList<Path> join_path = new ArrayList<>();
+       for (Path path1 : left_sub_paths) {
+           for (Path path2 : right_sub_paths) {
+               Path p = NodeLink(path1, path2);
+               if(p != null)
+                   if(!IsPathInSet(join_path, p))
+                       join_path.add(p);
+           } 
+       }
+       return join_path;
+    }
+
+    public ArrayList<Path> EdgeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+       ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
+       ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
+       ArrayList<Path> join_path = new ArrayList<>();
+       for (Path path1 : left_sub_paths) {
+           for (Path path2 : right_sub_paths) {
+               Path p = EdgeLink(path1, path2);
+               if(p != null)
+                   if(!IsPathInSet(join_path, p))
+                       join_path.add(p);
+           } 
+       }
+       return join_path;
+    }
      
-     public ArrayList<Path> EdgeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
-        ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
-        ArrayList<Path> join_path = new ArrayList<>();
-        for (Path path1 : left_sub_paths) {
-            for (Path path2 : right_sub_paths) {
-                Path p = EdgeLink(path1, path2);
-                if(p != null)
-                    join_path.add(p);
-            } 
-        }
-        return RemoveRepeatedPaths(join_path);
-     }
      
-     public ArrayList<Path> RemoveRepeatedPaths (ArrayList<Path> paths){
-        ArrayList<Path> no_repeated_paths = new ArrayList<>();
-        for (Path p : paths){
-            boolean contains = false;
-            for (Path nrp: no_repeated_paths)
-                if(p.equals(nrp))
-                    contains = true;
-            if(!contains)
-                no_repeated_paths.add(p);
-         }
-        return no_repeated_paths;
-     }
+    private boolean IsPathInSet (ArrayList<Path> paths, Path path){
+        for (Path p : paths)
+            if(p.equals(path))
+                return true;
+        return false;
+    }
 }
