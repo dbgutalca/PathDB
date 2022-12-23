@@ -6,6 +6,7 @@
 package com.gdblab.database;
 
 import com.gdblab.algebra.PathAlgebra;
+import com.gdblab.algebra.select.SimpleCondition;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
 import com.gdblab.schema.Node;
@@ -28,6 +29,8 @@ public class Database {
         ArrayList<Path> p= algebra.NodeJoin(graph.getPaths(), graph.getPaths());
         ArrayList<Path> paths = algebra.RightSubPaths(p);
         System.out.println(""); 
+        
+        System.out.println(SimpleCondition.lessThanOrEqualValue(9, 10));
     }
     
    
