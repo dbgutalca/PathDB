@@ -14,6 +14,7 @@ public  class SimpleCondition {
     }
     
     
+    
     public static boolean equalValue (Object v1, Object v2){
         if(v1 instanceof Integer && v2 instanceof Integer)
             if((Integer) v1 == (Integer) v2)
@@ -81,5 +82,8 @@ public  class SimpleCondition {
                return true;
      return false;
     }
+    
+    
+    
     
 }

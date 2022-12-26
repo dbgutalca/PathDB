@@ -146,6 +146,9 @@ public class Path extends GraphObject{
         return graph.getEdge(node1_id, node2_id);
     }
     
+    public int lenght (){
+        return getEdgeSequence().size();
+    }
     
     
     

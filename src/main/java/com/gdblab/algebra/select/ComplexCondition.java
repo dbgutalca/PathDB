@@ -23,6 +23,20 @@ public class ComplexCondition {
         else
             result = value1 && value2;
     }
+    
+    
+    public static boolean andCondition (boolean value1, boolean value2 ){
+        return value1 && value2;
+    }
+    
+    public static boolean orCondition (boolean value1, boolean value2 ){
+        return value1 || value2;
+    }
+    
+    public static boolean notCondition (boolean value1 ){
+        return !value1;
+    }
+    
 
     public boolean isResult() {
         return result;
