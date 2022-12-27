@@ -6,7 +6,7 @@
 package com.gdblab.database;
 
 import com.gdblab.algebra.PathAlgebra;
-import com.gdblab.algebra.select.SimpleCondition;
+import com.gdblab.algebra.select.*;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
 import com.gdblab.schema.Node;
@@ -30,7 +30,11 @@ public class Database {
         ArrayList<Path> paths = algebra.RightSubPaths(p);
         System.out.println(""); 
         
-        System.out.println(SimpleCondition.lessThanOrEqualValue(9, 10));
+        paths = Select.eval(graph.getPaths(), new Not(new First("n1")));
+        
+        for(Path pp : paths)
+            System.out.println(pp.getLabel());
+          
     }
     
    
