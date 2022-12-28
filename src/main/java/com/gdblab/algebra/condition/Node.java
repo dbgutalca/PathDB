@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.gdblab.algebra.select;
+package com.gdblab.algebra.condition;
 
 import com.gdblab.schema.Path;
 
@@ -10,12 +10,12 @@ import com.gdblab.schema.Path;
  *
  * @author ramhg
  */
-public class Edge  extends Condition{
+public class Node  extends Condition{
     
     public String id;
     public int pos;
 
-    public Edge(String id, int pos) {
+    public Node(String id, int pos) {
         this.id = id;
         this.pos = pos;
     }
@@ -23,7 +23,7 @@ public class Edge  extends Condition{
 
     @Override
     public boolean eval(Path p, Condition c) {
-        return p.GetEdgeX(this.getPos()).getId().equals(this.getId());
+        return p.GetNodeX(this.getPos()).getId().equals(this.getId());
     }
 
     public int getPos() {

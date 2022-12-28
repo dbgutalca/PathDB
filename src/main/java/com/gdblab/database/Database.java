@@ -5,8 +5,10 @@
  */
 package com.gdblab.database;
 
+import com.gdblab.algebra.condition.Not;
+import com.gdblab.algebra.condition.First;
+import com.gdblab.algebra.Select;
 import com.gdblab.algebra.PathAlgebra;
-import com.gdblab.algebra.select.*;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
 import com.gdblab.schema.Node;

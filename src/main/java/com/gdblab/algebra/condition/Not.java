@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.gdblab.algebra.select;
+package com.gdblab.algebra.condition;
 
 import com.gdblab.schema.Path;
 
@@ -10,27 +10,30 @@ import com.gdblab.schema.Path;
  *
  * @author ramhg
  */
-public class Length  extends Condition{
+public class Not extends Condition{
     
-    public int length;
+    Condition c1;
 
-    public Length(int length) {
-        this.length = length;
+    public Not(Condition c1) {
+        this.c1 = c1;
     }
-    
 
     @Override
     public boolean eval(Path p, Condition c) {
-        return p.lenght() == this.getLength();
+        return  !this.getC1().eval(p, this.getC1());
     }
 
-    public int getLength() {
-        return length;
+    public Condition getC1() {
+        return c1;
     }
 
-    public void setLength(int length) {
-        this.length = length;
+    public void setC1(Condition c1) {
+        this.c1 = c1;
     }
+
+    
+
+   
 
    
     
