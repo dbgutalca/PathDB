@@ -17,9 +17,8 @@ public final class Select {
     public static ArrayList<Path> eval (ArrayList<Path> path_set, Condition c){
         ArrayList<Path> result_set = new ArrayList<>();
         for (Path p : path_set)
-            if(c.eval(p, c))
-                result_set.add(p);
-        
+            if(c.eval(p))
+                result_set.add(p); 
         return result_set;
     }
 }

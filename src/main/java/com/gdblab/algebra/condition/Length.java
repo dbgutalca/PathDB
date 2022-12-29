@@ -20,7 +20,7 @@ public class Length  extends Condition{
     
 
     @Override
-    public boolean eval(Path p, Condition c) {
+    public boolean eval(Path p) {
         return p.lenght() == this.getLength();
     }
 

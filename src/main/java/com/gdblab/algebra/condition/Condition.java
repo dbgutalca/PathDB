@@ -15,6 +15,6 @@ public abstract class Condition {
     public Condition() {
     }
     
-    public abstract boolean eval (Path p, Condition c);
+    public abstract boolean eval (Path p);
     
 }

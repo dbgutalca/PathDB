@@ -21,8 +21,8 @@ public class Or  extends Condition{
     }
 
     @Override
-    public boolean eval(Path p, Condition c) {
-        return c.eval(p, getC1()) || c.eval(p, getC2());
+    public boolean eval(Path p) {
+        return getC1().eval(p) || getC2().eval(p);
     }
 
     public Condition getC1() {

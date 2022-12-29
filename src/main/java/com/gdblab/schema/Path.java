@@ -43,6 +43,11 @@ public class Path extends GraphObject{
             sequence.add(edge.getTarget());
         }
     }
+    
+    private void insertNode(Node node){
+        if(sequence.isEmpty())
+            sequence.add(node);
+    }
    
     
     
@@ -100,6 +105,9 @@ public class Path extends GraphObject{
         Path new_path = new Path(UUID.randomUUID().toString(), "path");
         boolean last_reached = false;
         boolean first_reached = false;
+        
+        if(i==j)
+            new_path.insertNode(first);
        
         for (int k = 0; k < seq.size() && !last_reached; k++) {
             if(seq.get(k).getSource().getId().equals(first.getId()) && !first_reached)

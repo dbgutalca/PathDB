@@ -20,7 +20,7 @@ public class Label  extends Condition{
     
 
     @Override
-    public boolean eval(Path p, Condition c) {
+    public boolean eval(Path p) {
         return p.getLabel().equals(this.getLabel());
     }
 

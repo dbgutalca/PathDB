@@ -29,13 +29,13 @@ public class Database {
         this.algebra = new PathAlgebra(graph);
         
         ArrayList<Path> p= algebra.NodeJoin(graph.getPaths(), graph.getPaths());
-        ArrayList<Path> paths = algebra.RightSubPaths(p);
+        ArrayList<Path> paths2 = algebra.RightSubPaths(p);
         System.out.println(""); 
         
-        paths = Select.eval(graph.getPaths(), new Not(new First("n1")));
+        ArrayList<Path> paths = Select.eval(paths2, new Not(new First("n1")));
         
         for(Path pp : paths)
-            System.out.println(pp.getLabel());
+            System.out.println(pp.getId());
           
     }
     

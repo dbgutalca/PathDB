@@ -20,8 +20,10 @@ public class First  extends Condition{
     
 
     @Override
-    public boolean eval(Path p, Condition c) {
-        return p.First().getId().equals(this.getId());
+    public boolean eval(Path p) {
+        if(p != null)
+            return p.First().getId().equals(this.getId());
+        return false;
     }
 
     public String getId() {

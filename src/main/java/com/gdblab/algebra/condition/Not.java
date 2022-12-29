@@ -19,8 +19,8 @@ public class Not extends Condition{
     }
 
     @Override
-    public boolean eval(Path p, Condition c) {
-        return  !this.getC1().eval(p, this.getC1());
+    public boolean eval(Path p) {
+        return  !this.getC1().eval(p);
     }
 
     public Condition getC1() {
