@@ -21,7 +21,7 @@ public class PathAlgebra {
         this.graph = graph;
     }
     
-    public Path NodeLink (Path pathA, Path pathB){
+    public static Path NodeLink (Path pathA, Path pathB){
         Path join_path = null;
             if(pathA.isNodeLinkable(pathB)){
                 join_path = new Path(UUID.randomUUID().toString());
@@ -33,7 +33,7 @@ public class PathAlgebra {
         return join_path;
     }
     
-    public ArrayList<Path> NodeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+    public static ArrayList<Path> NodeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> join_path = new ArrayList<>();
         for (Path path1 : pathsA) {
             for (Path path2 : pathsB) {
@@ -71,7 +71,7 @@ public class PathAlgebra {
         return join_path;
     }
     
-    public ArrayList<Path> Union (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+    public static ArrayList<Path> Union (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> union_path = new ArrayList<>();
         union_path.addAll(pathsA);
         for (Path path2 : pathsB) {

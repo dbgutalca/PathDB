@@ -8,6 +8,7 @@ com\gdblab\algebra\condition\First.class
 com\gdblab\main\Main.class
 com\gdblab\algebra\PathAlgebra.class
 com\gdblab\algebra\condition\Not.class
+com\gdblab\recursion\Recursion.class
 com\gdblab\schema\Edge.class
 com\gdblab\schema\GraphObject.class
 com\gdblab\database\Database.class

@@ -4,6 +4,7 @@
  */
 package com.gdblab.algebra.condition;
 
+import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Path;
 
 /**
@@ -13,15 +14,30 @@ import com.gdblab.schema.Path;
 public class Label  extends Condition{
     
     public String label;
+    public int pos;
 
-    public Label(String label) {
+    public Label(String label, int pos) {
         this.label = label;
+        this.pos = pos;
     }
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+
+   
     
 
     @Override
     public boolean eval(Path p) {
-        return p.getLabel().equals(this.getLabel());
+        if (p.getSequence().size() > pos)
+            return p.getSequence().get(pos).getLabel().equals(label);
+        else
+            return false;
     }
 
     public String getLabel() {
