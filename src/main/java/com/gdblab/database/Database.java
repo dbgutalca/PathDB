@@ -46,9 +46,12 @@ public class Database {
         System.out.println(".................................................");
         System.out.println("No repeated nodes");
         printPath(Recursion.noRepeatedNodes(paths, 10));
-         System.out.println(".................................................");
+        System.out.println(".................................................");
         System.out.println("No repeated edges");
         printPath(Recursion.noRepeatedEdges(paths, 10));
+        System.out.println(".................................................");
+        System.out.println("Shortest Paths");
+        printPath(Recursion.shortestPath(paths, 10));
             
           
     }
