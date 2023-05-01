@@ -16,12 +16,30 @@ import java.util.stream.Collectors;
  */
 public class Path extends GraphObject{
     private ArrayList<GraphObject> sequence;
+    private Node source;
+    private Node target;
     
-
     public Path(String id, String label) {
         super(id, label);
         this.sequence = new ArrayList<>();
     }
+
+    public Node getSource() {
+        return source;
+    }
+
+    public void setSource(Node Source) {
+        this.source = Source;
+    }
+
+    public Node getTarget() {
+        return target;
+    }
+
+    public void setTarget(Node Target) {
+        this.target = Target;
+    }
+    
     
     public Path(String id) {
         super(id);
@@ -37,10 +55,13 @@ public class Path extends GraphObject{
             sequence.add(edge.getSource());
             sequence.add(edge);
             sequence.add(edge.getTarget());
+            this.source= edge.getSource();
+            this.target= edge.getTarget();
         }
         else if (this.Last().getId() == edge.getSource().getId()){
             sequence.add(edge);
             sequence.add(edge.getTarget());
+            this.target= edge.getTarget();
         }
     }
     
@@ -89,6 +110,10 @@ public class Path extends GraphObject{
         if(seq.size()>= pos)
                 return seq.get(pos);
         return null;
+    }
+
+    public void setSequence(ArrayList<GraphObject> sequence) {
+        this.sequence = sequence;
     }
     
     public Edge GetEdgeX (int pos){

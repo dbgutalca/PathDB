@@ -17,12 +17,14 @@ public class Graph {
     private HashMap<String,Node> nodes;
     private HashMap<String,Edge> edges;
     private HashMap<String,Path> paths;
+    private HashMap<String,Path> cPaths;
 
     public Graph(String name) {
         this.name = name;
         this.nodes = new HashMap<>();
         this.edges = new HashMap<>();
         this.paths = new HashMap<>();
+        this.cPaths = new HashMap<>();
     }
 
     public String getName() {
@@ -83,6 +85,22 @@ public class Graph {
     
     public void insertPath(String id, Path path) {
         paths.put(id,path);
+    }
+    
+    public Path getCPath(String id) {
+        return (Path) cPaths.get(id);
+    }
+    public ArrayList<Path> getCPaths() {
+        return new ArrayList<>(cPaths.values());
+    }
+
+    public void setCPath(String id, Path path) {
+        cPaths.remove(id);
+        insertCPath(id, path);
+    }
+    
+    public void insertCPath(String id, Path path) {
+        cPaths.put(id,path);
     }
 
    
