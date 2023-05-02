@@ -19,9 +19,9 @@ import java.util.UUID;
  */
 public class PathCompression {
     
-    public static Path compressPath (ArrayList<Path> s, Path path, Graph g){
+    public static ArrayList<Path>  pathSetCompress (ArrayList<Path> s, Path path, Graph g){
         if (s.isEmpty())
-            return path;
+            return s;
         
         for (Path p : s){
             if(p.lenght()< path.lenght()){
@@ -30,25 +30,35 @@ public class PathCompression {
                 
         }
     
-        return path;
+        return s;
     }
     
-    public static Path comparePath (Path epath, Path npath , Graph g){
-        int nodesLenght = npath.getNodeNumber();
-        for (int i = 0 ; i< nodesLenght ;i++){
-            for (int j = i+1 ; j< nodesLenght ;j++){
+    public static Path pathCompress (Path epath, Path npath , Graph g){
+        int nPathSize = npath.getSequence().size();
+        for (int i = 0 ; i< nPathSize ;i=i+2){
+            for (int j = i+2 ; j< nPathSize ;j++){
                 Path sp = subPath(npath,i, j,g);
                 if (epath.getSequence().equals(sp.getSequence())){
-                    int min = 0;
+                    ArrayList<GraphObject> compPathSequence = new ArrayList<>();
                     if(i == 0){
-                        ArrayList<GraphObject> npathSequence = (ArrayList<GraphObject>) npath.SubPath(j, nodesLenght).getSequence().clone();
-                        ArrayList<GraphObject> compPathSequence = new ArrayList<>();
+                        ArrayList<GraphObject> subSeqR = (ArrayList<GraphObject>) subPath(npath,j, nPathSize-1,g).getSequence().clone();
                         compPathSequence.add(epath);
-                        compPathSequence.addAll(npathSequence.subList(1, npathSequence.size()-1));
+                        compPathSequence.addAll(subSeqR.subList(1, subSeqR.size()-1));
+                    }
+                    else if (i>0 && j < nPathSize-1){
+                        ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) subPath(npath,0, i-1,g).getSequence().clone();
+                        ArrayList<GraphObject> subSeqR = (ArrayList<GraphObject>) subPath(npath,j+1, nPathSize-1,g).getSequence().clone();
+                        compPathSequence.addAll(subSeqL);
+                        compPathSequence.add(epath);
+                        compPathSequence.addAll(subSeqR);
+                    }
+                    else{
+                        ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) subPath(npath,0, j-1,g).getSequence().clone();
+                        compPathSequence.addAll(subSeqL);
+                        compPathSequence.add(epath);
+                    }
                         npath.setSequence(compPathSequence);
                         return npath;
-                    }
-                            //Faltan casos intermedios
                 }
             }
         }    
