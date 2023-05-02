@@ -40,6 +40,9 @@ public class Database {
        //ArrayList<Path> paths = Select.eval(paths2, new Not(new First("n1")));
         
         ArrayList<Path> paths = Select.eval(graph.getPaths(), new Label("a", 1));
+        
+        System.out.println("Paths with label 'a'");
+        printPath(paths);
        
         System.out.println("Arbitrary");
         printPath(Recursion.arbitrary(paths, 10)); 
