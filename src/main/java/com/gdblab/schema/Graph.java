@@ -90,6 +90,10 @@ public class Graph {
     public Path getCPath(String id) {
         return (Path) cPaths.get(id);
     }
+
+    public void setcPaths(HashMap<String, Path> cPaths) {
+        this.cPaths = cPaths;
+    }
     public ArrayList<Path> getCPaths() {
         return new ArrayList<>(cPaths.values());
     }

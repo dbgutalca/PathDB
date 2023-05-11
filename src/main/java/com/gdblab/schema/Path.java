@@ -12,7 +12,7 @@ import java.util.UUID;
  *
  * @author ramhg
  */
-public class Path extends GraphObject{
+public class Path extends GraphObject implements Comparable<Object>{
     private ArrayList<GraphObject> sequence;
     private Node source;
     private Node target;
@@ -179,6 +179,12 @@ public class Path extends GraphObject{
     
     public int lenght (){
         return getEdgeSequence().size();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Path p = (Path) o;
+        return  p.getSequence().size() - this.getSequence().size();
     }
     
     

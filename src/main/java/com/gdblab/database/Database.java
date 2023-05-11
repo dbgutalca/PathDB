@@ -10,6 +10,7 @@ import com.gdblab.algebra.condition.First;
 import com.gdblab.algebra.Select;
 import com.gdblab.algebra.PathAlgebra;
 import com.gdblab.algebra.condition.Label;
+import com.gdblab.compress.PathCompression;
 import com.gdblab.recursion.Recursion;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
@@ -24,10 +25,10 @@ import java.util.ArrayList;
  */
 public class Database {
     
-    private final Graph graph;
-    private final PathAlgebra algebra;
+    private  Graph graph;
+    private  PathAlgebra algebra;
     public Database() {
-        
+        /**
         graph = new Graph("test1");
         generateDemoDatabase(this.graph);
         System.out.println(graph.getName());
@@ -52,11 +53,13 @@ public class Database {
         System.out.println(".................................................");
         System.out.println("Shortest Paths");
         printPath(Recursion.shortestPath(paths, 10));
+        * **/
+        PathCompression.Test();
             
           
     }
     
-    private void printPath(ArrayList<Path> paths){
+    public static void printPath(ArrayList<Path> paths){
          for(Path pp : paths){
             System.out.print(pp.getId()+" : ");
             for (GraphObject go : pp.getSequence())
