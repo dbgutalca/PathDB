@@ -38,7 +38,7 @@ public class PathCompression {
         return s;
     }
     
-    public static void Test (){
+    public static void Test1 (){
         Graph graph = new Graph("Path Test");
         Node node1 = new Node("n1", "Node");
         Node node2 = new Node("n2", "Node");
@@ -86,7 +86,7 @@ public class PathCompression {
         path6.insertEdge(edge2);
         path6.insertEdge(edge3);
         path6.insertEdge(edge4);
-         path6.insertEdge(edge5);
+        path6.insertEdge(edge5);
         
         graph.insertCPath("p1",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path1, graph));
         graph.insertCPath("p2",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path2, graph));
@@ -114,6 +114,71 @@ public class PathCompression {
         Database.printPath(graph.getCPaths());
     }
     
+    public static void Test2 (){
+        Graph graph = new Graph("Path Test");
+        Node node1 = new Node("n1", "Node");
+        Node node2 = new Node("n2", "Node");
+        Node node3 = new Node("n3", "Node");
+        Node node4 = new Node("n4", "Node");
+        
+        Edge edge1 = new Edge("e1", "a", node1, node2);
+        Edge edge2 = new Edge("e2", "a", node2, node3);
+        Edge edge3 = new Edge("e3", "b", node3, node4);
+        Edge edge4 = new Edge("e4", "c", node4, node1);
+        Edge edge5 = new Edge("e5", "a", node1, node3);
+        
+        graph.insertNode("n1", node1);
+        graph.insertNode("n2", node2);
+        graph.insertNode("n3", node3);
+        graph.insertNode("n4", node4);
+        
+        graph.insertEdge("e1", edge1);
+        graph.insertEdge("e2", edge2);
+        graph.insertEdge("e3", edge3);
+        graph.insertEdge("e4", edge4);
+        graph.insertEdge("e5", edge5);
+        
+        
+        Path path1 = new Path("p1", "path1");
+        path1.insertEdge(edge1);
+        
+        Path path2 = new Path("p2", "path2");
+        path2.insertEdge(edge1);
+        path2.insertEdge(edge2);
+        path2.insertEdge(edge3);
+        
+        Path path3 = new Path("p3", "path3");
+        path3.insertEdge(edge3);
+        
+        Path path4 = new Path("p4", "path4");
+        path4.insertEdge(edge4);
+        
+        Path path5 = new Path("p5", "path4");
+        path5.insertEdge(edge5);
+       
+        
+        Path path6 = new Path("p6", "path5");
+        path6.insertEdge(edge1);
+        path6.insertEdge(edge2);
+        path6.insertEdge(edge3);
+        path6.insertEdge(edge4);
+        path6.insertEdge(edge5);
+        
+        ArrayList<Path> paths  = compress_S_based_on_the_path_P(graph.getCPaths(), path6, graph);
+        paths  = compress_S_based_on_the_path_P(paths, path2, graph);
+        paths  = compress_S_based_on_the_path_P(paths, path1, graph);
+        paths  = compress_S_based_on_the_path_P(paths, path3, graph);
+        paths  = compress_S_based_on_the_path_P(paths, path4, graph);
+        paths  = compress_S_based_on_the_path_P(paths, path5, graph);
+        Database.printPath(paths);
+       
+        
+        
+        
+        
+       
+    }
+    
     public static Path compress_P_based_on_the_paths_in_S (ArrayList<Path> s, Path path, Graph g){
         if(!s.isEmpty()){
             final int  pathSize = size(path);
@@ -131,20 +196,20 @@ public class PathCompression {
       
     }
     
-    public static Path compress_S_based_on_the_path_P (ArrayList<Path> s, Path path, Graph g){
+    public static ArrayList<Path> compress_S_based_on_the_path_P (ArrayList<Path> s, Path path, Graph g){
         if(!s.isEmpty()){
             final int  pathSize = size(path);
-            ArrayList<Path> s_sorted_filtered = (ArrayList<Path>) s.stream().filter(p -> size(p) < pathSize).collect(Collectors.toList());
+            ArrayList<Path> s_sorted_filtered = (ArrayList<Path>) s.stream().filter(p -> size(p) > pathSize).collect(Collectors.toList());
             Collections.sort(s_sorted_filtered, (p1, p2) -> p1.compareTo(p2));
             int i = 0;
-            while (i < s_sorted_filtered.size() && size(path) > size(s_sorted_filtered.get(i)) ){
+            while (i < s_sorted_filtered.size()  ){
                 Path pi = s_sorted_filtered.get(i);
-                path = pathCompress(pi, path, g);
+                pi = pathCompress(path, pi, g);
                 i++;
             }
         }
-       
-        return path;
+        s.add(path);
+        return s;
       
     }
     

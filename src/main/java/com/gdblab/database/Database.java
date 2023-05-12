@@ -54,7 +54,14 @@ public class Database {
         System.out.println("Shortest Paths");
         printPath(Recursion.shortestPath(paths, 10));
         * **/
-        PathCompression.Test();
+        
+        System.out.println("Comprimir P en base a S");
+        PathCompression.Test1();
+        
+        System.out.println(".................................................");
+        System.out.println("Comprimir S en base a P");
+        PathCompression.Test2();
+        
             
           
     }
