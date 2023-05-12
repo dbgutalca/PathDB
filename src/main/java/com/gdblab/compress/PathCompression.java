@@ -48,8 +48,8 @@ public class PathCompression {
         Edge edge1 = new Edge("e1", "a", node1, node2);
         Edge edge2 = new Edge("e2", "a", node2, node3);
         Edge edge3 = new Edge("e3", "b", node3, node4);
-        Edge edge4 = new Edge("e4", "c", node1, node4);
-        Edge edge5 = new Edge("e5", "a", node2, node2);
+        Edge edge4 = new Edge("e4", "c", node4, node1);
+        Edge edge5 = new Edge("e5", "a", node1, node3);
         
         graph.insertNode("n1", node1);
         graph.insertNode("n2", node2);
@@ -66,23 +66,50 @@ public class PathCompression {
         Path path1 = new Path("p1", "path1");
         path1.insertEdge(edge1);
         
-        Path path3 = new Path("p3", "path3");
-        path3.insertEdge(edge3);
-        
         Path path2 = new Path("p2", "path2");
         path2.insertEdge(edge1);
         path2.insertEdge(edge2);
         path2.insertEdge(edge3);
         
-        graph.insertCPath("p1",incrementalInsertion(graph.getCPaths(), path1, graph));
-        graph.insertCPath("p3",incrementalInsertion(graph.getCPaths(), path3, graph));
-        graph.insertCPath("p2",incrementalInsertion(graph.getCPaths(), path2, graph));
+        Path path3 = new Path("p3", "path3");
+        path3.insertEdge(edge3);
+        
+        Path path4 = new Path("p4", "path4");
+        path4.insertEdge(edge4);
+        
+        Path path5 = new Path("p5", "path4");
+        path5.insertEdge(edge5);
+       
+        
+        Path path6 = new Path("p6", "path5");
+        path6.insertEdge(edge1);
+        path6.insertEdge(edge2);
+        path6.insertEdge(edge3);
+        path6.insertEdge(edge4);
+         path6.insertEdge(edge5);
+        
+        graph.insertCPath("p1",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path1, graph));
+        graph.insertCPath("p2",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path2, graph));
+        graph.insertCPath("p3",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path3, graph));
+        graph.insertCPath("p4",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path4, graph));
+        graph.insertCPath("p5",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path5, graph));
+        graph.insertCPath("p6",compress_P_based_on_the_paths_in_S(graph.getCPaths(), path6, graph));
+        
+        
+        
+        
+        Database.printPath(graph.getCPaths());
+        
+        
+        System.out.println("\nAplicar recompresión a p2 y p6");
+        graph.setCPath("p2",  compress_P_based_on_the_paths_in_S(graph.getCPaths(), graph.getCPath("p2"), graph));
+        graph.setCPath("p6",  compress_P_based_on_the_paths_in_S(graph.getCPaths(), graph.getCPath("p6"), graph));
         
         Database.printPath(graph.getCPaths());
         
     }
     
-    public static Path incrementalInsertion (ArrayList<Path> s, Path path, Graph g){
+    public static Path compress_P_based_on_the_paths_in_S (ArrayList<Path> s, Path path, Graph g){
         if(!s.isEmpty()){
             final int  pathSize = size(path);
             ArrayList<Path> s_sorted_filtered = (ArrayList<Path>) s.stream().filter(p -> size(p) < pathSize).collect(Collectors.toList());
@@ -123,7 +150,7 @@ public class PathCompression {
                         compPathSequence.addAll(subSeqR);
                     }
                     else{
-                        int size = j - size(pi);
+                        int size = j - size(pi)  ;
                         ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) slicePath(p,0, size,g).getSequence().clone();
                         compPathSequence.addAll(subSeqL);
                         compPathSequence.add(pi);
@@ -183,29 +210,14 @@ public class PathCompression {
              
     public static Path slicePath (Path p, int source, int target, Graph g){
         if (p.getSequence().size()>target && source >=0){
-             if((source % 2 == 0 || source == 0) &&  target % 2 == 0){
                 Node first;
                 Node last;
                 Path new_path = new Path("p"+UUID.randomUUID().toString(), "path");
                 List<GraphObject> seq =  p.getSequence().subList(source, target+1);
-                //Se reestablece el primer nodo
-                if (seq.get(0).getId().contains("n"))
-                    first = g.getNode(seq.get(0).getId());
-                else
-                    first = g.getCPath(seq.get(0).getId()).First();
-                
-                //OJO, el primero en un camino podría ser otro camino OJO, quizas hay que recomponer el camino cada vez para obtener el primer nodo?
-                
-                if (seq.get(seq.size()-1).getId().contains("n"))
-                    last = g.getNode(seq.get(seq.size()-1).getId());
-                else
-                    last = g.getCPath(seq.get(seq.size()-1).getId()).Last();
-                
-                new_path.setSource(first);
-                new_path.setTarget(last);
+               
                 new_path.setSequence(new ArrayList<>(seq));
                 return new_path;
-             }
+             
         }
         return p;
     }
