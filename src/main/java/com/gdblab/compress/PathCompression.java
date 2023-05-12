@@ -107,6 +107,11 @@ public class PathCompression {
         
         Database.printPath(graph.getCPaths());
         
+       
+        System.out.println("\nAplicar descompresion a p2 y p6");
+        graph.setCPath("p2",  pathDescompress(graph.getCPath("p2"), graph));
+        graph.setCPath("p6",  pathDescompress(graph.getCPath("p6"), graph));
+        Database.printPath(graph.getCPaths());
     }
     
     public static Path compress_P_based_on_the_paths_in_S (ArrayList<Path> s, Path path, Graph g){
@@ -185,18 +190,18 @@ public class PathCompression {
         return p.getSequence().size();
     }
     
-    public static Path pathReconstruct (Path p, Graph g){
+    public static Path pathDescompress (Path p, Graph g){
         ArrayList<GraphObject> seq = (ArrayList<GraphObject>) p.getSequence().clone();
         Boolean isReconstructed = false;
         int i =0;
-        while (!isReconstructed){
+        while (!isReconstructed && i < seq.size()){
             GraphObject go = seq.get(i);
             if(go.getId().contains("p")){
                 ArrayList<GraphObject> seq2 = g.getCPath(go.getId()).getSequence();
                 seq = pathSeqUnion(seq,seq2,i);
             }
             else{
-                i++;
+                i=i+2;
                 if(seq.size() == i)
                     isReconstructed = true;
             }
@@ -206,21 +211,22 @@ public class PathCompression {
     }
     
     public static ArrayList<GraphObject> pathSeqUnion (ArrayList<GraphObject> seq, ArrayList<GraphObject> seq2, int i){
+        ArrayList<GraphObject> subSeq2 = new ArrayList<>(seq2) ;
         if(i==0){
-            ArrayList<GraphObject> subSeq = (ArrayList<GraphObject>) seq.subList(i, seq.size()-1);
-            seq2.addAll(subSeq);
-            return seq2;
+            ArrayList<GraphObject> subSeq = new ArrayList<>(seq.subList(i+1, seq.size())) ;
+            subSeq2.addAll(subSeq);
+            return subSeq2;
         }
         else if (i>0 && i < seq.size()-1){
-            ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) seq.subList(0, i-1);
-            ArrayList<GraphObject> subSeqR = (ArrayList<GraphObject>) seq.subList(i+1, seq.size()-1);
-            subSeqL.addAll(seq2);
-            seq2.addAll(subSeqR);
-            return seq2;
+            ArrayList<GraphObject> subSeqL = new ArrayList<>( seq.subList(0, i));
+            ArrayList<GraphObject> subSeqR = new ArrayList<>( seq.subList(i+1, seq.size()));
+            subSeq2.addAll(subSeqR);
+            subSeqL.addAll(subSeq2);
+            return subSeqL;
         }
         else{
-            ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) seq.subList(0, i-1);
-            subSeqL.addAll(seq2);
+            ArrayList<GraphObject> subSeqL = new ArrayList<>( seq.subList(0, i));
+            subSeqL.addAll(subSeq2);
             return subSeqL;
         }
     }
