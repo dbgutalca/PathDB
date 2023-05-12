@@ -126,6 +126,23 @@ public class PathCompression {
       
     }
     
+    public static Path compress_S_based_on_the_path_P (ArrayList<Path> s, Path path, Graph g){
+        if(!s.isEmpty()){
+            final int  pathSize = size(path);
+            ArrayList<Path> s_sorted_filtered = (ArrayList<Path>) s.stream().filter(p -> size(p) < pathSize).collect(Collectors.toList());
+            Collections.sort(s_sorted_filtered, (p1, p2) -> p1.compareTo(p2));
+            int i = 0;
+            while (i < s_sorted_filtered.size() && size(path) > size(s_sorted_filtered.get(i)) ){
+                Path pi = s_sorted_filtered.get(i);
+                path = pathCompress(pi, path, g);
+                i++;
+            }
+        }
+       
+        return path;
+      
+    }
+    
     
     
     
@@ -133,32 +150,33 @@ public class PathCompression {
     public static Path pathCompress (Path pi, Path p , Graph g){
         int pSize = size(p);
         for (int i = 0 ; i< pSize ;i=i+2){
-            for (int j = i+2 ; j< pSize ;j++){
-                Path sp = slicePath(p,i, j,g);
-                if (pi.getSequence().equals(sp.getSequence())){
-                    ArrayList<GraphObject> compPathSequence = new ArrayList<>();
-                    if(i == 0){
-                        ArrayList<GraphObject> subSeqR = (ArrayList<GraphObject>) slicePath(p,j, pSize-1,g).getSequence().clone();
-                        compPathSequence.add(pi);
-                        compPathSequence.addAll(subSeqR.subList(1, subSeqR.size()));
-                    }
-                    else if (i>0 && j < pSize-1){
-                        ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) slicePath(p,0, i-1,g).getSequence().clone();
-                        ArrayList<GraphObject> subSeqR = (ArrayList<GraphObject>) slicePath(p,j+1, pSize-1,g).getSequence().clone();
-                        compPathSequence.addAll(subSeqL);
-                        compPathSequence.add(pi);
-                        compPathSequence.addAll(subSeqR);
-                    }
-                    else{
-                        int size = j - size(pi)  ;
-                        ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) slicePath(p,0, size,g).getSequence().clone();
-                        compPathSequence.addAll(subSeqL);
-                        compPathSequence.add(pi);
-                    }
-                        p.setSequence(compPathSequence);
-                        return p;
+            int j = size(pi) + i -1;
+            Path sp = slicePath(p,i, j,g);
+            if (pi.getSequence().equals(sp.getSequence())){
+                ArrayList<GraphObject> compPathSequence = new ArrayList<>();
+                if(i == 0){
+                    ArrayList<GraphObject> subSeqR = (ArrayList<GraphObject>) slicePath(p,j, pSize-1,g).getSequence().clone();
+                    compPathSequence.add(pi);
+                    compPathSequence.addAll(subSeqR.subList(1, subSeqR.size()));
                 }
+                else if (i>0 && j < pSize-1){
+                    ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) slicePath(p,0, i-1,g).getSequence().clone();
+                    ArrayList<GraphObject> subSeqR = (ArrayList<GraphObject>) slicePath(p,j+1, pSize-1,g).getSequence().clone();
+                    compPathSequence.addAll(subSeqL);
+                    compPathSequence.add(pi);
+                    compPathSequence.addAll(subSeqR);
+                }
+                else{
+                    int size = j - size(pi)  ;
+                    ArrayList<GraphObject> subSeqL = (ArrayList<GraphObject>) slicePath(p,0, size,g).getSequence().clone();
+                    compPathSequence.addAll(subSeqL);
+                    compPathSequence.add(pi);
+                }
+                    p.setSequence(compPathSequence);
+                    pSize = size(p);
+                    return p;
             }
+            
         }    
         return p;
     }
