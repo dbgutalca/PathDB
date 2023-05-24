@@ -24,7 +24,7 @@ public class PathAlgebra {
     public static Path NodeLink (Path pathA, Path pathB){
         Path join_path = null;
             if(pathA.isNodeLinkable(pathB)){
-                join_path = new Path(UUID.randomUUID().toString());
+                join_path = new Path("p"+UUID.randomUUID().toString());
                 for (Edge ed : pathA.getEdgeSequence())
                     join_path.insertEdge(ed);
                 for (Edge ed : pathB.getEdgeSequence())
@@ -49,7 +49,7 @@ public class PathAlgebra {
         Path join_path = null;
         Edge edge = pathA.isEdgeLinkable(pathB, graph);
         if(edge != null){
-            join_path = new Path(UUID.randomUUID().toString());
+            join_path = new Path("p"+UUID.randomUUID().toString());
             for (Edge ed : pathA.getEdgeSequence())
                 join_path.insertEdge(ed);
             join_path.insertEdge(edge);

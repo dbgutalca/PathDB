@@ -28,10 +28,15 @@ public class Database {
     private  Graph graph;
     private  PathAlgebra algebra;
     public Database() {
-        /**
-        graph = new Graph("test1");
-        generateDemoDatabase(this.graph);
-        System.out.println(graph.getName());
+        
+        //graph = new Graph("test1");
+        //generateDemoDatabase(this.graph);
+        
+        graph = Loader.LoadGraphFromFile("twitter_combined.txt", "Rmat100");
+        graph = Loader.LoadEdgesAsPaths(graph);
+        System.out.println("Graph: "+graph.getName());
+        System.out.println("Nodes: "+graph.nodeNumber());
+        System.out.println("Edges: "+graph.edgeNumber());
         this.algebra = new PathAlgebra(graph);
         
         ArrayList<Path> p= algebra.NodeJoin(graph.getPaths(), graph.getPaths());
@@ -40,10 +45,27 @@ public class Database {
         
        //ArrayList<Path> paths = Select.eval(paths2, new Not(new First("n1")));
         
-        ArrayList<Path> paths = Select.eval(graph.getPaths(), new Label("a", 1));
-       
+       // ArrayList<Path> paths = Select.eval(graph.getPaths(), new Label("a", 1));
+        ArrayList<Path> paths = graph.getPaths();
         System.out.println("Arbitrary");
-        printPath(Recursion.arbitrary(paths, 10)); 
+        paths = Recursion.shortestPath(paths, 7);
+        printPath(paths);
+        
+        for (Path path : paths){
+            PathCompression.compress_P_based_on_the_paths_in_S(paths, path, graph);
+        }
+        System.out.println("Comprimido 1 paso");
+        for (Path path : paths){
+            //paths.add(PathCompression.compress_P_based_on_the_paths_in_S(paths, p, g));
+            graph.setCPath(path.getId(),PathCompression.compress_P_based_on_the_paths_in_S(paths, path, graph));
+        }
+        
+         printPath(paths);
+        
+        
+        
+        
+        /**
         System.out.println(".................................................");
         System.out.println("No repeated nodes");
         printPath(Recursion.noRepeatedNodes(paths, 10));
@@ -53,26 +75,34 @@ public class Database {
         System.out.println(".................................................");
         System.out.println("Shortest Paths");
         printPath(Recursion.shortestPath(paths, 10));
-        * **/
+        **/
+       
         
-        System.out.println("Comprimir P en base a S");
-        PathCompression.Test1();
+        //System.out.println("Comprimir P en base a S");
+        //PathCompression.Test1();
         
-        System.out.println(".................................................");
-        System.out.println("Comprimir S en base a P");
-        PathCompression.Test2();
+        //System.out.println(".................................................");
+        //System.out.println("Comprimir S en base a P");
+        //PathCompression.Test2();
         
             
           
     }
     
-    public static void printPath(ArrayList<Path> paths){
+     public static void printPath(ArrayList<Path> paths){
+        int total =0;
          for(Path pp : paths){
-            System.out.print(pp.getId()+" : ");
-            for (GraphObject go : pp.getSequence())
-              System.out.print(go.getId()+" ");
-            System.out.println("");
+            //System.out.print(pp.getId()+" : ");
+            int size = pp.getSequence().size();
+            for (GraphObject go : pp.getSequence()){
+                //System.out.print(go.getId()+" ");
+            }
+             //System.out.print("|| Size: "+size); 
+             total+=size;
+            //System.out.println(" ");
         }
+         System.out.println("Total id's secuencias caminos: "+total);
+         System.out.println("Largo promedio secuencias: "+(total/paths.size()));
     }
     
    

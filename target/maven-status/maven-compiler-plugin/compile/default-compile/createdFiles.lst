@@ -1,6 +1,8 @@
 com\gdblab\algebra\Select.class
+com\gdblab\database\Loader.class
 com\gdblab\schema\Graph.class
 com\gdblab\algebra\condition\Edge.class
+com\gdblab\compress\PathCompression.class
 com\gdblab\algebra\condition\And.class
 com\gdblab\algebra\condition\Node.class
 com\gdblab\algebra\condition\Or.class

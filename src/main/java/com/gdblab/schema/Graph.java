@@ -62,6 +62,10 @@ public class Graph {
         return null;
     }
 
+    public ArrayList<Edge> getEdges() {
+        return new ArrayList<>(edges.values());
+    }
+
     public void setEdge(String id, Edge edge) {
         edges.remove(id);
         insertEdge(id, edge);
@@ -105,6 +109,14 @@ public class Graph {
     
     public void insertCPath(String id, Path path) {
         cPaths.put(id,path);
+    }
+    
+    public int nodeNumber() {
+        return nodes.size();
+    }
+    
+     public int edgeNumber() {
+        return edges.size();
     }
 
    
