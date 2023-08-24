@@ -21,7 +21,7 @@ import com.gdblab.parser.RPQGrammarParser;
 public class Main {
     public static void main(String[] args){
 
-        CharStream input = CharStreams.fromString("(a+.(c+.b?)).b*");
+        CharStream input = CharStreams.fromString("(a+.b)");
         RPQGrammarLexer lexer = new RPQGrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         RPQGrammarParser parser = new RPQGrammarParser(tokens);

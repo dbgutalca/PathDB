@@ -1,9 +1,20 @@
 // Generated from RPQGrammar.g4 by ANTLR 4.13.0
 package com.gdblab.parser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
+
+import com.gdblab.algebra.Select;
+import com.gdblab.algebra.condition.Label;
+import com.gdblab.algebra.PathAlgebra;
+import com.gdblab.database.Database;
+import com.gdblab.recursion.Recursion;
+import com.gdblab.schema.GraphObject;
+import com.gdblab.schema.Path;
 
 /**
  * This class provides an empty implementation of {@link RPQGrammarListener},
@@ -13,31 +24,39 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 @SuppressWarnings("CheckReturnValue")
 public class RPQGrammarBaseListener implements RPQGrammarListener {
 
-	private int index = 0;
+	private Database database;
+	private Integer MAX = 3;
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterQuery(RPQGrammarParser.QueryContext ctx) { }
+	@Override public void enterQuery(RPQGrammarParser.QueryContext ctx) {
+		this.database = new Database();
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitQuery(RPQGrammarParser.QueryContext ctx) { }
+	@Override public void exitQuery(RPQGrammarParser.QueryContext ctx) {
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpression(RPQGrammarParser.ExpressionContext ctx) { }
+	@Override public void enterExpression(RPQGrammarParser.ExpressionContext ctx) {
+		
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpression(RPQGrammarParser.ExpressionContext ctx) { }
+	@Override public void exitExpression(RPQGrammarParser.ExpressionContext ctx) {
+		// System.out.println("Expression: " + ctx.getText());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -50,7 +69,69 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitTerm(RPQGrammarParser.TermContext ctx) {
-		System.out.println("Term: " + ctx.getText());
+		ArrayList<Path> join =  null;
+		
+		String term = ctx.getText();
+
+		// This first version support only a sequence of terms without parenthesis adn operators
+		if(term.contains("(") && term.contains(")")){
+			term = term.substring(1, term.length()-1);
+			ArrayList<String> terms = new ArrayList<String>(Arrays.asList(term.split("\\.")));
+
+			if(terms.size() == 1){
+				join = Select.eval(this.database.graph.getPaths(), new Label(terms.get(0), 1));
+			}
+
+			else{
+				for(String t : terms){
+					if(join == null){
+						if(t.contains("+")){
+							t = t.replaceAll("\\+", "");
+							join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+							join = Recursion.arbitrary(join, this.MAX);
+						}
+						else if (t.contains("*")) {
+
+						}
+
+						else {
+							join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+						}
+					}
+					else{
+						ArrayList<Path> paths = new ArrayList<>();
+						if(t.contains("+")){
+							t = t.replaceAll("\\+", "");
+							paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+							paths = Recursion.arbitrary(paths, this.MAX);
+						}
+						else if (t.contains("*")) {
+
+						}
+
+						else {
+							paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+						}
+
+						join = PathAlgebra.NodeJoin(join, paths);
+					}
+				}
+			}
+			
+			// System.out.println("Arbitrary");
+			// printPath(Recursion.arbitrary(join, 10));
+			// System.out.println(".................................................");
+			// System.out.println("No repeated nodes");
+			// printPath(Recursion.noRepeatedNodes(join, 10));
+			// System.out.println(".................................................");
+			// System.out.println("No repeated edges");
+			// printPath(Recursion.noRepeatedEdges(join, 10));
+			// System.out.println(".................................................");
+			// System.out.println("Shortest Paths");
+			// printPath(Recursion.shortestPath(join, 10));
+
+			printPath(join);
+		}
 	}
 	/**
 	 * {@inheritDoc}
@@ -63,8 +144,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitBase(RPQGrammarParser.BaseContext ctx) {
-	}
+	@Override public void exitBase(RPQGrammarParser.BaseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -114,4 +194,13 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void visitErrorNode(ErrorNode node) { }
+
+	private void printPath(ArrayList<Path> paths) {
+		for (Path pp : paths) {
+			System.out.print(pp.getId() + " : ");
+			for (GraphObject go : pp.getSequence())
+				System.out.print(go.getId() + " ");
+			System.out.println("");
+		}
+	}
 }
