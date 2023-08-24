@@ -221,7 +221,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		for (Path pp : paths) {
 			System.out.print(pp.getId() + " : ");
 			for (GraphObject go : pp.getSequence())
-				System.out.print(go.getLabel() + " ");
+				System.out.print(go.getId() + " ");
 			System.out.println("");
 		}
 	}
