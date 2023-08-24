@@ -25,7 +25,8 @@ import com.gdblab.schema.Path;
 public class RPQGrammarBaseListener implements RPQGrammarListener {
 
 	private Database database;
-	private Integer MAX = 3;
+	private Integer MAX = 2;
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -90,8 +91,18 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 							join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
 							join = Recursion.arbitrary(join, this.MAX);
 						}
-						else if (t.contains("*")) {
 
+						else if (t.contains("*")) {
+							t = t.replaceAll("\\*", "");
+							join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+							join = Recursion.arbitrary(join, this.MAX);
+							join = PathAlgebra.Union(join, this.database.getPathsWithoutEdges());
+						}
+
+						else if (t.contains("?")) {
+							t = t.replaceAll("\\?", "");
+							join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+							join = PathAlgebra.Union(join, this.database.getPathsWithoutEdges());
 						}
 
 						else {
@@ -105,8 +116,18 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 							paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
 							paths = Recursion.arbitrary(paths, this.MAX);
 						}
-						else if (t.contains("*")) {
 
+						else if (t.contains("*")) {
+							t = t.replaceAll("\\*", "");
+							paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+							paths = Recursion.arbitrary(paths, this.MAX);
+							paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
+						}
+
+						else if (t.contains("?")) {
+							t = t.replaceAll("\\?", "");
+							paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
+							paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
 						}
 
 						else {
@@ -195,11 +216,12 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	 */
 	@Override public void visitErrorNode(ErrorNode node) { }
 
+	
 	private void printPath(ArrayList<Path> paths) {
 		for (Path pp : paths) {
 			System.out.print(pp.getId() + " : ");
 			for (GraphObject go : pp.getSequence())
-				System.out.print(go.getId() + " ");
+				System.out.print(go.getLabel() + " ");
 			System.out.println("");
 		}
 	}

@@ -44,7 +44,7 @@ public class Path extends GraphObject{
         }
     }
     
-    private void insertNode(Node node){
+    public void insertNode(Node node){
         if(sequence.isEmpty())
             sequence.add(node);
     }
