@@ -86,19 +86,42 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		System.out.println("Incoming term: " + term);
 		System.out.println("Saved terms: ");
 		for (String key : this.evals.keySet()) {
-			System.out.print(key + " ");
+			System.out.print(key + ", ");
 		}
 		System.out.println();
 
 		if (term.contains("(") && term.contains(")")) {
-			String operator = null;
+			String operator = null; // este es el operador del conjunto
 			String lastChar = Character.toString(term.charAt(term.length() - 1));
 			if (lastChar.equals("?") || lastChar.equals("*") || lastChar.equals("+")) {
 				operator = lastChar;
 				term = term.substring(0, term.length() - 1);
 			}
 
-			term = term.substring(1, term.length() - 1);
+			if(term.chars().filter(c -> c == '(').count() == 1){
+				ArrayList<Path> joinPaths = new ArrayList<>();
+
+				term = term.substring(1, term.length() - 1);
+				ArrayList<String> terms = new ArrayList<String>(java.util.Arrays.asList(term.split("\\.")));
+				
+				for (String t : terms) {
+					System.out.println("T: " + t);
+					if(joinPaths.isEmpty()){
+						joinPaths = this.evals.get(t);
+						printPath(joinPaths);
+					}
+					else{
+						joinPaths = PathAlgebra.NodeJoin(joinPaths, this.evals.get(t));
+						printPath(joinPaths);
+					}
+				}
+
+				this.evals.put(term, joinPaths);
+				
+			}
+			else{
+				// ver que ****** hacer
+			}
 
 		}
 
@@ -110,22 +133,15 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		else {
 			if(term.contains("+")){
 				String termReplaced = term.replaceAll("\\+", "");
-				paths = Select.eval(this.database.graph.getPaths(), new Label(termReplaced, 1));
-				paths = Recursion.arbitrary(paths, this.MAX);
-				this.evals.put(term, paths);
+				this.evals.put(term, this.evaluatePlus(termReplaced));
 			}
 			else if (term.contains("*")) {
 				String termReplaced = term.replaceAll("\\*", "");
-				paths = Select.eval(this.database.graph.getPaths(), new Label(termReplaced, 1));
-				paths = Recursion.arbitrary(paths, this.MAX);
-				paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
-				this.evals.put(term, paths);
+				this.evals.put(term, this.evaluateKleene(termReplaced));
 			}
 			else if (term.contains("?")) {
 				String termReplaced = term.replaceAll("\\?", "");
-				paths = Select.eval(this.database.graph.getPaths(), new Label(termReplaced, 1));
-				paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
-				this.evals.put(term, paths);
+				this.evals.put(term, this.evaluateOptional(termReplaced));
 			}
 			else {
 				paths = Select.eval(this.database.graph.getPaths(), new Label(term, 1));
@@ -139,65 +155,6 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		// }
 		System.out.println("====================================================");
 
-
-		// ArrayList<Path> join =  null;
-		// String term = ctx.getText();
-		// if(term.contains("(") && term.contains(")")){
-		// 	term = term.substring(1, term.length()-1);
-		// 	ArrayList<String> terms = new ArrayList<String>(Arrays.asList(term.split("\\.")));
-		// 	if(terms.size() == 1){
-		// 		join = Select.eval(this.database.graph.getPaths(), new Label(terms.get(0), 1));
-		// 	}
-		// 	else{
-		// 		for(String t : terms){
-		// 			if(join == null){
-		// 				if(t.contains("+")){
-		// 					t = t.replaceAll("\\+", "");
-		// 					join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 					join = Recursion.arbitrary(join, this.MAX);
-		// 				}
-		// 				else if (t.contains("*")) {
-		// 					t = t.replaceAll("\\*", "");
-		// 					join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 					join = Recursion.arbitrary(join, this.MAX);
-		// 					join = PathAlgebra.Union(join, this.database.getPathsWithoutEdges());
-		// 				}
-		// 				else if (t.contains("?")) {
-		// 					t = t.replaceAll("\\?", "");
-		// 					join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 					join = PathAlgebra.Union(join, this.database.getPathsWithoutEdges());
-		// 				}
-		// 				else {
-		// 					join = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 				}
-		// 			}
-		// 			else{
-		// 				ArrayList<Path> paths = new ArrayList<>();
-		// 				if(t.contains("+")){
-		// 					t = t.replaceAll("\\+", "");
-		// 					paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 					paths = Recursion.arbitrary(paths, this.MAX);
-		// 				}
-		// 				else if (t.contains("*")) {
-		// 					t = t.replaceAll("\\*", "");
-		// 					paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 					paths = Recursion.arbitrary(paths, this.MAX);
-		// 					paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
-		// 				}
-		// 				else if (t.contains("?")) {
-		// 					t = t.replaceAll("\\?", "");
-		// 					paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 					paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
-		// 				}
-		// 				else {
-		// 					paths = Select.eval(this.database.graph.getPaths(), new Label(t, 1));
-		// 				}
-		// 				join = PathAlgebra.NodeJoin(join, paths);
-		// 			}
-		// 		}
-		// 	}
-		// 	printPath(join);
-		// }
 	}
 	/**
 	 * {@inheritDoc}
@@ -269,5 +226,29 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 				System.out.print(go.getId() + " ");
 			System.out.println("");
 		}
+	}
+
+	
+	
+	private ArrayList<Path> evaluatePlus(String label){
+		ArrayList<Path> paths = new ArrayList<>();
+		paths = Select.eval(this.database.graph.getPaths(), new Label(label, 1));
+		paths = Recursion.arbitrary(paths, this.MAX);
+		return paths;
+	}
+
+	private ArrayList<Path> evaluateKleene(String label){
+		ArrayList<Path> paths = new ArrayList<>();
+		paths = Select.eval(this.database.graph.getPaths(), new Label(label, 1));
+		paths = Recursion.arbitrary(paths, this.MAX);
+		paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
+		return paths;
+	}
+
+	private ArrayList<Path> evaluateOptional(String label){
+		ArrayList<Path> paths = new ArrayList<>();
+		paths = Select.eval(this.database.graph.getPaths(), new Label(label, 1));
+		paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
+		return paths;
 	}
 }
