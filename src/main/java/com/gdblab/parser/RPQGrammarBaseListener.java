@@ -121,6 +121,8 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		TreeNode tree = this.buildtree(e);
 		this.printTree(tree, "");
 		recorridoPostorden(tree);
+
+		System.out.println(tree.getPaths());
 	}
 
 	private TreeNode buildtree(ParseTree p) {
@@ -173,17 +175,21 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 			return;
 		}
 
+		if (node.childs != null) {
+			for (TreeNode hijo : node.childs) {
+				recorridoPostorden(hijo);
+			}
+		}
+
 		if (node.getChildsCount() == 0) {
-			// extraer la evaluacion del hashmap
 			node.setPaths(this.evals.get(node.label));
+			
 		}
 		else if ( node.getChildsCount() == 1 && node.getChildByIndex(0).label.equals(node.label)) {
-			// si tiene un solo hijo y es igual a su padre, entonces se debe copiar los mismos paths
 			node.setPaths(node.getChildByIndex(0).getPaths());
+			
 		}
 		else if ( node.getChildsCount() == 1 && !node.getChildByIndex(0).label.equals(node.label)) {
-			// si tiene un solo hijo y es distinto al padre significa que hay un operador extra, se debe copiar la evaluacion del hijo
-			// y agregar según corresponda
 			ArrayList<Path> paths = node.getChildByIndex(0).getPaths();
 			if(node.label.endsWith("?")){
 				paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
@@ -195,23 +201,23 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 				paths = Recursion.arbitrary(paths, this.MAX);
 			}
 			node.setPaths(paths);
+			
 		}
 		else if ( node.getChildsCount() > 1) {
 			// Si tiene más de un hijo se debe verificar si ya fueron visitados todos
 			// en caso de que todos fueron visitados se debe realizar la operación correspondiente
 			// y agregar los paths al nodo padre
+			ArrayList<Path> paths = node.getChildByIndex(0).getPaths();
+			
 			if (this.checkIfChildsVisited(node)) {
-				
+				for (int i = 1; i < node.getChildsCount(); i++) {
+					paths = PathAlgebra.NodeJoin(paths, node.getChildByIndex(i).getPaths());
+				}
 			}
+			
+			node.setPaths(paths);
 		}
-
-		if (node.childs != null) {
-			for (TreeNode hijo : node.childs) {
-				recorridoPostorden(hijo);
-			}
-		}
-
-		
+		node.visitNode();
 	}
 
 	private boolean checkIfChildsVisited(TreeNode node) {
