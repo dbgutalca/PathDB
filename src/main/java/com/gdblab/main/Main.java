@@ -9,7 +9,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import com.gdblab.database.Database;
 import com.gdblab.parser.RPQGrammarBaseListener;
 import com.gdblab.parser.RPQGrammarLexer;
 import com.gdblab.parser.RPQGrammarParser;
@@ -21,7 +20,7 @@ import com.gdblab.parser.RPQGrammarParser;
 public class Main {
     public static void main(String[] args){
 
-        CharStream input = CharStreams.fromString("(a+.b)");
+        CharStream input = CharStreams.fromString("((c+.b).a.b)+");
         RPQGrammarLexer lexer = new RPQGrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         RPQGrammarParser parser = new RPQGrammarParser(tokens);
