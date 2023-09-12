@@ -36,7 +36,7 @@ public class Database {
         generateDemoDatabase(this.graph);
 
         
-        System.out.println(graph.getName());
+        // System.out.println(graph.getName());
         this.algebra = new PathAlgebra(graph);
         
         // ArrayList<Path> p= algebra.NodeJoin(graph.getPaths(), graph.getPaths());
@@ -91,13 +91,14 @@ public class Database {
         // Creation of edges
         Edge edge1 = new Edge("e1", "c", node1, node1);
         Edge edge2 = new Edge("e2", "b", node1, node2);
-        Edge edge3 = new Edge("e3", "a", node2, node3);
-        Edge edge5 = new Edge("e4", "a", node2, node5);
-        Edge edge6 = new Edge("e5", "b", node2, node5);
-        Edge edge7 = new Edge("e6", "b", node3, node3);
-        Edge edge4 = new Edge("e7", "c", node4, node2);
-        Edge edge8 = new Edge("e8", "d", node3, node4);
-        Edge edge9 = new Edge("e9", "b", node5, node4);
+        Edge edge3 = new Edge("e3", "c", node2, node1);
+        Edge edge4 = new Edge("e4", "a", node2, node3);
+        Edge edge5 = new Edge("e5", "a", node2, node5);
+        Edge edge6 = new Edge("e6", "b", node2, node5);
+        Edge edge7 = new Edge("e7", "b", node3, node3);
+        Edge edge8 = new Edge("e8", "c", node4, node2);
+        Edge edge9 = new Edge("e10", "d", node3, node4);
+        Edge edge10 = new Edge("e9", "b", node5, node4);
         
         // Insert Nodes and Edges
         graph.insertNode("n1", node1);
@@ -115,6 +116,7 @@ public class Database {
         graph.insertEdge("e7", edge7);
         graph.insertEdge("e8", edge8);
         graph.insertEdge("e9", edge9);
+        graph.insertEdge("e10", edge10);
         
         // Creation of Paths and insertion of edges to each path
         Path path1 = new Path("p1", "path1");
@@ -143,6 +145,9 @@ public class Database {
         
         Path path9 = new Path("p9", "path9");
         path9.insertEdge(edge9);
+
+        Path path10 = new Path("p10", "path10");
+        path9.insertEdge(edge10);
         
         // Insert Paths to the graph
         graph.insertPath("p1", path1);
@@ -154,6 +159,7 @@ public class Database {
         graph.insertPath("p7", path7);
         graph.insertPath("p8", path8);
         graph.insertPath("p9", path9);
+        graph.insertPath("p10", path10);
         
         // Create paths without edges to test the algebra
         Path pathwoe1 = new Path("pwoe1", "pathwoe1");

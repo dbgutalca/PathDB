@@ -67,19 +67,6 @@ class TreeNode {
 }
 
 /**
- * InnerRPQGrammarBaseListener
- */
-class Eval {
-	private String term;
-	private ArrayList<Path> paths;
-
-	public Eval(String term, ArrayList<Path> paths) {
-		this.term = term;
-		this.paths = paths;
-	}
-}
-
-/**
  * This class provides an empty implementation of {@link RPQGrammarListener},
  * which can be extended to create a listener which only needs to handle a
  * subset
@@ -89,7 +76,7 @@ class Eval {
 public class RPQGrammarBaseListener implements RPQGrammarListener {
 
 	private Database database;
-	private Integer MAX = 2;
+	private Integer MAX = 1;
 	private HashMap<String, ArrayList<Path>> evals = new HashMap<>();
 
 	/**
@@ -119,10 +106,13 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		ParseTree e = ctx.getChild(0);
 
 		TreeNode tree = this.buildtree(e);
-		this.printTree(tree, "");
+		System.out.println("Tree: ");
+		this.printTree(tree, "  ", false);
+		System.out.println("====================================================");
 		recorridoPostorden(tree);
-
-		System.out.println(tree.getPaths());
+		System.out.println("Paths: ");
+		this.printPath(tree.getPaths());
+		System.out.println("====================================================");
 	}
 
 	private TreeNode buildtree(ParseTree p) {
@@ -158,19 +148,24 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		return root;
 	}
 
-	private void printTree(TreeNode node, String prefix) {
-		System.out.println(prefix + "└── " + node.label);
+	private void printTree(TreeNode node, String prefix, boolean isLast) {
+		System.out.print(prefix);
+		if (isLast) {
+			System.out.println("└── " + node.label);
+			prefix += "    ";
+		} else {
+			System.out.println("├── " + node.label);
+			prefix += "|   ";
+		}
 
 		for (int i = 0; i < node.childs.size(); i++) {
-			if (i == node.childs.size() - 1) {
-				printTree(node.childs.get(i), prefix + "|   ");
-			} else {
-				printTree(node.childs.get(i), prefix + "|   ");
-			}
+			boolean lastChild = (i == node.childs.size() - 1);
+			printTree(node.childs.get(i), prefix, lastChild);
 		}
 	}
 
 	private void recorridoPostorden(TreeNode node) {
+		ArrayList<Path> paths = new ArrayList<>();
 		if (node.childs == null) {
 			return;
 		}
@@ -182,15 +177,17 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		}
 
 		if (node.getChildsCount() == 0) {
-			node.setPaths(this.evals.get(node.label));
+			paths = this.evals.get(node.label);
+			node.setPaths(paths);
 			
 		}
 		else if ( node.getChildsCount() == 1 && node.getChildByIndex(0).label.equals(node.label)) {
-			node.setPaths(node.getChildByIndex(0).getPaths());
+			paths = node.getChildByIndex(0).getPaths();
+			node.setPaths(paths);
 			
 		}
 		else if ( node.getChildsCount() == 1 && !node.getChildByIndex(0).label.equals(node.label)) {
-			ArrayList<Path> paths = node.getChildByIndex(0).getPaths();
+			paths = node.getChildByIndex(0).getPaths();
 			if(node.label.endsWith("?")){
 				paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
 			}
@@ -207,7 +204,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 			// Si tiene más de un hijo se debe verificar si ya fueron visitados todos
 			// en caso de que todos fueron visitados se debe realizar la operación correspondiente
 			// y agregar los paths al nodo padre
-			ArrayList<Path> paths = node.getChildByIndex(0).getPaths();
+			paths = node.getChildByIndex(0).getPaths();
 			
 			if (this.checkIfChildsVisited(node)) {
 				for (int i = 1; i < node.getChildsCount(); i++) {
@@ -217,6 +214,12 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 			
 			node.setPaths(paths);
 		}
+
+		// System.out.println("Node Label: "+node.label);
+		// System.out.println("Paths: ");
+		// this.printPath(paths);
+		// System.out.println("------------");
+
 		node.visitNode();
 	}
 
