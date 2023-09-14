@@ -97,8 +97,8 @@ public class Database {
         Edge edge6 = new Edge("e6", "b", node2, node5);
         Edge edge7 = new Edge("e7", "b", node3, node3);
         Edge edge8 = new Edge("e8", "c", node4, node2);
-        Edge edge9 = new Edge("e10", "d", node3, node4);
-        Edge edge10 = new Edge("e9", "b", node5, node4);
+        Edge edge9 = new Edge("e9", "d", node3, node4);
+        Edge edge10 = new Edge("e10", "b", node5, node4);
         
         // Insert Nodes and Edges
         graph.insertNode("n1", node1);
@@ -147,7 +147,7 @@ public class Database {
         path9.insertEdge(edge9);
 
         Path path10 = new Path("p10", "path10");
-        path9.insertEdge(edge10);
+        path10.insertEdge(edge10);
         
         // Insert Paths to the graph
         graph.insertPath("p1", path1);
