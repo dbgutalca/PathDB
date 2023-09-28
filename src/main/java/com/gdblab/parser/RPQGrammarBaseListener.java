@@ -276,22 +276,28 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	 */
 	@Override
 	public void exitTerm(RPQGrammarParser.TermContext ctx) {
+		Boolean negated = false;
 
 		ArrayList<Path> paths = new ArrayList<>();
 		String term = ctx.getText();
 
 		if (!term.contains("(") && !term.contains(")")) {
+
+			if(term.contains("!")){
+				negated = true;
+			}
+
 			if (term.contains("+")) {
 				String termReplaced = term.replaceAll("\\+", "");
-				this.evals.put(term, this.evaluatePlus(termReplaced));
+				this.evals.put(term, this.evaluatePlus(termReplaced, negated));
 			} else if (term.contains("*")) {
 				String termReplaced = term.replaceAll("\\*", "");
-				this.evals.put(term, this.evaluateKleene(termReplaced));
+				this.evals.put(term, this.evaluateKleene(termReplaced, negated));
 			} else if (term.contains("?")) {
 				String termReplaced = term.replaceAll("\\?", "");
-				this.evals.put(term, this.evaluateOptional(termReplaced));
+				this.evals.put(term, this.evaluateOptional(termReplaced, negated));
 			} else {
-				paths = Select.eval(this.database.graph.getPaths(), new Label(term, 1));
+				paths = Select.eval(this.database.graph.getPaths(), new Label(term.replaceAll("!", ""), 1), negated);
 				this.evals.put(term, paths);
 			}
 		}
@@ -410,8 +416,15 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	private void printPath(ArrayList<Path> paths) {
 		for (Path pp : paths) {
 			System.out.print(pp.getId() + " : ");
-			for (GraphObject go : pp.getSequence())
-				System.out.print(go.getId() + " ");
+			for (GraphObject go : pp.getSequence()){
+
+				if(go.getId().startsWith("e"))
+					System.out.print(go.getLabel() + " ");
+				
+				else
+					System.out.print(go.getId() + " ");
+				
+			}
 			System.out.println("");
 		}
 	}
@@ -426,24 +439,24 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		System.out.println("====================================================");
 	}
 
-	private ArrayList<Path> evaluatePlus(String label) {
+	private ArrayList<Path> evaluatePlus(String label, Boolean negated) {
 		ArrayList<Path> paths = new ArrayList<>();
-		paths = Select.eval(this.database.graph.getPaths(), new Label(label, 1));
+		paths = Select.eval(this.database.graph.getPaths(), new Label(label.replaceAll("!", ""), 1), negated);
 		paths = Recursion.arbitrary(paths, this.MAX);
 		return paths;
 	}
 
-	private ArrayList<Path> evaluateKleene(String label) {
+	private ArrayList<Path> evaluateKleene(String label, Boolean negated) {
 		ArrayList<Path> paths = new ArrayList<>();
-		paths = Select.eval(this.database.graph.getPaths(), new Label(label, 1));
+		paths = Select.eval(this.database.graph.getPaths(), new Label(label.replaceAll("!", ""), 1), negated);
 		paths = Recursion.arbitrary(paths, this.MAX);
 		paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
 		return paths;
 	}
 
-	private ArrayList<Path> evaluateOptional(String label) {
+	private ArrayList<Path> evaluateOptional(String label, Boolean negated) {
 		ArrayList<Path> paths = new ArrayList<>();
-		paths = Select.eval(this.database.graph.getPaths(), new Label(label, 1));
+		paths = Select.eval(this.database.graph.getPaths(), new Label(label.replaceAll("!", ""), 1), negated);
 		paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
 		return paths;
 	}

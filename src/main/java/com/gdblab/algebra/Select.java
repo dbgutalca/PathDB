@@ -14,11 +14,19 @@ import java.util.ArrayList;
  */
 public final class Select {
     
-    public static ArrayList<Path> eval (ArrayList<Path> path_set, Condition c){
+    public static ArrayList<Path> eval (ArrayList<Path> path_set, Condition c, Boolean negated){
         ArrayList<Path> result_set = new ArrayList<>();
-        for (Path p : path_set)
-            if(c.eval(p))
-                result_set.add(p); 
+        for (Path p : path_set) {
+            if(negated){
+                if(!c.eval(p)){
+                    result_set.add(p);
+                }
+            }
+            else{
+                if(c.eval(p))
+                    result_set.add(p);
+                }
+            }
         return result_set;
     }
 }
