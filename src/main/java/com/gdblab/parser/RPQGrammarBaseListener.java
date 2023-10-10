@@ -5,6 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+
+import com.gdblab.parser.RPQGrammarBaseListener;
+import com.gdblab.parser.RPQGrammarLexer;
+import com.gdblab.parser.RPQGrammarParser;
+
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -104,7 +112,6 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		System.out.println("Query: " + ctx.getText().replaceAll("<EOF>", ""));
 		System.out.println("====================================================");
 		ParseTree e = ctx.getChild(0);
-
 		TreeNode tree = this.buildtree(e);
 		System.out.println("Tree: ");
 		this.printTree(tree, "  ", false);
@@ -113,11 +120,16 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		System.out.println("Paths: ");
 		this.printPath(tree.getPaths());
 		System.out.println("====================================================");
+		// this.printEvals();
 	}
 
 	private TreeNode buildtree(ParseTree p) {
 		TreeNode root = new TreeNode(p.getText());
 		ArrayList<TreeNode> childs = new ArrayList<>();
+
+		if(p.getText().contains("|")){
+			
+		}
 
 		// Este if es para detener la producción de hojas una vez que se ha llegado a un
 		// nodo atómico
@@ -166,6 +178,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 
 	private void recorridoPostorden(TreeNode node) {
 		ArrayList<Path> paths = new ArrayList<>();
+
 		if (node.childs == null) {
 			return;
 		}

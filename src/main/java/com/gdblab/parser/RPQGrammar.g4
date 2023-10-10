@@ -5,7 +5,7 @@ expression: term ( separator term)*;
 term: base operator?;
 base: '!'? ID | '(' expression ')';
 operator: '*' | '+' | '?';
-separator: '.' | '|'; // Agregar el | (or) para el separador
+separator: '.';
 
 ID: LETTER ( LETTER | DIGIT)*;
 LETTER: [a-zA-Z];
