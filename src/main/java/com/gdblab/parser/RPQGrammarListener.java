@@ -1,4 +1,4 @@
-// Generated from RPQGrammar.g4 by ANTLR 4.13.0
+// Generated from RPQGrammar.g4 by ANTLR 4.13.1
 package com.gdblab.parser;
 
 import org.antlr.v4.runtime.tree.ParseTreeListener;
@@ -29,43 +29,13 @@ public interface RPQGrammarListener extends ParseTreeListener {
 	 */
 	void exitExpression(RPQGrammarParser.ExpressionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link RPQGrammarParser#term}.
+	 * Enter a parse tree produced by {@link RPQGrammarParser#label}.
 	 * @param ctx the parse tree
 	 */
-	void enterTerm(RPQGrammarParser.TermContext ctx);
+	void enterLabel(RPQGrammarParser.LabelContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link RPQGrammarParser#term}.
+	 * Exit a parse tree produced by {@link RPQGrammarParser#label}.
 	 * @param ctx the parse tree
 	 */
-	void exitTerm(RPQGrammarParser.TermContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link RPQGrammarParser#base}.
-	 * @param ctx the parse tree
-	 */
-	void enterBase(RPQGrammarParser.BaseContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link RPQGrammarParser#base}.
-	 * @param ctx the parse tree
-	 */
-	void exitBase(RPQGrammarParser.BaseContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link RPQGrammarParser#operator}.
-	 * @param ctx the parse tree
-	 */
-	void enterOperator(RPQGrammarParser.OperatorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link RPQGrammarParser#operator}.
-	 * @param ctx the parse tree
-	 */
-	void exitOperator(RPQGrammarParser.OperatorContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link RPQGrammarParser#separator}.
-	 * @param ctx the parse tree
-	 */
-	void enterSeparator(RPQGrammarParser.SeparatorContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link RPQGrammarParser#separator}.
-	 * @param ctx the parse tree
-	 */
-	void exitSeparator(RPQGrammarParser.SeparatorContext ctx);
+	void exitLabel(RPQGrammarParser.LabelContext ctx);
 }

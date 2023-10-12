@@ -1,13 +1,16 @@
 grammar RPQGrammar;
 
 query: expression EOF;
-expression: term ( separator term)*;
-term: base operator?;
-base: '!'? ID | '(' expression ')';
-operator: '*' | '+' | '?';
-separator: '.';
+expression: label
+	| expression '?'
+	| expression '+'
+	| expression '*'
+	| expression '|' expression
+	| expression '.' expression
+    | '(' expression ')'
+    ;
 
-ID: LETTER ( LETTER | DIGIT)*;
+label: '!'? LETTER ( LETTER | DIGIT)*;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 WS: [ \t\r\n]+ -> skip;

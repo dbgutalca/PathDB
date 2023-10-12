@@ -1,6 +1,6 @@
-// Generated from RPQGrammar.g4 by ANTLR 4.13.0
-package com.gdblab.parser;
 // Generated from RPQGrammar.g4 by ANTLR 4.13.1
+package com.gdblab.parser;
+
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -18,28 +18,27 @@ public class RPQGrammarParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, ID=9, 
-		LETTER=10, DIGIT=11, WS=12;
+		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, T__5=6, T__6=7, T__7=8, LETTER=9, 
+		DIGIT=10, WS=11;
 	public static final int
-		RULE_query = 0, RULE_expression = 1, RULE_term = 2, RULE_base = 3, RULE_operator = 4, 
-		RULE_separator = 5;
+		RULE_query = 0, RULE_expression = 1, RULE_label = 2;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"query", "expression", "term", "base", "operator", "separator"
+			"query", "expression", "label"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'!'", "'('", "')'", "'*'", "'+'", "'?'", "'.'", "'|'"
+			null, "'?'", "'+'", "'*'", "'|'", "'.'", "'('", "')'", "'!'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, null, null, null, "ID", "LETTER", 
-			"DIGIT", "WS"
+			null, null, null, null, null, null, null, null, null, "LETTER", "DIGIT", 
+			"WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -119,9 +118,9 @@ public class RPQGrammarParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(12);
-			expression();
-			setState(13);
+			setState(6);
+			expression(0);
+			setState(7);
 			match(EOF);
 			}
 		}
@@ -138,17 +137,14 @@ public class RPQGrammarParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class ExpressionContext extends ParserRuleContext {
-		public List<TermContext> term() {
-			return getRuleContexts(TermContext.class);
+		public LabelContext label() {
+			return getRuleContext(LabelContext.class,0);
 		}
-		public TermContext term(int i) {
-			return getRuleContext(TermContext.class,i);
+		public List<ExpressionContext> expression() {
+			return getRuleContexts(ExpressionContext.class);
 		}
-		public List<SeparatorContext> separator() {
-			return getRuleContexts(SeparatorContext.class);
-		}
-		public SeparatorContext separator(int i) {
-			return getRuleContext(SeparatorContext.class,i);
+		public ExpressionContext expression(int i) {
+			return getRuleContext(ExpressionContext.class,i);
 		}
 		public ExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -165,157 +161,117 @@ public class RPQGrammarParser extends Parser {
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
-		ExpressionContext _localctx = new ExpressionContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_expression);
-		int _la;
+		return expression(0);
+	}
+
+	private ExpressionContext expression(int _p) throws RecognitionException {
+		ParserRuleContext _parentctx = _ctx;
+		int _parentState = getState();
+		ExpressionContext _localctx = new ExpressionContext(_ctx, _parentState);
+		ExpressionContext _prevctx = _localctx;
+		int _startState = 2;
+		enterRecursionRule(_localctx, 2, RULE_expression, _p);
 		try {
+			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(15);
-			term();
-			setState(21);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==T__6 || _la==T__7) {
-				{
-				{
-				setState(16);
-				separator();
-				setState(17);
-				term();
-				}
-				}
-				setState(23);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	@SuppressWarnings("CheckReturnValue")
-	public static class TermContext extends ParserRuleContext {
-		public BaseContext base() {
-			return getRuleContext(BaseContext.class,0);
-		}
-		public OperatorContext operator() {
-			return getRuleContext(OperatorContext.class,0);
-		}
-		public TermContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_term; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).enterTerm(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).exitTerm(this);
-		}
-	}
-
-	public final TermContext term() throws RecognitionException {
-		TermContext _localctx = new TermContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_term);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(24);
-			base();
-			setState(26);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 112L) != 0)) {
-				{
-				setState(25);
-				operator();
-				}
-			}
-
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	@SuppressWarnings("CheckReturnValue")
-	public static class BaseContext extends ParserRuleContext {
-		public TerminalNode ID() { return getToken(RPQGrammarParser.ID, 0); }
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
-		}
-		public BaseContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_base; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).enterBase(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).exitBase(this);
-		}
-	}
-
-	public final BaseContext base() throws RecognitionException {
-		BaseContext _localctx = new BaseContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_base);
-		int _la;
-		try {
-			setState(36);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
-			case T__0:
-			case ID:
-				enterOuterAlt(_localctx, 1);
+			case T__7:
+			case LETTER:
 				{
-				setState(29);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				if (_la==T__0) {
-					{
-					setState(28);
-					match(T__0);
-					}
-				}
-
-				setState(31);
-				match(ID);
+				setState(10);
+				label();
 				}
 				break;
-			case T__1:
-				enterOuterAlt(_localctx, 2);
+			case T__5:
 				{
-				setState(32);
-				match(T__1);
-				setState(33);
-				expression();
-				setState(34);
-				match(T__2);
+				setState(11);
+				match(T__5);
+				setState(12);
+				expression(0);
+				setState(13);
+				match(T__6);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
+			_ctx.stop = _input.LT(-1);
+			setState(31);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					if ( _parseListeners!=null ) triggerExitRuleEvent();
+					_prevctx = _localctx;
+					{
+					setState(29);
+					_errHandler.sync(this);
+					switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
+					case 1:
+						{
+						_localctx = new ExpressionContext(_parentctx, _parentState);
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(17);
+						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
+						setState(18);
+						match(T__3);
+						setState(19);
+						expression(4);
+						}
+						break;
+					case 2:
+						{
+						_localctx = new ExpressionContext(_parentctx, _parentState);
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(20);
+						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
+						setState(21);
+						match(T__4);
+						setState(22);
+						expression(3);
+						}
+						break;
+					case 3:
+						{
+						_localctx = new ExpressionContext(_parentctx, _parentState);
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(23);
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						setState(24);
+						match(T__0);
+						}
+						break;
+					case 4:
+						{
+						_localctx = new ExpressionContext(_parentctx, _parentState);
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(25);
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						setState(26);
+						match(T__1);
+						}
+						break;
+					case 5:
+						{
+						_localctx = new ExpressionContext(_parentctx, _parentState);
+						pushNewRecursionContext(_localctx, _startState, RULE_expression);
+						setState(27);
+						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
+						setState(28);
+						match(T__2);
+						}
+						break;
+					}
+					} 
+				}
+				setState(33);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+			}
+			}
 		}
 		catch (RecognitionException re) {
 			_localctx.exception = re;
@@ -323,43 +279,78 @@ public class RPQGrammarParser extends Parser {
 			_errHandler.recover(this, re);
 		}
 		finally {
-			exitRule();
+			unrollRecursionContexts(_parentctx);
 		}
 		return _localctx;
 	}
 
 	@SuppressWarnings("CheckReturnValue")
-	public static class OperatorContext extends ParserRuleContext {
-		public OperatorContext(ParserRuleContext parent, int invokingState) {
+	public static class LabelContext extends ParserRuleContext {
+		public List<TerminalNode> LETTER() { return getTokens(RPQGrammarParser.LETTER); }
+		public TerminalNode LETTER(int i) {
+			return getToken(RPQGrammarParser.LETTER, i);
+		}
+		public List<TerminalNode> DIGIT() { return getTokens(RPQGrammarParser.DIGIT); }
+		public TerminalNode DIGIT(int i) {
+			return getToken(RPQGrammarParser.DIGIT, i);
+		}
+		public LabelContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_operator; }
+		@Override public int getRuleIndex() { return RULE_label; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).enterOperator(this);
+			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).enterLabel(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).exitOperator(this);
+			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).exitLabel(this);
 		}
 	}
 
-	public final OperatorContext operator() throws RecognitionException {
-		OperatorContext _localctx = new OperatorContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_operator);
+	public final LabelContext label() throws RecognitionException {
+		LabelContext _localctx = new LabelContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_label);
 		int _la;
 		try {
+			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(38);
+			setState(35);
+			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 112L) != 0)) ) {
-			_errHandler.recoverInline(this);
+			if (_la==T__7) {
+				{
+				setState(34);
+				match(T__7);
+				}
 			}
-			else {
-				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-				_errHandler.reportMatch(this);
-				consume();
+
+			setState(37);
+			match(LETTER);
+			setState(41);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
+			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1 ) {
+					{
+					{
+					setState(38);
+					_la = _input.LA(1);
+					if ( !(_la==LETTER || _la==DIGIT) ) {
+					_errHandler.recoverInline(this);
+					}
+					else {
+						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+						_errHandler.reportMatch(this);
+						consume();
+					}
+					}
+					} 
+				}
+				setState(43);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,4,_ctx);
 			}
 			}
 		}
@@ -374,81 +365,61 @@ public class RPQGrammarParser extends Parser {
 		return _localctx;
 	}
 
-	@SuppressWarnings("CheckReturnValue")
-	public static class SeparatorContext extends ParserRuleContext {
-		public SeparatorContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
+	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
+		switch (ruleIndex) {
+		case 1:
+			return expression_sempred((ExpressionContext)_localctx, predIndex);
 		}
-		@Override public int getRuleIndex() { return RULE_separator; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).enterSeparator(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof RPQGrammarListener ) ((RPQGrammarListener)listener).exitSeparator(this);
-		}
+		return true;
 	}
-
-	public final SeparatorContext separator() throws RecognitionException {
-		SeparatorContext _localctx = new SeparatorContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_separator);
-		int _la;
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(40);
-			_la = _input.LA(1);
-			if ( !(_la==T__6 || _la==T__7) ) {
-			_errHandler.recoverInline(this);
-			}
-			else {
-				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
-				_errHandler.reportMatch(this);
-				consume();
-			}
-			}
+	private boolean expression_sempred(ExpressionContext _localctx, int predIndex) {
+		switch (predIndex) {
+		case 0:
+			return precpred(_ctx, 3);
+		case 1:
+			return precpred(_ctx, 2);
+		case 2:
+			return precpred(_ctx, 6);
+		case 3:
+			return precpred(_ctx, 5);
+		case 4:
+			return precpred(_ctx, 4);
 		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
+		return true;
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\f+\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
-		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
-		"\u0005\u0007\u0005\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001"+
-		"\u0001\u0001\u0001\u0001\u0001\u0005\u0001\u0014\b\u0001\n\u0001\f\u0001"+
-		"\u0017\t\u0001\u0001\u0002\u0001\u0002\u0003\u0002\u001b\b\u0002\u0001"+
-		"\u0003\u0003\u0003\u001e\b\u0003\u0001\u0003\u0001\u0003\u0001\u0003\u0001"+
-		"\u0003\u0001\u0003\u0003\u0003%\b\u0003\u0001\u0004\u0001\u0004\u0001"+
-		"\u0005\u0001\u0005\u0001\u0005\u0000\u0000\u0006\u0000\u0002\u0004\u0006"+
-		"\b\n\u0000\u0002\u0001\u0000\u0004\u0006\u0001\u0000\u0007\b(\u0000\f"+
-		"\u0001\u0000\u0000\u0000\u0002\u000f\u0001\u0000\u0000\u0000\u0004\u0018"+
-		"\u0001\u0000\u0000\u0000\u0006$\u0001\u0000\u0000\u0000\b&\u0001\u0000"+
-		"\u0000\u0000\n(\u0001\u0000\u0000\u0000\f\r\u0003\u0002\u0001\u0000\r"+
-		"\u000e\u0005\u0000\u0000\u0001\u000e\u0001\u0001\u0000\u0000\u0000\u000f"+
-		"\u0015\u0003\u0004\u0002\u0000\u0010\u0011\u0003\n\u0005\u0000\u0011\u0012"+
-		"\u0003\u0004\u0002\u0000\u0012\u0014\u0001\u0000\u0000\u0000\u0013\u0010"+
-		"\u0001\u0000\u0000\u0000\u0014\u0017\u0001\u0000\u0000\u0000\u0015\u0013"+
-		"\u0001\u0000\u0000\u0000\u0015\u0016\u0001\u0000\u0000\u0000\u0016\u0003"+
-		"\u0001\u0000\u0000\u0000\u0017\u0015\u0001\u0000\u0000\u0000\u0018\u001a"+
-		"\u0003\u0006\u0003\u0000\u0019\u001b\u0003\b\u0004\u0000\u001a\u0019\u0001"+
-		"\u0000\u0000\u0000\u001a\u001b\u0001\u0000\u0000\u0000\u001b\u0005\u0001"+
-		"\u0000\u0000\u0000\u001c\u001e\u0005\u0001\u0000\u0000\u001d\u001c\u0001"+
-		"\u0000\u0000\u0000\u001d\u001e\u0001\u0000\u0000\u0000\u001e\u001f\u0001"+
-		"\u0000\u0000\u0000\u001f%\u0005\t\u0000\u0000 !\u0005\u0002\u0000\u0000"+
-		"!\"\u0003\u0002\u0001\u0000\"#\u0005\u0003\u0000\u0000#%\u0001\u0000\u0000"+
-		"\u0000$\u001d\u0001\u0000\u0000\u0000$ \u0001\u0000\u0000\u0000%\u0007"+
-		"\u0001\u0000\u0000\u0000&\'\u0007\u0000\u0000\u0000\'\t\u0001\u0000\u0000"+
-		"\u0000()\u0007\u0001\u0000\u0000)\u000b\u0001\u0000\u0000\u0000\u0004"+
-		"\u0015\u001a\u001d$";
+		"\u0004\u0001\u000b-\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001\u0010"+
+		"\b\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001"+
+		"\u0001\u0005\u0001\u001e\b\u0001\n\u0001\f\u0001!\t\u0001\u0001\u0002"+
+		"\u0003\u0002$\b\u0002\u0001\u0002\u0001\u0002\u0005\u0002(\b\u0002\n\u0002"+
+		"\f\u0002+\t\u0002\u0001\u0002\u0000\u0001\u0002\u0003\u0000\u0002\u0004"+
+		"\u0000\u0001\u0001\u0000\t\n1\u0000\u0006\u0001\u0000\u0000\u0000\u0002"+
+		"\u000f\u0001\u0000\u0000\u0000\u0004#\u0001\u0000\u0000\u0000\u0006\u0007"+
+		"\u0003\u0002\u0001\u0000\u0007\b\u0005\u0000\u0000\u0001\b\u0001\u0001"+
+		"\u0000\u0000\u0000\t\n\u0006\u0001\uffff\uffff\u0000\n\u0010\u0003\u0004"+
+		"\u0002\u0000\u000b\f\u0005\u0006\u0000\u0000\f\r\u0003\u0002\u0001\u0000"+
+		"\r\u000e\u0005\u0007\u0000\u0000\u000e\u0010\u0001\u0000\u0000\u0000\u000f"+
+		"\t\u0001\u0000\u0000\u0000\u000f\u000b\u0001\u0000\u0000\u0000\u0010\u001f"+
+		"\u0001\u0000\u0000\u0000\u0011\u0012\n\u0003\u0000\u0000\u0012\u0013\u0005"+
+		"\u0004\u0000\u0000\u0013\u001e\u0003\u0002\u0001\u0004\u0014\u0015\n\u0002"+
+		"\u0000\u0000\u0015\u0016\u0005\u0005\u0000\u0000\u0016\u001e\u0003\u0002"+
+		"\u0001\u0003\u0017\u0018\n\u0006\u0000\u0000\u0018\u001e\u0005\u0001\u0000"+
+		"\u0000\u0019\u001a\n\u0005\u0000\u0000\u001a\u001e\u0005\u0002\u0000\u0000"+
+		"\u001b\u001c\n\u0004\u0000\u0000\u001c\u001e\u0005\u0003\u0000\u0000\u001d"+
+		"\u0011\u0001\u0000\u0000\u0000\u001d\u0014\u0001\u0000\u0000\u0000\u001d"+
+		"\u0017\u0001\u0000\u0000\u0000\u001d\u0019\u0001\u0000\u0000\u0000\u001d"+
+		"\u001b\u0001\u0000\u0000\u0000\u001e!\u0001\u0000\u0000\u0000\u001f\u001d"+
+		"\u0001\u0000\u0000\u0000\u001f \u0001\u0000\u0000\u0000 \u0003\u0001\u0000"+
+		"\u0000\u0000!\u001f\u0001\u0000\u0000\u0000\"$\u0005\b\u0000\u0000#\""+
+		"\u0001\u0000\u0000\u0000#$\u0001\u0000\u0000\u0000$%\u0001\u0000\u0000"+
+		"\u0000%)\u0005\t\u0000\u0000&(\u0007\u0000\u0000\u0000\'&\u0001\u0000"+
+		"\u0000\u0000(+\u0001\u0000\u0000\u0000)\'\u0001\u0000\u0000\u0000)*\u0001"+
+		"\u0000\u0000\u0000*\u0005\u0001\u0000\u0000\u0000+)\u0001\u0000\u0000"+
+		"\u0000\u0005\u000f\u001d\u001f#)";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
