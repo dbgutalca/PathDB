@@ -99,17 +99,26 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitQuery(RPQGrammarParser.QueryContext ctx) {
-		System.out.println("Query: " + ctx.getChild(0).getText());
-		System.out.println();
 
 		ParseTree pt = ctx.getChild(0);
 
 		TreeNode tree = this.buildTree(pt);
 
-		System.out.println("Tree");
+		System.out.println("Graph:");
+		this.printGraph();
+
+		System.out.println("-------------------------------------------------");
+		
+		System.out.println("Query: " + ctx.getChild(0).getText());
+
+		System.out.println("-------------------------------------------------");
+
+		System.out.println("Tree:");
 		this.printTree(tree, "  ", false);
 
-		System.out.println();
+		System.out.println("-------------------------------------------------");
+
+		System.out.println("Paths:");
 		ArrayList<Path> paths = this.evalTree(tree);
 		this.printPath(paths);
 	}
@@ -343,6 +352,23 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 			}
 			System.out.println("");
 		}
+	}
+
+	private void printGraph() {
+		System.out.println("    ┌─────B────┐\r\n" + //
+				"    │          v\r\n" + //
+				"  ┌─┴┐        ┌──┬───B──┐\r\n" + //
+				"┌>│N1│<──C────┤N2│      │\r\n" + //
+				"│ └┬─┘        ├──┴─A─┐  │\r\n" + //
+				"│  C          │ ^    v  v\r\n" + //
+				"└──┘          │ │    ┌──┐\r\n" + //
+				"      ┌───A───┘ C    │N5│\r\n" + //
+				"      v         │    └┬─┘\r\n" + //
+				"    ┌──┐      ┌─┴┐    │\r\n" + //
+				"  ┌>│N3├──D──>│N4│<─B─┘\r\n" + //
+				"  │ └┬─┘      └──┘\r\n" + //
+				"  B  │\r\n" + //
+				"  └──┘");
 	}
 
 }

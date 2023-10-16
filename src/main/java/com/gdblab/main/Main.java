@@ -5,6 +5,9 @@
  */
 package com.gdblab.main;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -20,7 +23,19 @@ import com.gdblab.parser.RPQGrammarParser;
 public class Main {
     public static void main(String[] args){
 
-        CharStream input = CharStreams.fromString("c.(a|b|c)*");
+        String rpq = "";
+
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            System.out.print("Ingrese RPQ > ");
+            rpq = br.readLine();
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+        } catch (Exception e) {
+        }
+        
+        // CharStream input = CharStreams.fromString("!c.(a|b|c)*");
+        CharStream input = CharStreams.fromString(rpq);
         RPQGrammarLexer lexer = new RPQGrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         RPQGrammarParser parser = new RPQGrammarParser(tokens);
