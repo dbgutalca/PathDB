@@ -85,7 +85,10 @@ public class Graph {
         paths.put(id,path);
     }
 
-   
+    public void getNodes(){
+        for (Node n : nodes.values())
+            System.out.println(n.getId());
+    }
     
     
     

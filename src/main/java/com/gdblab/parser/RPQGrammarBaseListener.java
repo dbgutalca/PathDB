@@ -17,6 +17,7 @@ import com.gdblab.algebra.Select;
 import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.condition.Not;
 import com.gdblab.database.Database;
+import com.gdblab.main.Main;
 import com.gdblab.recursion.Recursion;
 import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Path;
@@ -81,7 +82,7 @@ class TreeNode {
 @SuppressWarnings("CheckReturnValue")
 public class RPQGrammarBaseListener implements RPQGrammarListener {
 
-	private Database database;
+	public Database database = Main.db;
 	private Integer MAX = 2;
 	private HashMap<String, ArrayList<Path>> evals = new HashMap<>();
 	
@@ -91,7 +92,6 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterQuery(RPQGrammarParser.QueryContext ctx) {
-		this.database = new Database();
 	}
 	/**
 	 * {@inheritDoc}
@@ -103,9 +103,6 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		ParseTree pt = ctx.getChild(0);
 
 		TreeNode tree = this.buildTree(pt);
-
-		System.out.println("Graph:");
-		this.printGraph();
 
 		System.out.println("-------------------------------------------------");
 		
@@ -121,6 +118,9 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		System.out.println("Paths:");
 		ArrayList<Path> paths = this.evalTree(tree);
 		this.printPath(paths);
+
+		System.out.println("-------------------------------------------------");
+		// this.printEvals();
 	}
 
 	/**

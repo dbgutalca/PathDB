@@ -16,7 +16,13 @@ import com.gdblab.schema.Graph;
 import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  *
@@ -28,12 +34,12 @@ public class Database {
     private ArrayList<Path> pathsWithoutEdges;
     private final PathAlgebra algebra;
 
-    public Database() {
+    public Database(String url) {
         
         this.graph = new Graph("|---- Graph 1 ----|");
         this.pathsWithoutEdges = new ArrayList<>();
 
-        generateDemoDatabase(this.graph);
+        generateDemoDatabase(this.graph, url);
 
         
         // System.out.println(graph.getName());
@@ -79,7 +85,32 @@ public class Database {
          return this.pathsWithoutEdges;
     }
     
-    private void generateDemoDatabase(Graph graph){
+    private void generateDemoDatabase(Graph graph, String url){
+        ArrayList<String> lines = new ArrayList<>();
+        Set<String> nodes = new HashSet<String>();
+
+        // Read the file
+        try {
+            File myObj = new File("db.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                lines.add(data);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            String source = parts[0];
+            String label = parts[1];
+            String target = parts[2];
+
+        }
+
         
         // Creation of nodes
         Node node1 = new Node("n1", "Node");
