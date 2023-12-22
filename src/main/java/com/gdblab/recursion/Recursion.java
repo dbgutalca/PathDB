@@ -5,12 +5,20 @@
 package com.gdblab.recursion;
 
 import com.gdblab.algebra.PathAlgebra;
+import com.gdblab.main.Main;
 import com.gdblab.schema.Edge;
+import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
+import com.ibm.icu.text.Edits.Iterator;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -18,16 +26,20 @@ import java.util.Collections;
  */
 public class Recursion {
     
-    
     public static ArrayList<Path> arbitrary (ArrayList<Path> s , int n){
+        if (Main.semantic.equals("Simple Path")) s = removeDuplicatedNodes(s);
+        else if (Main.semantic.equals("Trail")) s = removeDuplicatedEdges(s);
+        
         ArrayList<Path> results = (ArrayList<Path>) s.clone();
         ArrayList<Path> last_results = new ArrayList<>();
-        int i = 0;
-        while (results.size() > last_results.size() && i < n){
+        ArrayList<Path> temp = new ArrayList<>();
+        while (results.size() > last_results.size()){
             last_results = (ArrayList<Path>) results.clone();
-            results = PathAlgebra.Union(PathAlgebra.NodeJoin(results, s), results);
-            i++;
+            temp = PathAlgebra.NodeJoin(results, s);
+            results = PathAlgebra.Union(temp, results);
+            checkPath(results);
         }
+        
         return results;
     }
     
@@ -132,5 +144,67 @@ public class Recursion {
         return result;
     }
 
-    
+    private static void checkPath(ArrayList<Path> paths) {
+        ArrayList<Path> pathsToRemove = new ArrayList<>();
+
+        for (Path p : paths) {
+            Map<String, Integer> c = new HashMap<>();
+
+            for (Edge e : p.getEdgeSequence()) {
+                if (c.containsKey(e.getId())) {
+                    c.put(e.getId(), c.get(e.getId()) + 1);
+                } else {
+                    c.put(e.getId(), 1);
+                }
+            }
+
+            for (Map.Entry<String, Integer> entry : c.entrySet()) {
+                if (entry.getValue() >= 3) {
+                    pathsToRemove.add(p);
+                }
+            }
+
+        }
+
+        paths.removeAll(pathsToRemove);
+    }
+
+    public static ArrayList<Path> removeDuplicatedNodes(ArrayList<Path> paths) {
+        ArrayList<Path> filteredPaths = new ArrayList<>();
+        for (Path input : paths) {
+            boolean flag = false;
+            String[] tokens = input.getStringNodeSequence().split(" ");
+            HashSet<String> visitedNodes = new HashSet<>();
+            for (String token : tokens) {
+                if (token.startsWith("N")) {
+                    if (!visitedNodes.add(token)) {
+                        flag = true;
+                        break;
+                    }
+                }
+            }   
+            if (!flag) filteredPaths.add(input);
+        }
+        return filteredPaths;
+    }
+
+    public static ArrayList<Path> removeDuplicatedEdges(ArrayList<Path> paths) {
+        ArrayList<Path> filteredPaths = new ArrayList<>();
+        for (Path input : paths) {
+            boolean flag = false;
+            String[] tokens = input.getStringNodeSequence().split(" ");
+            HashSet<String> visitedEdges = new HashSet<>();
+
+            for (String token : tokens) {
+                if (token.startsWith("e")) {
+                    if (!visitedEdges.add(token)) {
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+            if (!flag) filteredPaths.add(input);
+        }
+        return filteredPaths;
+    }
 }

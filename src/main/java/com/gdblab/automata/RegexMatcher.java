@@ -13,6 +13,9 @@ public class RegexMatcher {
     private int rs;
     private boolean[] fs;
 
+    private int state;
+    private int lastState;
+
     public RegexMatcher(String regex) {
         compile(regex);
     }
@@ -25,11 +28,11 @@ public class RegexMatcher {
         is = dfa.getInitState();
         fs = dfa.getFinalStates();
         rs = dfa.getRejectedState();
-        
+        state = is;
+        lastState = is;
     }
 
     public String match(String str) {
-        // this.printTransitionTable();
         int s = is;
         for (int i = 0, length = str.length(); i < length; i++) {
             char ch = str.charAt(i);
@@ -39,6 +42,17 @@ public class RegexMatcher {
             }
         }
         return fs[s] ? "Accepted" : "Substring";
+    }
+
+    public int next(char c){
+        lastState = state;
+        state = transitionTable[state][c];
+        return state;
+    }
+    
+    public int back(){
+        state = lastState;
+        return state;
     }
 
     public void printTransitionTable() {

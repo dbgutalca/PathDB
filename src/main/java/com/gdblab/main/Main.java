@@ -8,19 +8,26 @@ package com.gdblab.main;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import com.gdblab.algorithms.BFS;
+import com.gdblab.algorithms.DFS;
+import com.gdblab.algorithms.DFSAutomata;
 import com.gdblab.automata.RegexMatcher;
-import com.gdblab.converter.RPQtoER;
+import com.gdblab.converter.Converter;
 import com.gdblab.database.Database;
 import com.gdblab.parser.RPQGrammarBaseListener;
 import com.gdblab.parser.RPQGrammarLexer;
 import com.gdblab.parser.RPQGrammarParser;
 import com.gdblab.schema.Graph;
+import com.gdblab.schema.GraphObject;
+import com.gdblab.schema.Path;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -31,29 +38,205 @@ import java.io.IOException;
  * @author ramhg
  */
 public class Main {
-
+                                                                                                                                                            
+    private static Converter converter = new Converter();
+    private static String regex = "";
     public static Database db;
+
+    public static String algorithm = "";
+    public static String dburl = "";
+    public static String semantic = "";
+    public static String rpq = "";
+    public static String output = "";
+
     public static void main(String[] args){
-        String graphFileURL = null;
-        String rpqValue = null;
-        String algorithm = null;
 
-        db = new Database("db.txt");
+        for (String string : args) {
+            String[] arg = string.split("=");
+            switch (arg[0]) {
+                case "-algorithm":
+                    algorithm = arg[1];
+                    break;
+                case "-database":
+                    dburl = arg[1];
+                    break;
+                case "-semantic":
+                    semantic = arg[1];
+                    break;
+                case "-rpq":
+                    rpq = arg[1];
+                    break;
+                case "-output":
+                    output = arg[1];
+                    break;
+            }
+        }
 
-        RPQtoER converter = new RPQtoER("et_1.et_2*.et_3");
-        String er = converter.Convert();
-        System.out.println("ER: " + er);
+        if (algorithm.equals("") || dburl.equals("") || semantic.equals("") || rpq.equals("") || output.equals("")) {
+            System.out.println("Error: Missing arguments");
+            System.out.println("Usage: java -jar rpq.jar -algorithm=[alg|dfs|bfs] -database=[dburl] -semantic=[sp|t|a] -rpq=[rpq] -output=[outputurl]");
+            System.exit(0);
+        }
 
-        RegexMatcher rm = new RegexMatcher(er);
-        System.out.println(rm.match("et_1et_2et_2et_2et_2et_3"));
-        
-        // CharStream input = CharStreams.fromString("(a.b*.c)");
-        // RPQGrammarLexer lexer = new RPQGrammarLexer(input);
-        // CommonTokenStream tokens = new CommonTokenStream(lexer);
-        // RPQGrammarParser parser = new RPQGrammarParser(tokens);
-        // parser.removeParseListeners();
-        // parser.addParseListener(new RPQGrammarBaseListener());
-        // RPQGrammarParser.QueryContext tree = parser.query();
+        db = new Database(dburl);
+
+        switch (algorithm) {
+            case "alg":
+                switch (algorithm) {
+                    case "alg":
+                        algorithm = "Algebra";
+                        break;
+                    case "dfs":
+                        algorithm = "DFS";
+                        break;
+                    case "bfs":
+                        algorithm = "BFS";
+                        break;
+                }
+                switch (semantic) {
+                    case "sp":
+                        semantic = "Simple Path";
+                        break;
+                    case "t":
+                        semantic = "Trail";
+                        break;
+                    case "a":
+                        semantic = "Arbitrary";
+                        break;
+                }
+                printConfiguration(algorithm, semantic, dburl, rpq);
+                System.out.println(ANSI_BLUE + ANSI_BOLD + ANSI_ITALIC + "Cargando..." + ANSI_RESET);
+                System.out.println();
+                CharStream input = CharStreams.fromString(rpq);
+                RPQGrammarLexer lexer = new RPQGrammarLexer(input);
+                CommonTokenStream tokens = new CommonTokenStream(lexer);
+                RPQGrammarParser parser = new RPQGrammarParser(tokens);
+                parser.removeParseListeners();
+                parser.addParseListener(new RPQGrammarBaseListener());
+                RPQGrammarParser.QueryContext tree = parser.query();
+
+                break;
+            case "dfs":
+                regex = converter.RPQtoER(rpq);
+                switch (semantic) {
+                    case "sp":
+                        semantic = "Simple Path";
+                        break;
+                    case "t":
+                        semantic = "Trail";
+                        break;
+                    case "a":
+                        semantic = "Arbitrary";
+                        break;
+                }
+                printConfiguration(algorithm, semantic, dburl, rpq, regex);
+                System.out.println(ANSI_BLUE + ANSI_BOLD + ANSI_ITALIC + "Cargando..." + ANSI_RESET);
+                System.out.println();
+                DFSAutomata dfs = new DFSAutomata(db, semantic, regex);
+                dfs.printPath(output);
+                break;
+            default:
+                System.out.println("Error: Invalid algorithm");
+                System.exit(0);
+        }
     }
-    
+
+    private static void printConfiguration(String algorithm, String semantic, String dburl, String rpq) {
+        switch (algorithm) {
+            case "alg":
+                algorithm = "Algebra";
+                break;
+            case "dfs":
+                algorithm = "DFS";
+                break;
+            case "bfs":
+                algorithm = "BFS";
+                break;
+        }
+        switch (semantic) {
+            case "sp":
+                semantic = "Simple Path";
+                break;
+            case "t":
+                semantic = "Trail";
+                break;
+            case "a":
+                semantic = "Arbitrary";
+                break;
+        }
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        System.out.println(ANSI_BLUE + ANSI_BOLD + "CONFIGURATION" + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "Algorithm: " + algorithm + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "Semantic: " + semantic + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "Database: " + dburl + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "RPQ: " + rpq + ANSI_RESET);
+        System.out.println();
+    }
+
+    private static void printConfiguration(String algorithm, String semantic, String dburl, String rpq, String regex) {
+        switch (algorithm) {
+            case "alg":
+                algorithm = "Algebra";
+                break;
+            case "dfs":
+                algorithm = "DFS";
+                break;
+            case "bfs":
+                algorithm = "BFS";
+                break;
+        }
+        switch (semantic) {
+            case "sp":
+                semantic = "Simple Path";
+                break;
+            case "t":
+                semantic = "Trail";
+                break;
+            case "a":
+                semantic = "Arbitrary";
+                break;
+        }
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        System.out.println(ANSI_BLUE + ANSI_BOLD + "CONFIGURATION" + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "Algorithm: " + algorithm + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "Semantic: " + semantic + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "Database: " + dburl + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "RPQ: " + rpq + ANSI_RESET);
+        System.out.println(ANSI_BLUE + ANSI_ITALIC + "Regex: " + regex + ANSI_RESET);
+        System.out.println();
+    }
+
+    public static void printPath(ArrayList<Path> paths) {
+		for (Path pp : paths) {
+			System.out.print(pp.getId() + " : ");
+			for (GraphObject go : pp.getSequence()){
+
+				if(go.getId().startsWith("e"))
+					System.out.print(go.getLabel() + " ");
+				
+				else
+					System.out.print(go.getId() + " ");
+				
+			}
+			System.out.println("");
+		}
+	}
+
+    public static void runTest(){
+        db = new Database("db.txt");
+    }
+
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+    public static final String ANSI_BOLD = "\u001B[1m";
+    public static final String ANSI_ITALIC = "\u001B[3m";
 }

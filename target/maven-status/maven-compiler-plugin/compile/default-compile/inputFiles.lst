@@ -1,20 +1,61 @@
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Length.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Last.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\schema\Path.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\main\Main.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Edge.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\First.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Label.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\schema\GraphObject.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Condition.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Node.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\recursion\Recursion.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\database\Database.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\schema\Graph.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\schema\Edge.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\And.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\PathAlgebra.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Or.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\Select.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\schema\Node.java
-E:\UTalca\7 Semestre\Path Database\PathDatabase\src\main\java\com\gdblab\algebra\condition\Not.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algorithms\DFS.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\automata\NFABitmapStateManager.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\automata\NFABitmapStatePack.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\BMany.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algorithms\BFS.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Node.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\main\Main.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Not.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\RPQGrammarLexer.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\RegexSearcher.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\automata\NFABitmapState.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\automata\NFAState.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\RPQGrammarParser.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\RPQGrammarListener.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\.antlr\RPQGrammarBaseListener.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\database\Database.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\util\CommonSets.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\PathAlgebra.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\LeafNode.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\And.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\recursion\Recursion.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Condition.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Length.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\SyntaxTree.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Edge.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\automata\DFA.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\RegexComparator.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\converter\Converter.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\schema\GraphObject.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\.antlr\RPQGrammarLexer.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\automata\NFA.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\BOr.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\tester\Tester.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\bracket\RightBracket.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\schema\Path.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\util\InvalidSyntaxException.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\schema\Edge.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\stack\ShuntingStack.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Or.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\LClosure.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Last.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\schema\Node.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\automata\NFAStateFactory.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\bracket\LeftBracket.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\Node.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\stack\OperatingStack.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\LChar.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\Label.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algorithms\DFSAutomata.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\LNull.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\Select.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\algebra\condition\First.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\MatchedText.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\BConcat.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\RegexMatcher.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\.antlr\RPQGrammarParser.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\RPQGrammarBaseListener.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\parser\.antlr\RPQGrammarListener.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\schema\Graph.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\automata\tree\node\BranchNode.java
+C:\Users\vroja\Documents\PathDatabase\src\main\java\com\gdblab\generator\Generator.java
