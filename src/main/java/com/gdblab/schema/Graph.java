@@ -85,12 +85,12 @@ public class Graph {
         paths.put(id,path);
     }
 
-    public void getNodes(){
-        for (Node n : nodes.values())
-            System.out.println(n.getId());
+    public HashMap<String,Node> getNodes(){
+        return nodes;
     }
-    
-    
-    
+
+    public HashMap<String,Edge> getEdges(){
+        return edges;
+    }
     
 }

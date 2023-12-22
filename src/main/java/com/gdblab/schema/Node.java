@@ -17,6 +17,11 @@ public class Node extends GraphObject{
     
     public Node(String id) {
         super(id);
-    } 
+    }
+
+    @Override
+    public String toString() {
+        return "Node{" + "id=" + this.getId() + ", label=" + getLabel() + '}';
+    }
         
 }
