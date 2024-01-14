@@ -24,6 +24,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.UUID;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  *
@@ -32,13 +33,13 @@ import java.util.HashSet;
 public class Database {
     
     public final Graph graph;
-    private ArrayList<Path> pathsWithoutEdges;
+    private LinkedList<Path> pathsWithoutEdges;
     private final PathAlgebra algebra;
 
     public Database(String url) {
         
         this.graph = new Graph("|---- Graph 1 ----|");
-        this.pathsWithoutEdges = new ArrayList<>();
+        this.pathsWithoutEdges = new LinkedList<>();
 
         generateDemoDatabase(this.graph, url);
 
@@ -82,7 +83,7 @@ public class Database {
     }
     
    // generate Get function for pathsWithoutEdges
-    public ArrayList<Path> getPathsWithoutEdges(){
+    public LinkedList<Path> getPathsWithoutEdges(){
          return this.pathsWithoutEdges;
     }
     

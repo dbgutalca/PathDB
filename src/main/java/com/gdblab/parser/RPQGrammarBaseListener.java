@@ -6,7 +6,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +24,7 @@ import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.condition.Not;
 import com.gdblab.database.Database;
 import com.gdblab.main.Main;
+import com.gdblab.newAlgebra.NewPathAlgebra;
 import com.gdblab.recursion.Recursion;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.GraphObject;
@@ -30,14 +33,14 @@ import com.gdblab.schema.Path;
 class TreeNode {
 	String label;
 	String operator;
-	ArrayList<Path> paths;
+	LinkedList<Path> paths;
 	List<TreeNode> childs;
 	boolean visited;
 
 	public TreeNode(String label) {
 		this.label = label;
 		this.operator = "";
-		this.paths = new ArrayList<>();
+		this.paths = new LinkedList<>();
 		this.childs = new ArrayList<>();
 		this.visited = false;
 	}
@@ -70,11 +73,11 @@ class TreeNode {
 		return label;
 	}
 
-	public void setPaths(ArrayList<Path> paths) {
+	public void setPaths(LinkedList<Path> paths) {
 		this.paths = paths;
 	}
 
-	public ArrayList<Path> getPaths() {
+	public LinkedList<Path> getPaths() {
 		return paths;
 	}
 }
@@ -113,7 +116,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 
 		long startTime = System.currentTimeMillis();
 
-		ArrayList<Path> paths = this.evalTree(tree);
+		LinkedList<Path> paths = this.evalTree(tree);
 
 		long endTime = System.currentTimeMillis();
 
@@ -206,7 +209,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		return root;
 	}
 
-	public ArrayList<Path> evalTree (TreeNode tree) {
+	public LinkedList<Path> evalTree (TreeNode tree) {
 		
 		if(tree.getChildsCount() == 0) {
 			return tree.getPaths();
@@ -214,43 +217,42 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 
 		else if(tree.getChildsCount() == 1) {
 			if (tree.getLabel().startsWith("(") &&  tree.getLabel().endsWith(")?")) {
-				ArrayList<Path> p = this.evalTree(tree.getChildByIndex(0));
+				LinkedList<Path> p = this.evalTree(tree.getChildByIndex(0));
 				p = PathAlgebra.Union(p, this.database.getPathsWithoutEdges());
-				checkPath(p);
+				// checkPath(p);
 				return p;
 			}
 			else if (tree.getLabel().startsWith("(") &&  tree.getLabel().endsWith(")*")) {
-				ArrayList<Path> p = this.evalTree(tree.getChildByIndex(0));
+				LinkedList<Path> p = this.evalTree(tree.getChildByIndex(0));
 				p = Recursion.arbitrary(p, this.MAX);
 				p = PathAlgebra.Union(p, this.database.getPathsWithoutEdges());
-				checkPath(p);
+				// checkPath(p);
 				return p;
 			}
 			else if (tree.getLabel().startsWith("(") &&  tree.getLabel().endsWith(")+")) {
-				ArrayList<Path> p = this.evalTree(tree.getChildByIndex(0));
+				LinkedList<Path> p = this.evalTree(tree.getChildByIndex(0));
 				p = Recursion.arbitrary(p, this.MAX);
 				
-				checkPath(p);
+				// checkPath(p);
 				return p;
 			}
 			else {
-				ArrayList<Path> p = this.evalTree(tree.getChildByIndex(0));
+				LinkedList<Path> p = this.evalTree(tree.getChildByIndex(0));
 				if (Main.semantic.equals("Simple Path")) p = Recursion.removeDuplicatedNodes(p);
-				// else if (Main.semantic.equals("Trail"))
+				else if (Main.semantic.equals("Trail")) p = Recursion.removeDuplicatedEdges(p);
 				
-				checkPath(p);
+				// checkPath(p);
 				return p;
 			}
 		}
 		
 		else {
-			ArrayList<Path> result = new ArrayList<>();
-			ArrayList<Path> pl = this.evalTree(tree.getChildByIndex(0));
-			ArrayList<Path> pr = this.evalTree(tree.getChildByIndex(2));
+			LinkedList<Path> result = new LinkedList<>();
+			LinkedList<Path> pl = this.evalTree(tree.getChildByIndex(0));
+			LinkedList<Path> pr = this.evalTree(tree.getChildByIndex(2));
 
 			if (tree.getChildByIndex(1).getLabel().equals(".")) {
 				result = PathAlgebra.NodeJoin(pl, pr);
-				printPath(result);
 			}
 			else {
 				result.addAll(pr);
@@ -258,7 +260,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 				
 			}
 
-			checkPath(result);
+			// checkPath(result);
 
 			return result;
 		}
@@ -266,20 +268,33 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 
 	private void evalLeaf(TreeNode node) {
 		String term = node.getLabel();
-		ArrayList<Path> paths = new ArrayList<>();
+		LinkedList<Path> paths = new LinkedList<>();
+		HashSet<String> stringPaths = new HashSet<>();
 
 		if(term.startsWith("!")){
 			String label = term.substring(1);
 			if(label.endsWith("?")){
 				label = label.substring(0, label.length() - 1);
+
+				// Este es para el algebra original
 				paths = Select.eval(this.database.graph.getPaths(), new Not(new Label(label, 1)));
 				paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
+
+				// Este es para la nueva algebra con Strings
+				// stringPaths = NewPathAlgebra.eval(label);
+				// stringPaths = NewPathAlgebra.pathsUnion(stringPaths, stringPaths);
 			}
 			else if(label.endsWith("*")){
 				label = label.substring(0, label.length() - 1);
+
+				// Este es para el algebra original
 				paths = Select.eval(this.database.graph.getPaths(), new Not(new Label(label, 1)));
 				paths = Recursion.arbitrary(paths, this.MAX);
 				paths = PathAlgebra.Union(paths, this.database.getPathsWithoutEdges());
+
+				// Este es para la nueva algebra con Strings
+				// stringPaths = NewPathAlgebra.eval(label);
+				// stringPaths = NewPathAlgebra.arbitrary(stringPaths);
 			}
 			else if(label.endsWith("+")){
 				label = label.substring(0, label.length() - 1);
@@ -323,7 +338,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		node.setPaths(paths);
 	}
 
-	private void realPrintPath(ArrayList<Path> paths) {
+	private void realPrintPath(LinkedList<Path> paths) {
 		for (Path pp : paths) {
 			for (GraphObject go : pp.getSequence()) {
 				if (go.getId().startsWith("e"))
@@ -335,7 +350,7 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		}
 	}
 
-	private void printPath(ArrayList<Path> paths) {
+	private void printPath(LinkedList<Path> paths) {
 		try (BufferedWriter writer = new BufferedWriter(new FileWriter(Main.output))) {
 			// print config
 			writer.write("--Configuration--"); writer.newLine();
@@ -361,8 +376,8 @@ public class RPQGrammarBaseListener implements RPQGrammarListener {
 		}
 	}
 
-	private static void checkPath(ArrayList<Path> paths){
-        ArrayList<Path> pathsToRemove = new ArrayList<>();
+	private static void checkPath(LinkedList<Path> paths){
+        LinkedList<Path> pathsToRemove = new LinkedList<>();
 
         for (Path p : paths) {
             Map<String, Integer> c = new HashMap<>();

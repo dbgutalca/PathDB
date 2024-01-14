@@ -11,6 +11,7 @@ import com.gdblab.schema.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import com.gdblab.main.Main;
@@ -28,10 +29,9 @@ public class PathAlgebra {
     
     public static Path NodeLink (Path pathA, Path pathB){
         if(pathA.isNodeLinkable(pathB)){
-            Path join_path = null;
+            Path join_path = null; 
 
             if (Main.semantic.equals("Simple Path")) {
-                System.out.println("Simple Path");
                 ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringNodeSequence().split(" ")));
                 ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringNodeSequence().split(" ")));
                 pathBString.remove(0);
@@ -43,7 +43,6 @@ public class PathAlgebra {
             }
 
             else if (Main.semantic.equals("Trail")) {
-                System.out.println("Trail");
                 ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringEdgeSequence().split(" ")));
                 ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringEdgeSequence().split(" ")));
                 pathAString.addAll(pathBString);
@@ -71,8 +70,8 @@ public class PathAlgebra {
         return null;
     }
     
-    public static ArrayList<Path> NodeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> join_path = new ArrayList<>();
+    public static LinkedList<Path> NodeJoin (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
+        LinkedList<Path> join_path = new LinkedList<>();
         
         for (Path path1 : pathsA) {
             for (Path path2 : pathsB) {
@@ -120,9 +119,8 @@ public class PathAlgebra {
         return join_path;
     }
     
-    public static ArrayList<Path> Union (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> union_path = new ArrayList<>();
-        HashSet<Path> union_path_set = new HashSet<>();
+    public static LinkedList<Path> Union (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
+        LinkedList<Path> union_path = new LinkedList<>();
 
         union_path.addAll(pathsA);
         for (Path path2 : pathsB) {
@@ -138,6 +136,7 @@ public class PathAlgebra {
         }
         return union_path;
     }
+    
     public ArrayList<Path> Intersection (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> intersection_path = new ArrayList<>();
         for (Path path1 : pathsA) {

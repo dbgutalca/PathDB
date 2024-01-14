@@ -7,6 +7,7 @@ package com.gdblab.schema;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  *
@@ -72,8 +73,8 @@ public class Graph {
     public Path getPath(String id) {
         return (Path) paths.get(id);
     }
-    public ArrayList<Path> getPaths() {
-        return new ArrayList<>(paths.values());
+    public LinkedList<Path> getPaths() {
+        return new LinkedList<>(paths.values());
     }
 
     public void setPath(String id, Path path) {
