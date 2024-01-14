@@ -22,23 +22,23 @@ public class BFS {
     private List<List<Edge>> paths;
     private RegexMatcher matcher;
 
-    public BFS(Database db, String                                        semantic, String regex) {
+    public BFS(Database db, String semantic, String regex) {
         this.matcher = new RegexMatcher(regex);
         paths = new ArrayList<>();
         nodes = db.graph.getNodes();
         edges = db.graph.getEdges();
         switch (semantic) {
-            case "simple_path":
+            case "Simple Path":
                 BFSSimplePath();
                 break;
-            case "trail":
+            case "Trail":
                 BFSTrail();
                 break;
-            case "arbitrary":
+            case "Arbitrary":
                 BFSArbitrary(3);
                 break;                                                                 
         }
-        
+        checkZeroPaths();
     }
 
     private void BFSSimplePath() {
@@ -46,34 +46,42 @@ public class BFS {
             BFSUtilSimplePath(node);
         }
     }
+
     private void BFSUtilSimplePath(Node node) {
-        List<List<Edge>> paths = new ArrayList<>();
-
+        List<List<Edge>> allPaths = new ArrayList<>();
         Queue<List<Edge>> queue = new LinkedList<>();
-        Node startNode = nodes.get(node.getId());
 
-        for (Edge edge : edges.values()) {
-            if (edge.getSource().equals(startNode)) {
-                List<Edge> initialPath = new ArrayList<>();
-                initialPath.add(edge);
-                queue.add(initialPath);
+        for (Map.Entry<String, Edge> entry : edges.entrySet()) {
+            Edge edge = entry.getValue();
+            if (edge.getSource().getId().equals(node.getId())) {
+                List<Edge> path = new ArrayList<>();
+                path.add(edge);
+                Set<String> visitedNodes = new HashSet<>();
+                visitedNodes.add(node.getId());
+                queue.add(path);
             }
         }
 
         while (!queue.isEmpty()) {
-            List<Edge> currentPath = queue.poll();
-            Edge lastEdge = currentPath.get(currentPath.size() - 1);
-            Node currentNode = lastEdge.getTarget();
+            List<Edge> currentPath = queue.remove();
 
-            // Evitar añadir un nodo ya presente en el camino actual
-            if (containsNode(currentPath, currentNode.getId())) {
-                continue;
+            if (matcher.match(getPaths(currentPath)).equals("Accepted")) {
+                allPaths.add(new ArrayList<>(currentPath));
             }
 
-            paths.add(new ArrayList<>(currentPath));
+            Set<String> visitedNodesInPath = new HashSet<>();
+            for (Edge e : currentPath) {
+                visitedNodesInPath.add(e.getSource().getId());
+                visitedNodesInPath.add(e.getTarget().getId());
+            }
 
-            for (Edge edge : edges.values()) {
-                if (edge.getSource().equals(currentNode)) {
+            Edge lastEdge = currentPath.get(currentPath.size() - 1);
+            Node lastNode = lastEdge.getTarget();
+
+            for (Map.Entry<String, Edge> entry : edges.entrySet()) {
+                Edge edge = entry.getValue();
+                if (!visitedNodesInPath.contains(edge.getTarget().getId())
+                        && edge.getSource().getId().equals(lastNode.getId())) {
                     List<Edge> newPath = new ArrayList<>(currentPath);
                     newPath.add(edge);
                     queue.add(newPath);
@@ -81,21 +89,8 @@ public class BFS {
             }
         }
 
-        this.paths.addAll(paths);
+        this.paths.addAll(allPaths);
     }
-
-    private boolean containsNode(List<Edge> path, String nodeId) {
-        for (Edge edge : path) {
-            if (edge.getSource().getId().equals(nodeId) || edge.getTarget().getId().equals(nodeId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
-
-
 
 
     private void BFSTrail() {
@@ -108,7 +103,6 @@ public class BFS {
         List<List<Edge>> allPaths = new ArrayList<>();
         Queue<List<Edge>> queue = new LinkedList<>();
 
-        // Inicializar la cola con caminos que comienzan en el nodo de inicio
         for (Map.Entry<String, Edge> entry : edges.entrySet()) {
             Edge edge = entry.getValue();
             if (edge.getSource().getId().equals(node.getId())) {
@@ -121,7 +115,7 @@ public class BFS {
         while (!queue.isEmpty()) {
             List<Edge> currentPath = queue.remove();
             
-            if(matcher.match(getPaths(currentPath)) == "Accepted") {
+            if(matcher.match(getPaths(currentPath)).equals("Accepted")) {
                 allPaths.add(new ArrayList<>(currentPath));
             }
 
@@ -172,7 +166,7 @@ public class BFS {
             List<Edge> currentPath = current.path;
             Map<String, Integer> currentVisitCount = current.visitCount;
 
-            if(matcher.match(getPaths(currentPath)) == "Accepted") {
+            if(matcher.match(getPaths(currentPath)).equals("Accepted")) {
                 allPaths.add(new ArrayList<>(currentPath));
             }
 
@@ -195,6 +189,7 @@ public class BFS {
             }
         }
 
+        
         this.paths.addAll(allPaths);
     }
 
@@ -209,17 +204,15 @@ public class BFS {
     }
 
     public void printCompletePaths() {
-        int i = 0;
         for (List<Edge> path : this.paths) {
             if (path.isEmpty()) {
                 continue;
             }
-            System.out.print(i + " " + path.get(0).getSource().getId());
+            System.out.print(path.get(0).getSource().getId());
             for (Edge edge : path) {
                 System.out.print(" " + edge.getLabel() + " " + edge.getTarget().getId());
             }
             System.out.println();
-            i++;
         }
     }
 
@@ -261,5 +254,16 @@ public class BFS {
         }
 
         return pathString;
+    }
+
+    private void checkZeroPaths() {
+        if (matcher.match("") == "Accepted") {
+            for (Node node : nodes.values()) {
+                Edge e = new Edge("", "", node, new Node(""));
+                List<Edge> path = new ArrayList<>();
+                path.add(e);
+                this.paths.add(path);
+            }
+        }
     }
 }

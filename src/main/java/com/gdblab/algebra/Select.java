@@ -7,6 +7,7 @@ package com.gdblab.algebra;
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.schema.Path;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  *
@@ -14,8 +15,8 @@ import java.util.ArrayList;
  */
 public final class Select {
     
-    public static ArrayList<Path> eval (ArrayList<Path> path_set, Condition c){
-        ArrayList<Path> result_set = new ArrayList<>();
+    public static LinkedList<Path> eval (LinkedList<Path> path_set, Condition c){
+        LinkedList<Path> result_set = new LinkedList<>();
         for (Path p : path_set) {
             if(c.eval(p))
                 result_set.add(p);

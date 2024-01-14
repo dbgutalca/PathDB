@@ -135,6 +135,25 @@ public class Main {
                 DFSAutomata dfs = new DFSAutomata(db, semantic, regex);
                 dfs.printPath(output);
                 break;
+            case "bfs":
+                regex = converter.RPQtoER(rpq);
+                switch (semantic) {
+                    case "sp":
+                        semantic = "Simple Path";
+                        break;
+                    case "t":
+                        semantic = "Trail";
+                        break;
+                    case "a":
+                        semantic = "Arbitrary";
+                        break;
+                }
+                // printConfiguration(algorithm, semantic, dburl, rpq, regex);
+                System.out.println(ANSI_BLUE + ANSI_BOLD + ANSI_ITALIC + "Cargando..." + ANSI_RESET);
+                System.out.println();
+                BFS bfs = new BFS(db, semantic, regex);
+                bfs.printCompletePaths();
+                break;
             default:
                 System.out.println("Error: Invalid algorithm");
                 System.exit(0);
@@ -223,10 +242,6 @@ public class Main {
 			System.out.println("");
 		}
 	}
-
-    public static void runTest(){
-        db = new Database("db.txt");
-    }
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
