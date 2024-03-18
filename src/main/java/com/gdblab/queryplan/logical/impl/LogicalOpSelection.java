@@ -15,7 +15,11 @@ public class LogicalOpSelection extends UnaryLogicalOp {
     }
 
     @Override
-    public void visit(final LogicalPlanVisitor visitor) {
+    public void acceptVisitor(final LogicalPlanVisitor visitor) {
         visitor.visit(this);
+    }
+
+    public Condition getCondition() {
+        return c;
     }
 }

@@ -5,7 +5,7 @@ import com.gdblab.queryplan.logical.LogicalPlanVisitor;
 public class LogicalOpNodeProduct extends BinaryLogicalOp {
 
     @Override
-    public void visit(LogicalPlanVisitor visitor) {
+    public void acceptVisitor(LogicalPlanVisitor visitor) {
         visitor.visit(this);
     }
 }
