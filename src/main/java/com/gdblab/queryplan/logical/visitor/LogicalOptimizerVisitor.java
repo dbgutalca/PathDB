@@ -8,7 +8,7 @@ public class LogicalOptimizerVisitor implements LogicalPlanVisitor {
     int height = 0;
 
     @Override
-    public void visit(LogicalOpSelection logicalOpSelection) {
+    public void visit(final LogicalOpSelection logicalOpSelection) {
 
     }
 
