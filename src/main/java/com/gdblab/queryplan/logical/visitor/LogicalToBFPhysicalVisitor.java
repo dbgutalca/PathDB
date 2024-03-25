@@ -22,7 +22,7 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     }
 
     @Override
-    public void visit(LogicalOpProjection logicalOpProjection) {
+    public void visit(final LogicalOpProjection logicalOpProjection) {
 
     }
 
