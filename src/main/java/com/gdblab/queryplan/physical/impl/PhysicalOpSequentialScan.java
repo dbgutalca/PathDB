@@ -53,7 +53,7 @@ public class PhysicalOpSequentialScan extends UnaryPhysicalOp {
     @Override
     public Path next() {
         if (hasNext()){
-            Path p = slot;
+            final Path p = slot;
             slot = null;
             return p;
         }
