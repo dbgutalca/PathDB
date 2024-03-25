@@ -16,7 +16,7 @@ public class LogicalOpAllPathsStartingFromNode implements NullaryLogicalOperator
     }
 
     @Override
-    public void acceptVisitor(LogicalPlanVisitor visitor) {
+    public void acceptVisitor(final LogicalPlanVisitor visitor) {
         visitor.visit(this);
     }
 }
