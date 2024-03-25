@@ -16,5 +16,5 @@ public interface LogicalPlan {
      * If the plan has fewer sub-plans (or no sub-plans at all),
      * then a {@link NoSuchElementException} will be thrown.
      */
-    LogicalPlan getSubPlan( int i ) throws NoSuchElementException;
+    LogicalPlan getSubPlan(final int i) throws NoSuchElementException;
 }
