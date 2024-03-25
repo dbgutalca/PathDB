@@ -1,6 +1,7 @@
 package com.gdblab.queryplan.logical;
 
 import com.gdblab.queryplan.logical.impl.*;
+import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 
 /**
  * Visits all possible types of {@link LogicalOperator}
@@ -24,4 +25,7 @@ public interface LogicalPlanVisitor {
     void visit(final LogicalOpIntersection logicalOpIntersection);
 
     void visit(final LogicalOpDifference logicalOpDifference);
+
+    void visit(final LogicalOpAllPathsStartingFromNode logicalOpAllPathsStartingFromNode);
+
 }

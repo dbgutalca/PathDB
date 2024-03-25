@@ -34,20 +34,21 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
     public boolean hasNext() {
         if ( slot == null ) {
             slot = moveToNextPathOrNull();
-            if ( slot == null ) {
-                return false;
-            }
+            return slot != null;
         }
         return true;
     }
 
     @Override
     public Path next() {
-        Path r = slot;
+        final Path r = slot;
         slot = null;
         return r;
     }
 
+    /**
+     * Code taken from Apache Jena. It gets the next match, or null if there isn't one.
+     */
     protected Path moveToNextPathOrNull() {
         for ( ;; ) { // For rows from the right.
             if ( nextRight == null ) {
@@ -60,8 +61,8 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
 
             // There is a rowRight
             while (left.hasNext()) {
-                Path rowLeft = left.next();
-                Path r = PathAlgebra.NodeLink(rowLeft, nextRight);//Algebra.merge(rowLeft, rowRight);
+                final Path rowLeft = left.next();
+                final Path r = PathAlgebra.NodeLink(rowLeft, nextRight);//Algebra.merge(rowLeft, rowRight);
                 if ( r != null ) {
                     return r;
                 }
