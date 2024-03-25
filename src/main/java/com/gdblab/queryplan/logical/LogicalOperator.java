@@ -5,6 +5,6 @@ public interface LogicalOperator {
     /**
      * Receives a Logical Plan visitor that traverses the logical plan tree
      */
-    void acceptVisitor(LogicalPlanVisitor visitor );
+    void acceptVisitor(final LogicalPlanVisitor visitor );
 
 }
