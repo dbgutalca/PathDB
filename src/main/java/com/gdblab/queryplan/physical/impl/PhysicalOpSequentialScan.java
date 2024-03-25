@@ -32,7 +32,7 @@ public class PhysicalOpSequentialScan extends UnaryPhysicalOp {
     @Override
     public boolean hasNext() {
         if (slot != null) return true;
-        if (getChild().hasNext()){
+        while (getChild().hasNext()){
             Path candidate = getChild().next();
             if (lop.getCondition().eval(candidate)){
                 slot = candidate;
