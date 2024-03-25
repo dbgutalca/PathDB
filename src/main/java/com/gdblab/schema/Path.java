@@ -7,6 +7,7 @@ package com.gdblab.schema;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class Path extends GraphObject{
             sequence.add(edge);
             sequence.add(edge.getTarget());
         }
-        else if (this.Last().getId() == edge.getSource().getId()){
+        else if (Objects.equals(this.Last().getId(), edge.getSource().getId())){
             sequence.add(edge);
             sequence.add(edge.getTarget());
         }
