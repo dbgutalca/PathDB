@@ -24,7 +24,6 @@ import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.condition.Not;
 import com.gdblab.database.Database;
 import com.gdblab.main.Main;
-import com.gdblab.newAlgebra.NewPathAlgebra;
 import com.gdblab.recursion.Recursion;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.GraphObject;
