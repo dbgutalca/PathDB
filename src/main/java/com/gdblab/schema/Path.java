@@ -45,14 +45,11 @@ public class Path extends GraphObject{
         }
     }
     
-    private void insertNode(Node node){
+    public void insertNode(Node node){
         if(sequence.isEmpty())
             sequence.add(node);
     }
-   
-    
-    
- 
+
     
     public ArrayList<Node> getNodeSequence() {
         ArrayList<Node> nodes = new ArrayList<>();
@@ -62,12 +59,30 @@ public class Path extends GraphObject{
         }
         return nodes;
     }
+
+    public String getStringNodeSequence() {
+        String nodes = "";
+         for (int i = 0; i < sequence.size(); i++) {
+             if(sequence.get(i) instanceof Node node)
+                 nodes += node.getId() + " ";
+        }
+        return nodes;
+    }
     
     public ArrayList<Edge> getEdgeSequence() {
         ArrayList<Edge> edges = new ArrayList<>();
          for (int i = 0; i < sequence.size(); i++) {
              if(sequence.get(i) instanceof Edge edge)
                  edges.add(edge);
+        }
+        return edges;
+    }
+
+    public String getStringEdgeSequence() {
+        String edges = "";
+         for (int i = 0; i < sequence.size(); i++) {
+             if(sequence.get(i) instanceof Edge edge)
+                 edges += edge.getId() + " ";
         }
         return edges;
     }
@@ -159,9 +174,9 @@ public class Path extends GraphObject{
         return getEdgeSequence().size();
     }
     
-    
-    
-    
-    
+    @Override
+    public String toString() {
+        return "Path{" + "id=" + this.getId() + ", label=" + getLabel() + ", sequence=" + sequence + '}';
+    }
     
 }

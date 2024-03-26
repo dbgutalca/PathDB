@@ -6,9 +6,15 @@ package com.gdblab.algebra;
 
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
+import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
+import com.gdblab.main.Main;
 
 /**
  *
@@ -22,24 +28,66 @@ public class PathAlgebra {
     }
     
     public static Path NodeLink (Path pathA, Path pathB){
-        Path join_path = null;
-            if(pathA.isNodeLinkable(pathB)){
-                join_path = new Path(UUID.randomUUID().toString());
+        if(pathA.isNodeLinkable(pathB)){
+            Path join_path = null; 
+
+            if (Main.semantic.equals("Simple Path")) {
+                ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringNodeSequence().split(" ")));
+                ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringNodeSequence().split(" ")));
+                pathBString.remove(0);
+                pathAString.addAll(pathBString);
+
+                if(hasDuplicateNodes(pathAString)) {
+                    return null;
+                }
+            }
+
+            else if (Main.semantic.equals("Trail")) {
+                ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringEdgeSequence().split(" ")));
+                ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringEdgeSequence().split(" ")));
+                pathAString.addAll(pathBString);
+                
+                if(hasDuplicateEdges(pathAString)) {
+                    return null;
+                }
+            }
+ 
+            join_path = new Path(UUID.randomUUID().toString());
+            if(pathA.getNodeNumber() == 1 && pathB.getNodeNumber() == 1){
+                join_path.insertNode(pathA.First());
+            }
+            else {
                 for (Edge ed : pathA.getEdgeSequence())
                     join_path.insertEdge(ed);
                 for (Edge ed : pathB.getEdgeSequence())
+
                     join_path.insertEdge(ed);
             }
-        return join_path;
+        
+            return join_path;
+        }
+        
+        return null;
     }
     
-    public static ArrayList<Path> NodeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> join_path = new ArrayList<>();
+    public static LinkedList<Path> NodeJoin (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
+        LinkedList<Path> join_path = new LinkedList<>();
+        
         for (Path path1 : pathsA) {
             for (Path path2 : pathsB) {
+
                 Path p = NodeLink(path1, path2);
-                if(p != null)
-                    join_path.add(p);
+                if(p != null) {
+                    boolean equal = false;
+                    for (Path jp : join_path) {
+                        if(jp.equals(p)){
+                            equal = true;
+                            break;
+                        }
+                    }
+                    if(!equal)
+                        join_path.add(p);
+                }
             } 
         }
         return join_path;
@@ -71,22 +119,24 @@ public class PathAlgebra {
         return join_path;
     }
     
-    public static ArrayList<Path> Union (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> union_path = new ArrayList<>();
+    public static LinkedList<Path> Union (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
+        LinkedList<Path> union_path = new LinkedList<>();
+
         union_path.addAll(pathsA);
         for (Path path2 : pathsB) {
             boolean equal = false;
              for (Path path1 : pathsA) {
-                 if(path1.equals(path2)){
-                     equal = true;
-                     break;
-                 }
+                if(path1.equals(path2)){
+                    equal = true;
+                    break;
+                }
             }
             if(!equal)
                 union_path.add(path2);
         }
         return union_path;
     }
+    
     public ArrayList<Path> Intersection (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
         ArrayList<Path> intersection_path = new ArrayList<>();
         for (Path path1 : pathsA) {
@@ -184,6 +234,30 @@ public class PathAlgebra {
         return false;
     }
     
-    
-    
+    public static boolean hasDuplicateNodes(ArrayList<String> tokens) {
+        HashSet<String> visitedNodes = new HashSet<>();
+        for (String token : tokens) {
+            if (token.startsWith("N")) {
+                if (!visitedNodes.add(token)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasDuplicateEdges(ArrayList<String> tokens) {
+        HashSet<String> visitedEdges = new HashSet<>();
+
+        for (String token : tokens) {
+            if (token.startsWith("e")) {
+                if (!visitedEdges.add(token)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

@@ -16,7 +16,15 @@ import com.gdblab.schema.Graph;
 import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.UUID;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 /**
  *
@@ -24,37 +32,43 @@ import java.util.ArrayList;
  */
 public class Database {
     
-    private final Graph graph;
+    public final Graph graph;
+    private LinkedList<Path> pathsWithoutEdges;
     private final PathAlgebra algebra;
-    public Database() {
+
+    public Database(String url) {
         
-        graph = new Graph("test1");
-        generateDemoDatabase(this.graph);
-        System.out.println(graph.getName());
+        this.graph = new Graph("|---- Graph 1 ----|");
+        this.pathsWithoutEdges = new LinkedList<>();
+
+        generateDemoDatabase(this.graph, url);
+
+        
+        // System.out.println(graph.getName());
         this.algebra = new PathAlgebra(graph);
         
-        ArrayList<Path> p= algebra.NodeJoin(graph.getPaths(), graph.getPaths());
-        ArrayList<Path> paths2 = algebra.RightSubPaths(p);
-        System.out.println(""); 
+        // ArrayList<Path> p= algebra.NodeJoin(graph.getPaths(), graph.getPaths());
+        // ArrayList<Path> paths2 = algebra.RightSubPaths(p);
+        // System.out.println(""); 
         
        //ArrayList<Path> paths = Select.eval(paths2, new Not(new First("n1")));
         
-        ArrayList<Path> paths = Select.eval(graph.getPaths(), new Label("a", 1));
+        // ArrayList<Path> paths = Select.eval(graph.getPaths(), new Label("a", 1));
         
-        System.out.println("Paths with label 'a'");
-        printPath(paths);
+        // System.out.println("Paths with label 'a'");
+        // printPath(paths);
        
-        System.out.println("Arbitrary");
-        printPath(Recursion.arbitrary(paths, 10)); 
-        System.out.println(".................................................");
-        System.out.println("No repeated nodes");
-        printPath(Recursion.noRepeatedNodes(paths, 10));
-        System.out.println(".................................................");
-        System.out.println("No repeated edges");
-        printPath(Recursion.noRepeatedEdges(paths, 10));
-        System.out.println(".................................................");
-        System.out.println("Shortest Paths");
-        printPath(Recursion.shortestPath(paths, 10));
+        // System.out.println("Arbitrary");
+        // printPath(Recursion.arbitrary(paths, 10)); 
+        // System.out.println(".................................................");
+        // System.out.println("No repeated nodes");
+        // printPath(Recursion.noRepeatedNodes(paths, 10));
+        // System.out.println(".................................................");
+        // System.out.println("No repeated edges");
+        // printPath(Recursion.noRepeatedEdges(paths, 10));
+        // System.out.println(".................................................");
+        // System.out.println("Shortest Paths");
+        // printPath(Recursion.shortestPath(paths, 10));
             
           
     }
@@ -68,57 +82,68 @@ public class Database {
         }
     }
     
-   
-        
+   // generate Get function for pathsWithoutEdges
+    public LinkedList<Path> getPathsWithoutEdges(){
+         return this.pathsWithoutEdges;
+    }
     
-    private void generateDemoDatabase(Graph graph){
-        Node node1 = new Node("n1", "Node");
-        Node node2 = new Node("n2", "Node");
-        Node node3 = new Node("n3", "Node");
-        Node node4 = new Node("n4", "Node");
-        
-        Edge edge1 = new Edge("e1", "a", node1, node2);
-        Edge edge2 = new Edge("e2", "a", node2, node3);
-        Edge edge3 = new Edge("e3", "b", node3, node4);
-        Edge edge4 = new Edge("e4", "c", node1, node4);
-        Edge edge5 = new Edge("e5", "a", node2, node2);
-        
-        graph.insertNode("n1", node1);
-        graph.insertNode("n2", node2);
-        graph.insertNode("n3", node3);
-        graph.insertNode("n4", node4);
-        
-        graph.insertEdge("e1", edge1);
-        graph.insertEdge("e2", edge2);
-        graph.insertEdge("e3", edge3);
-        graph.insertEdge("e4", edge4);
-        graph.insertEdge("e5", edge5);
-        
-        
-        Path path1 = new Path("p1", "path1");
-        path1.insertEdge(edge1);
-        
-        Path path2 = new Path("p2", "path2");
-        path2.insertEdge(edge2);
-        
-        Path path3 = new Path("p3", "path3");
-        path3.insertEdge(edge3);
-        
-        Path path4 = new Path("p4", "path4");
-        path4.insertEdge(edge4);
-        
-        Path path5 = new Path("p5", "path5");
-        path5.insertEdge(edge5);
-        
-        graph.insertPath("p1", path1);
-        graph.insertPath("p2", path2);
-        graph.insertPath("p3", path3);
-        graph.insertPath("p4", path4);
-        graph.insertPath("p5", path5);
-        
+    private void generateDemoDatabase(Graph graph, String url){
+        ArrayList<String> lines = new ArrayList<>();
+
+        try {
+            File myObj = new File(url);
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                lines.add(data);
+            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        Set<String> nodes = new HashSet<String>();
+        nodes = getUniqueNodes(lines);
+
+        int j = 1;
+        for (String n : nodes) {
+            Node node = new Node(n, "Node");
+            graph.insertNode(n, node);
+
+            Path p = new Path(UUID.randomUUID().toString(), "pathwoe" + j);
+            p.insertNode(node);
+            this.pathsWithoutEdges.add(p);
+            j++;
+        }
+
+        int i = 1;
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            String source = parts[0];
+            String label = parts[1];
+            String target = parts[2];
+            Edge edge = new Edge("e" + i, label, graph.getNode(source), graph.getNode(target));
+            graph.insertEdge("e" + i, edge);
+            Path p = new Path(UUID.randomUUID().toString(), "path" + i);
+            p.insertEdge(edge);
+            graph.insertPath(p.getId(), p);
+            i++;
+        }
     }
    
-   
+    public Set<String> getUniqueNodes(ArrayList<String> lines){
+        Set<String> nodes = new HashSet<String>();
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            String source = parts[0];
+            String label = parts[1];
+            String target = parts[2];
+            nodes.add(source);
+            nodes.add(target);
+        }
+        return nodes;
+    }
    
    
     
