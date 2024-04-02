@@ -44,7 +44,7 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
 
     //@Override public void exitParenthesis(RPQGrammarParser.ParenthesisContext ctx) { }
 
-    @Override public void exitPlus(RPQGrammarParser.PlusContext ctx) {
+    @Override public void exitPlus(final RPQGrammarParser.PlusContext ctx) {
         stack.push(new OneOrMoreExpression(stack.pop()));
     }
 
