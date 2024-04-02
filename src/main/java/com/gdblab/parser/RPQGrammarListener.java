@@ -22,7 +22,7 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
         stack.push(new LabelExpression(ctx.getText()));
     }
 
-    @Override public void exitConcatenation(RPQGrammarParser.ConcatenationContext ctx) {
+    @Override public void exitConcatenation(final RPQGrammarParser.ConcatenationContext ctx) {
         final RPQExpression right = stack.pop();
         final RPQExpression left = stack.pop();
         stack.push(new ConcatenationExpression(left, right));
