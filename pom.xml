@@ -13,8 +13,14 @@
     <dependencies>
         <dependency>
             <groupId>org.antlr</groupId>
-            <artifactId>antlr4</artifactId>
-            <version>4.13.0</version>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -39,6 +45,24 @@
                         <phase>package</phase> <!-- Vincula el ensamblaje al ciclo de vida del empaquetado -->
                         <goals>
                             <goal>single</goal> <!-- Invoca el objetivo single del assembly plugin -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.7.1</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <arguments>
+                                <argument>-visitor</argument>
+                            </arguments>
+                        </configuration>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>antlr4</goal>
                         </goals>
                     </execution>
                 </executions>

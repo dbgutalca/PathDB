@@ -7,19 +7,10 @@ package com.gdblab.recursion;
 import com.gdblab.algebra.PathAlgebra;
 import com.gdblab.main.Main;
 import com.gdblab.schema.Edge;
-import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
-import com.ibm.icu.text.Edits.Iterator;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
