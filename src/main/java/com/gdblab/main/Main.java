@@ -5,33 +5,18 @@
  */
 package com.gdblab.main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Scanner;
-
+import com.gdblab.algorithms.BFS;
+import com.gdblab.algorithms.DFSAutomata;
+import com.gdblab.converter.Converter;
+import com.gdblab.database.Database;
+import com.gdblab.parser.RPQExpression;
+import com.gdblab.schema.GraphObject;
+import com.gdblab.schema.Path;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import com.gdblab.algorithms.BFS;
-import com.gdblab.algorithms.DFS;
-import com.gdblab.algorithms.DFSAutomata;
-import com.gdblab.automata.RegexMatcher;
-import com.gdblab.converter.Converter;
-import com.gdblab.database.Database;
-import com.gdblab.parser.RPQGrammarBaseListener;
-import com.gdblab.parser.RPQGrammarLexer;
-import com.gdblab.parser.RPQGrammarParser;
-import com.gdblab.schema.Graph;
-import com.gdblab.schema.GraphObject;
-import com.gdblab.schema.Path;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
@@ -108,12 +93,14 @@ public class Main {
                 System.out.println(ANSI_BLUE + ANSI_BOLD + ANSI_ITALIC + "Cargando..." + ANSI_RESET);
                 System.out.println();
                 CharStream input = CharStreams.fromString(rpq);
-                RPQGrammarLexer lexer = new RPQGrammarLexer(input);
-                CommonTokenStream tokens = new CommonTokenStream(lexer);
-                RPQGrammarParser parser = new RPQGrammarParser(tokens);
-                parser.removeParseListeners();
-                parser.addParseListener(new RPQGrammarBaseListener());
-                RPQGrammarParser.QueryContext tree = parser.query();
+                //RPQGrammarLexer lexer = new RPQGrammarLexer(input);
+                //CommonTokenStream tokens = new CommonTokenStream(lexer);
+                //RPQGrammarParser parser = new RPQGrammarParser(tokens);
+                //parser.removeParseListeners();
+                //parser.addParseListener(new RPQGrammarBaseListener());
+                //RPQGrammarParser.QueryContext tree = parser.query();
+
+
 
                 break;
             case "dfs":
