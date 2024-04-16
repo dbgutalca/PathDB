@@ -6,6 +6,7 @@
 package com.gdblab.schema;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -169,14 +170,24 @@ public class Path extends GraphObject{
         
         return graph.getEdge(node1_id, node2_id);
     }
-    
-    public int lenght (){
-        return getEdgeSequence().size();
-    }
-    
-    @Override
-    public String toString() {
-        return "Path{" + "id=" + this.getId() + ", label=" + getLabel() + ", sequence=" + sequence + '}';
+    /**
+     * Check if a path is in a list of paths.
+     * 
+     * @param p - Path to check.
+     * @param list - List of paths.
+     * 
+     * @return true if the path is in the list, false otherwise.
+     * 
+     * @see Path
+     */
+    public boolean isInList(Path p, List<Path> list) {
+        Iterator<Path> i = list.iterator();
+        while (i.hasNext()) {
+            Path path = i.next();
+            if (path.equals(p))
+                return true;
+        }
+        return false;
     }
     
 }
