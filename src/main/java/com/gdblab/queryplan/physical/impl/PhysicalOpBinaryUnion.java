@@ -53,7 +53,6 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
         while  (rightChild.hasNext() ) {
             nextRight = rightChild.next();
             
-            // Cambiar al reves
             if (!leftRows.contains(nextRight)) {
                 return nextRight;
             }
