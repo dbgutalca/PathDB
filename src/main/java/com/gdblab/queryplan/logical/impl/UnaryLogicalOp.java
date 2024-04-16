@@ -7,6 +7,10 @@ public abstract class UnaryLogicalOp implements UnaryLogicalOperator {
 
     protected LogicalOperator child;
 
+    public UnaryLogicalOp(final LogicalOperator child) {
+        this.child = child;
+    }
+
     @Override
     public LogicalOperator getChild() {
         return child;

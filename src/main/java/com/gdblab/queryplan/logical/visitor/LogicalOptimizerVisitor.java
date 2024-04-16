@@ -13,47 +13,52 @@ public class LogicalOptimizerVisitor implements LogicalPlanVisitor {
     }
 
     @Override
-    public void visit(LogicalOpProjection logicalOpProjection) {
+    public void visit(final LogicalOpProjection logicalOpProjection) {
 
     }
 
     @Override
-    public void visit(LogicalOpNodeJoin logicalOpNodeJoin) {
+    public void visit(final LogicalOpNodeJoin logicalOpNodeJoin) {
 
     }
 
     @Override
-    public void visit(LogicalOpEdgeJoin logicalOpEdgeJoin) {
+    public void visit(final LogicalOpEdgeJoin logicalOpEdgeJoin) {
 
     }
 
     @Override
-    public void visit(LogicalOpNodeProduct logicalOpNodeProduct) {
+    public void visit(final LogicalOpNodeProduct logicalOpNodeProduct) {
 
     }
 
     @Override
-    public void visit(LogicalOpEdgeProduct logicalOpEdgeProduct) {
+    public void visit(final LogicalOpEdgeProduct logicalOpEdgeProduct) {
 
     }
 
     @Override
-    public void visit(LogicalOpUnion logicalOpUnion) {
+    public void visit(final LogicalOpUnion logicalOpUnion) {
 
     }
 
     @Override
-    public void visit(LogicalOpIntersection logicalOpIntersection) {
+    public void visit(final LogicalOpIntersection logicalOpIntersection) {
 
     }
 
     @Override
-    public void visit(LogicalOpDifference logicalOpDifference) {
+    public void visit(final LogicalOpDifference logicalOpDifference) {
 
     }
 
     @Override
-    public void visit(LogicalOpAllPathsStartingFromNode logicalOpAllPathsStartingFromNode) {
+    public void visit(final LogicalOpAllPathsStartingFromNode logicalOpAllPathsStartingFromNode) {
+
+    }
+
+    @Override
+    public void visit(final LogicalOpRecursive logicalOpRecursive) {
 
     }
 

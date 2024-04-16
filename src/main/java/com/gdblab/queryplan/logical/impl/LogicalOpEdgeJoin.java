@@ -1,10 +1,12 @@
 package com.gdblab.queryplan.logical.impl;
 
+import com.gdblab.queryplan.logical.LogicalOperator;
 import com.gdblab.queryplan.logical.LogicalPlanVisitor;
 
 public class LogicalOpEdgeJoin extends BinaryLogicalOp {
-    public LogicalOpEdgeJoin() {
-        super(, );
+
+    public LogicalOpEdgeJoin(final LogicalOperator leftChild, final LogicalOperator rightChild) {
+        super(leftChild, rightChild);
     }
 
     @Override

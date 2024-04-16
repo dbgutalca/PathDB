@@ -5,12 +5,14 @@ import com.gdblab.queryplan.logical.LogicalOperator;
 import com.gdblab.queryplan.logical.LogicalPlanVisitor;
 import com.gdblab.queryplan.logical.UnaryLogicalOperator;
 
+import java.util.Objects;
+
 public class LogicalOpSelection extends UnaryLogicalOp {
 
     protected Condition c;
 
     public LogicalOpSelection(final LogicalOperator child, final Condition c) {
-        this.child = child;
+        super(child);
         this.c = c;
     }
 
@@ -21,5 +23,19 @@ public class LogicalOpSelection extends UnaryLogicalOp {
 
     public Condition getCondition() {
         return c;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof LogicalOpSelection that) {
+            return Objects.equals(this.child, that.child) &&
+                    this.c.equals(that.c);
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return "SELECT<"+c+">("+child+")";
     }
 }
