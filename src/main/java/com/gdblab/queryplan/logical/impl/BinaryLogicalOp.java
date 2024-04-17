@@ -4,8 +4,13 @@ import com.gdblab.queryplan.logical.BinaryLogicalOperator;
 import com.gdblab.queryplan.logical.LogicalOperator;
 
 public abstract class BinaryLogicalOp implements BinaryLogicalOperator {
-    protected LogicalOperator leftChild;
-    protected LogicalOperator rightChild;
+    protected final LogicalOperator leftChild;
+    protected final LogicalOperator rightChild;
+
+    public BinaryLogicalOp(final LogicalOperator leftChild, final LogicalOperator rightChild) {
+        this.leftChild = leftChild;
+        this.rightChild = rightChild;
+    }
 
     @Override
     public LogicalOperator getLeftChild() {

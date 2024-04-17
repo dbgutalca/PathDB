@@ -71,6 +71,22 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
         stack.push(new PhysicalOpBFSAllPathsFromNode(logicalOpAllPathsStartingFromNode));
     }
 
+    @Override
+    public void visit(final LogicalOpRecursive logicalOpRecursive) {
+        logicalOpRecursive.getChild().acceptVisitor(this);
+        //TODO Link with Physical operator
+    }
+
+    @Override
+    public void visit(final LogicalOpAllNodes logicalOpAllNodes) {
+        //TODO Link with Physical operator
+    }
+
+    @Override
+    public void visit(final LogicalOpAllEdges logicalOpAllEdges) {
+        //TODO Link with Physical operator
+    }
+
     public PhysicalPlan getPhysicalPlan(){
         return stack::peek;
     }

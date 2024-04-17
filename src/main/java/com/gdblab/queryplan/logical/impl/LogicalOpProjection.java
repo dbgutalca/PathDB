@@ -8,7 +8,7 @@ public class LogicalOpProjection extends UnaryLogicalOp {
     protected int end;
 
     public LogicalOpProjection(final LogicalOperator child, final int start, final int end) {
-        this.child = child;
+        super(child);
         this.start = start;
         this.end = end;
     }
