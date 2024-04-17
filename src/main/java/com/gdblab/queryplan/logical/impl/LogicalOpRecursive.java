@@ -3,8 +3,6 @@ package com.gdblab.queryplan.logical.impl;
 import com.gdblab.queryplan.logical.LogicalOperator;
 import com.gdblab.queryplan.logical.LogicalPlanVisitor;
 
-import java.util.Objects;
-
 public class LogicalOpRecursive extends UnaryLogicalOp{
     public LogicalOpRecursive(final LogicalOperator child) {
         super(child);
@@ -17,8 +15,8 @@ public class LogicalOpRecursive extends UnaryLogicalOp{
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof LogicalOpSelection that) {
-            return Objects.equals(this.child, that.child);
+        if (obj instanceof LogicalOpRecursive that) {
+            return this.child.equals(that.child);
         }
         return false;
     }

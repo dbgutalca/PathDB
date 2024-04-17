@@ -3,10 +3,7 @@ package com.gdblab.parser.impl;
 import com.gdblab.algebra.condition.Label;
 import com.gdblab.parser.RPQExpressionVisitor;
 import com.gdblab.queryplan.logical.LogicalOperator;
-import com.gdblab.queryplan.logical.impl.LogicalOpNodeJoin;
-import com.gdblab.queryplan.logical.impl.LogicalOpRecursive;
-import com.gdblab.queryplan.logical.impl.LogicalOpSelection;
-import com.gdblab.queryplan.logical.impl.LogicalOpUnion;
+import com.gdblab.queryplan.logical.impl.*;
 
 import java.util.Stack;
 
@@ -39,8 +36,7 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
     @Override
     public void visit(final ZeroOrMoreExpression zeroOrMoreExpression) {
         zeroOrMoreExpression.getChild().acceptVisit(this);
-        // TODO: We need S1 to replace null
-        stack.push(new LogicalOpUnion(new LogicalOpRecursive(stack.pop()), null));
+        stack.push(new LogicalOpUnion(new LogicalOpRecursive(stack.pop()), new LogicalOpAllNodes()));
     }
 
     @Override
@@ -51,13 +47,13 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
 
     @Override
     public void visit(final ZeroOrOneExpression zeroOrOneExpression) {
-        //TODO WE NEED AN OPERATOR TO GET S_0 and S_1
+        zeroOrOneExpression.getChild().acceptVisit(this);
+        stack.push(new LogicalOpUnion(stack.pop(), new LogicalOpAllNodes()));
     }
 
     @Override
     public void visit(final LabelExpression labelExpression) {
-        // NEED A GENERIC ALL GRAPH PATHS TO FEED INTO THIS ONE, AND REPLACE THE null
-        stack.push(new LogicalOpSelection(null, new Label(labelExpression.getLabel(), 1)));
+        stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Label(labelExpression.getLabel(), 1)));
     }
 
     public LogicalOperator getRoot() {

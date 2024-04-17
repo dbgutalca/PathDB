@@ -77,6 +77,16 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
         //TODO Link with Physical operator
     }
 
+    @Override
+    public void visit(final LogicalOpAllNodes logicalOpAllNodes) {
+        //TODO Link with Physical operator
+    }
+
+    @Override
+    public void visit(final LogicalOpAllEdges logicalOpAllEdges) {
+        //TODO Link with Physical operator
+    }
+
     public PhysicalPlan getPhysicalPlan(){
         return stack::peek;
     }
