@@ -6,6 +6,7 @@
 package com.gdblab.schema;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -145,18 +146,27 @@ public class Path extends GraphObject{
         return SubPath(j, this.getNodeNumber()-1);
     }
     
-    public boolean equals (Path p2){
-        ArrayList<GraphObject> sequence1 = this.getSequence();
-        ArrayList<GraphObject> sequence2 = p2.getSequence();
-        
-        if (sequence1.size() != sequence2.size())
-            return false;
-        
-        for (int i = 0; i < sequence1.size(); i++) 
-            if(!sequence1.get(i).getId().equals(sequence2.get(i).getId()))
+    @Override
+    public boolean equals (Object obj){
+
+        if (obj instanceof Path) {
+
+            Path p2 = (Path) obj;
+
+            ArrayList<GraphObject> sequence1 = this.getSequence();
+            ArrayList<GraphObject> sequence2 = p2.getSequence();
+            
+            if (sequence1.size() != sequence2.size())
                 return false;
-        
-        return true;
+            
+            for (int i = 0; i < sequence1.size(); i++) 
+                if(!sequence1.get(i).getId().equals(sequence2.get(i).getId()))
+                    return false;
+            
+            return true;
+        }
+
+        return false;
     }
     
     public boolean isNodeLinkable(Path path2){
@@ -168,15 +178,6 @@ public class Path extends GraphObject{
         String node2_id = path2.First().getId();
         
         return graph.getEdge(node1_id, node2_id);
-    }
-    
-    public int lenght (){
-        return getEdgeSequence().size();
-    }
-    
-    @Override
-    public String toString() {
-        return "Path{" + "id=" + this.getId() + ", label=" + getLabel() + ", sequence=" + sequence + '}';
     }
     
 }
