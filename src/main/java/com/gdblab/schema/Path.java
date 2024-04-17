@@ -146,18 +146,27 @@ public class Path extends GraphObject{
         return SubPath(j, this.getNodeNumber()-1);
     }
     
-    public boolean equals (Path p2){
-        ArrayList<GraphObject> sequence1 = this.getSequence();
-        ArrayList<GraphObject> sequence2 = p2.getSequence();
-        
-        if (sequence1.size() != sequence2.size())
-            return false;
-        
-        for (int i = 0; i < sequence1.size(); i++) 
-            if(!sequence1.get(i).getId().equals(sequence2.get(i).getId()))
+    @Override
+    public boolean equals (Object obj){
+
+        if (obj instanceof Path) {
+
+            Path p2 = (Path) obj;
+
+            ArrayList<GraphObject> sequence1 = this.getSequence();
+            ArrayList<GraphObject> sequence2 = p2.getSequence();
+            
+            if (sequence1.size() != sequence2.size())
                 return false;
-        
-        return true;
+            
+            for (int i = 0; i < sequence1.size(); i++) 
+                if(!sequence1.get(i).getId().equals(sequence2.get(i).getId()))
+                    return false;
+            
+            return true;
+        }
+
+        return false;
     }
     
     public boolean isNodeLinkable(Path path2){
@@ -169,25 +178,6 @@ public class Path extends GraphObject{
         String node2_id = path2.First().getId();
         
         return graph.getEdge(node1_id, node2_id);
-    }
-    /**
-     * Check if a path is in a list of paths.
-     * 
-     * @param p - Path to check.
-     * @param list - List of paths.
-     * 
-     * @return true if the path is in the list, false otherwise.
-     * 
-     * @see Path
-     */
-    public boolean isInList(Path p, List<Path> list) {
-        Iterator<Path> i = list.iterator();
-        while (i.hasNext()) {
-            Path path = i.next();
-            if (path.equals(p))
-                return true;
-        }
-        return false;
     }
     
 }
