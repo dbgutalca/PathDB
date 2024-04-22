@@ -28,4 +28,6 @@ public interface LogicalPlanVisitor {
 
     void visit(final LogicalOpAllPathsStartingFromNode logicalOpAllPathsStartingFromNode);
 
+    void visit(final LogicalOpOneOrMore logicalOpOneOrMore);
+
 }
