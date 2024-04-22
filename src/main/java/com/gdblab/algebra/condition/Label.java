@@ -48,6 +48,17 @@ public class Label  extends Condition{
         this.label = label;
     }
 
-   
-    
+    @Override
+    public String toString() {
+        return "label("+label + "," + pos+")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Label that) {
+            return this.label.equals(that.label) &&
+                    this.pos == that.pos;
+        }
+        return false;
+    }
 }
