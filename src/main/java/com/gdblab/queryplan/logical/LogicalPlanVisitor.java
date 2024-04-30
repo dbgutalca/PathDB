@@ -32,7 +32,5 @@ public interface LogicalPlanVisitor {
     void visit(final LogicalOpAllNodes logicalOpAllNodes);
 
     void visit(final LogicalOpAllEdges logicalOpAllEdges);
-    
-    void visit(final LogicalOpOneOrMore logicalOpOneOrMore);
 
 }
