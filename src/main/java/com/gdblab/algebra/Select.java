@@ -6,7 +6,7 @@ package com.gdblab.algebra;
 
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.schema.Path;
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 
 /**

@@ -9,15 +9,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import com.gdblab.automata.RegexMatcher;
 import com.gdblab.database.Database;
 import com.gdblab.main.Main;
 import com.gdblab.schema.Edge;
-import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Node;
-import com.gdblab.schema.Path;
 
 public class DFSAutomata {
     private HashMap<String, Node> nodes;

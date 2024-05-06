@@ -5,18 +5,17 @@
  */
 package com.gdblab.schema;
 
+import com.gdblab.schema.impl.MemoryGraph;
+
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  *
  * @author ramhg
  */
-public class Path extends GraphObject{
+public class Path extends GraphObject {
     private ArrayList<GraphObject> sequence;
     
 
@@ -173,7 +172,7 @@ public class Path extends GraphObject{
         return Last().getId().equals(path2.First().getId());
     }
     
-    public Edge isEdgeLinkable(Path path2, Graph graph){
+    public Edge isEdgeLinkable(Path path2, MemoryGraph graph){
         String node1_id = Last().getId();
         String node2_id = path2.First().getId();
         

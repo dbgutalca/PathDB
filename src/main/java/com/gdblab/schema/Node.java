@@ -9,7 +9,7 @@ package com.gdblab.schema;
  *
  * @author ramhg
  */
-public class Node extends GraphObject{
+public class Node extends GraphObject {
     
     public Node(String id, String label) {
         super(id, label);

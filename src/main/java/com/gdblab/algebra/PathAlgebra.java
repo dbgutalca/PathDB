@@ -5,14 +5,12 @@
 package com.gdblab.algebra;
 
 import com.gdblab.schema.Edge;
-import com.gdblab.schema.Graph;
-import com.gdblab.schema.GraphObject;
+import com.gdblab.schema.impl.MemoryGraph;
 import com.gdblab.schema.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 import com.gdblab.main.Main;
 
@@ -22,8 +20,8 @@ import com.gdblab.main.Main;
  */
 public class PathAlgebra {
 
-    Graph graph;
-    public PathAlgebra(Graph graph) {
+    MemoryGraph graph;
+    public PathAlgebra(MemoryGraph graph) {
         this.graph = graph;
     }
     

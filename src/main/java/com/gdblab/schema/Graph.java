@@ -1,97 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.gdblab.schema;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Iterator;
 
-/**
- *
- * @author ramhg
- */
-public class Graph {
-    private String name;
-    private HashMap<String,Node> nodes;
-    private HashMap<String,Edge> edges;
-    private HashMap<String,Path> paths;
+public interface Graph {
+    /**
+     * Gets a node object in the graph with the given id. null if not present
+     */
+    public Node getNode(String id);
 
-    public Graph(String name) {
-        this.name = name;
-        this.nodes = new HashMap<>();
-        this.edges = new HashMap<>();
-        this.paths = new HashMap<>();
-    }
+    /**
+     * Gets an iterator that iterates through all the nodes in the graph
+     */
+    public Iterator<Node> getNodeIterator();
 
-    public String getName() {
-        return name;
-    }
+    /**
+     * Gets an iterator that iterates through all the edges in the graph
+     */
+    public Iterator<Edge> getEdgeIterator();
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    /**
+     * Gets an iterator that iterates through all the edges in the graph that have a given label
+     */
+    public Iterator<Edge> getEdgesByLabel(String label);
 
-    public Node getNode(String id) {
-        return (Node) nodes.get(id);
-    }
+    /**
+     * Gets all the neighbours of the node with the given id. Considers edges with any label
+     */
+    public Collection<Node> getNeighbours(String id);
 
-    public void setNode(String id, Node node) {
-        nodes.remove(id);
-        insertNode(id, node);
-    }
-    
-    public void insertNode(String id, Node node) {
-        nodes.put(id,node);
-    }
-    
-    public Edge getEdge(String id) {
-        return (Edge) edges.get(id);
-    }
-    
-     public Edge getEdge(String source_id, String target_id) {
-        for (GraphObject go : edges.values()){
-            Edge edge = (Edge)go;
-            if (edge.getSource().getId().equals(source_id) && edge.getTarget().getId().equals(target_id))
-                return edge;
-        }
-         
-        return null;
-    }
-
-    public void setEdge(String id, Edge edge) {
-        edges.remove(id);
-        insertEdge(id, edge);
-    }
-    
-    public void insertEdge(String id, Edge edge) {
-        edges.put(id,edge);
-    }
-    
-    public Path getPath(String id) {
-        return (Path) paths.get(id);
-    }
-    public LinkedList<Path> getPaths() {
-        return new LinkedList<>(paths.values());
-    }
-
-    public void setPath(String id, Path path) {
-        paths.remove(id);
-        insertPath(id, path);
-    }
-    
-    public void insertPath(String id, Path path) {
-        paths.put(id,path);
-    }
-
-    public HashMap<String,Node> getNodes(){
-        return nodes;
-    }
-
-    public HashMap<String,Edge> getEdges(){
-        return edges;
-    }
-    
+    /**
+     * Gets the neighbours of the node with the given id, if they are reachable through edges
+     * with the given label
+     */
+    public Collection<Node> getNeighbours(String id, String label);
 }

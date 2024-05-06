@@ -5,14 +5,9 @@
  */
 package com.gdblab.database;
 
-import com.gdblab.algebra.condition.Not;
-import com.gdblab.algebra.condition.First;
-import com.gdblab.algebra.Select;
 import com.gdblab.algebra.PathAlgebra;
-import com.gdblab.algebra.condition.Label;
-import com.gdblab.recursion.Recursion;
 import com.gdblab.schema.Edge;
-import com.gdblab.schema.Graph;
+import com.gdblab.schema.impl.MemoryGraph;
 import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
@@ -32,13 +27,13 @@ import java.util.LinkedList;
  */
 public class Database {
     
-    public final Graph graph;
+    public final MemoryGraph graph;
     private LinkedList<Path> pathsWithoutEdges;
     private final PathAlgebra algebra;
 
     public Database(String url) {
         
-        this.graph = new Graph("|---- Graph 1 ----|");
+        this.graph = new MemoryGraph("|---- Graph 1 ----|");
         this.pathsWithoutEdges = new LinkedList<>();
 
         generateDemoDatabase(this.graph, url);
@@ -87,7 +82,7 @@ public class Database {
          return this.pathsWithoutEdges;
     }
     
-    private void generateDemoDatabase(Graph graph, String url){
+    private void generateDemoDatabase(MemoryGraph graph, String url){
         ArrayList<String> lines = new ArrayList<>();
 
         try {
