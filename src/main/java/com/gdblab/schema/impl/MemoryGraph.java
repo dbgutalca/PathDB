@@ -39,7 +39,7 @@ public class MemoryGraph implements Graph {
     }
 
     @Override
-    public Iterator<Edge> getEdgesByLabel(String label) {
+    public Iterator<Edge> getEdgesByLabel(final String label) {
         return new Iterator<>() {
 
             Edge slot = null;
