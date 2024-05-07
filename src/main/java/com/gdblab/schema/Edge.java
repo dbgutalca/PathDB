@@ -9,7 +9,7 @@ package com.gdblab.schema;
  *
  * @author ramhg
  */
-public class Edge extends GraphObject{
+public class Edge extends GraphObject {
     private Node source;
     private Node target;
 

@@ -1,7 +1,5 @@
 package com.gdblab.queryplan.physical.impl;
 
-import com.gdblab.queryplan.logical.LogicalPlanVisitor;
-import com.gdblab.queryplan.logical.NullaryLogicalOperator;
 import com.gdblab.queryplan.logical.impl.LogicalOpAllPathsStartingFromNode;
 import com.gdblab.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;

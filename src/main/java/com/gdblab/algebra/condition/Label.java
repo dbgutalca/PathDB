@@ -4,7 +4,6 @@
  */
 package com.gdblab.algebra.condition;
 
-import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Path;
 
 /**

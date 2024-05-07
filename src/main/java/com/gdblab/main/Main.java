@@ -9,12 +9,10 @@ import com.gdblab.algorithms.BFS;
 import com.gdblab.algorithms.DFSAutomata;
 import com.gdblab.converter.Converter;
 import com.gdblab.database.Database;
-import com.gdblab.parser.RPQExpression;
 import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Path;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.util.ArrayList;
 
