@@ -24,7 +24,7 @@ public class MemoryGraph implements Graph {
     }
 
     @Override
-    public Node getNode(String id) {
+    public Node getNode(final String id) {
         return nodes.get(id);
     }
 
