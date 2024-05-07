@@ -33,7 +33,7 @@ public class Database {
 
     public Database(String url) {
         
-        this.graph = new MemoryGraph("|---- Graph 1 ----|");
+        this.graph = new MemoryGraph();
         this.pathsWithoutEdges = new LinkedList<>();
 
         generateDemoDatabase(this.graph, url);
@@ -120,15 +120,12 @@ public class Database {
             String target = parts[2];
             Edge edge = new Edge("e" + i, label, graph.getNode(source), graph.getNode(target));
             graph.insertEdge("e" + i, edge);
-            Path p = new Path(UUID.randomUUID().toString(), "path" + i);
-            p.insertEdge(edge);
-            graph.insertPath(p.getId(), p);
             i++;
         }
     }
    
     public Set<String> getUniqueNodes(ArrayList<String> lines){
-        Set<String> nodes = new HashSet<String>();
+        Set<String> nodes = new HashSet<>();
         for (String line : lines) {
             String[] parts = line.split(",");
             String source = parts[0];
