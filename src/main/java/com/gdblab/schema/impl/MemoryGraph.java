@@ -79,7 +79,7 @@ public class MemoryGraph implements Graph {
     }
 
     @Override
-    public Collection<Node> getNeighbours(String id, String label) {
+    public Collection<Node> getNeighbours(final String id, final String label) {
         final List<Node> neighbours = new ArrayList<>();
         for (Edge e : edges.values()) {
             if (e.getLabel().equals(label) && e.getSource().getId().equals(id))
