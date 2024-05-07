@@ -17,7 +17,7 @@ public interface PhysicalPlanVisitor {
 
     void visit(final PhysicalOpBinaryUnion physicalOpBinaryUnion);
 
-    void visit(final PhysicalOpRecursive physicalOpOneOrMore);
+    void visit(final PhysicalOpRecursive physicalOpRecursive);
 
     void visit(final PhysicalOperatorListWrapper phisicalOperatorListWrapper);
 }

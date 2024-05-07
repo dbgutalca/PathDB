@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.gdblab.algebra.PathAlgebra;
 import com.gdblab.queryplan.logical.impl.LogicalOpNodeJoin;
 import com.gdblab.queryplan.logical.impl.LogicalOpRecursive;
 import com.gdblab.queryplan.physical.PhysicalOperator;
@@ -27,12 +26,13 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
 
     private Integer counterFixPoint = 1;
 
-    public PhysicalOpRecursive(final PhysicalOperator child, final LogicalOpRecursive lop, final LogicalOpNodeJoin lon) {
+    public PhysicalOpRecursive(final PhysicalOperator child, final LogicalOpRecursive lop) {
         super(child);
         this.lop = lop;
-        this.lon = lon;
 
         this.loopChild = new LinkedList<Path>();
+
+        this.lon = new LogicalOpNodeJoin(null, null);
 
         join = new PhysicalOpNestedLoopNodeJoin(
             new PhysicalOperatorListWrapper(child),
@@ -44,7 +44,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
     }
 
     @Override
-    public void acceptVisitor(PhysicalPlanVisitor visitor) {
+    public void acceptVisitor(final PhysicalPlanVisitor visitor) {
         visitor.visit(this);
     }
 
@@ -66,8 +66,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
 
     protected Path getNextPath() {
         while (this.childIterator.hasNext()) {
-            Path path = this.childIterator.next();
-            return path;
+            return this.childIterator.next();
         }
 
         for ( ;; ) {
@@ -76,7 +75,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             }
 
             while (this.join.hasNext()) {
-                Path path = this.join.next();
+                final Path path = this.join.next();
                 if (path != null) {
                     this.loopChild.add(path);
                     return path;

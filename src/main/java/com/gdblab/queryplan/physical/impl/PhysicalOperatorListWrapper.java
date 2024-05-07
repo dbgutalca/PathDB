@@ -14,7 +14,7 @@ public class PhysicalOperatorListWrapper extends PhysicalOp {
     }
 
     @Override
-    public void acceptVisitor(PhysicalPlanVisitor visitor) {
+    public void acceptVisitor(final PhysicalPlanVisitor visitor) {
         visitor.visit(this);
     }
 
