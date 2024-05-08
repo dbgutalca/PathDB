@@ -34,4 +34,17 @@ public interface Graph {
      * with the given label
      */
     public Collection<Node> getNeighbours(String id, String label);
+
+    /**
+     * Insert a node object in the graph and return in. If a node with the same id already
+     * exists return null
+     */
+    public Node insertNode(Node node);
+
+    /**
+     * Insert an edge object in the graph and return it. If an edge with the same id already
+     * exists return null
+     */
+    public Edge insertEdge(Edge edge);
+
 }
