@@ -7,6 +7,7 @@ import com.gdblab.schema.*;
 public class AdjacentList implements Graph {
 
     private final HashMap<String, Node> nodes;
+
     private final LinkedList<LinkedList<Edge>> adjList;
 
     public AdjacentList() {
@@ -88,8 +89,45 @@ public class AdjacentList implements Graph {
         return neighbours;
     }
 
-    public void insertNode(String id, Node node) {
-        nodes.put(id,node);
+    @Override
+    public Node insertNode(Node node) {
+        if (!this.nodes.containsKey(node.getId())) {
+            this.nodes.put(node.getId(), node);
+            return node;
+        }
+        return null;
+    }
+
+    @Override
+    public Edge insertEdge(Edge edge) {
+        /*
+         * Check if the source and target nodes exist in the graph.
+         * If not, return null
+         *
+         * Note: Maybe if doesn't exist, insert the nodes in the graph and then add the edge.
+         */
+        if (getNode(edge.getSource().getId()) == null ||
+            getNode(edge.getTarget().getId()) == null) {
+            return null;
+        }
+
+        /*
+         * Search for the source node in the adjacency list.
+         */
+        for (LinkedList<Edge> edgeList : adjList) {
+            if (edgeList.getFirst().getSource().getId().equals(edge.getSource().getId())) {
+                edgeList.add(edge);
+                return edge;
+            }
+        }
+
+        /*
+         * If the source node is not found in the adjacency list, create a new list and add the edge.
+         */
+        LinkedList<Edge> edgeList = new LinkedList<>();
+        edgeList.add(edge);
+        adjList.add(edgeList);
+        return edge;
     }
     
 }
