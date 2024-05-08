@@ -74,5 +74,40 @@ public class CSRVPMin implements Graph{
         }
         return nodesTemp;    
     }
+
+    @Override
+    public Node insertNode(Node node) {
+        if (! nodes.containsKey(node.getId())){
+            nodes.put(node.getId(), node);
+            return node;
+        }
+        return null;
+        
+    }
+
+    @Override
+    public Edge insertEdge(Edge edge) {
+        if (!edges.containsKey(edge.getLabel())){
+            LinkedList<Edge> edgesByLabel = new LinkedList<>();
+            edges.put(edge.getLabel(), edgesByLabel);
+            edgesByLabel.add(edge);
+            return edge;
+        }
+        else{
+            LinkedList<Edge> edgesByLabel = edges.get(edge.getLabel());
+            boolean found = false;
+            for (Edge edge1 : edgesByLabel) 
+                if (edge1.getId().equals(edge.getId())){
+                    found = true;
+                    break;
+                }
+            if(!found){
+                edgesByLabel.add(edge);
+                return edge;
+            }
+            else
+                return null;
+        }
+    }
     
 }
