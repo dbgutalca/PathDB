@@ -88,6 +88,18 @@ public class MemoryGraph implements Graph {
         return neighbours;
     }
 
+    @Override
+    public Node insertNode(Node node) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'insertNode'");
+    }
+
+    @Override
+    public Edge insertEdge(Edge edge) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'insertEdge'");
+    }
+    
     public void setNode(String id, Node node) {
         nodes.remove(id);
         insertNode(id, node);
