@@ -13,14 +13,20 @@ import java.util.*;
  *
  * @author ramhg
  */
-public class MemoryGraph implements Graph {
+public final class MemoryGraph implements Graph {
 
+    private static MemoryGraph INSTANCE;
     private final HashMap<String, Node> nodes;
     private final HashMap<String, Edge> edges;
 
-    public MemoryGraph() {
+    private MemoryGraph() {
         this.nodes = new HashMap<>();
         this.edges = new HashMap<>();
+    }
+    
+    public static MemoryGraph getInstance() {
+        if (INSTANCE == null) INSTANCE = new MemoryGraph();
+        return INSTANCE;
     }
 
     @Override
@@ -90,14 +96,14 @@ public class MemoryGraph implements Graph {
 
     @Override
     public Node insertNode(Node node) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'insertNode'");
+        this.nodes.put(node.getId(), node);
+        return node;
     }
 
     @Override
     public Edge insertEdge(Edge edge) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'insertEdge'");
+        this.edges.put(edge.getId(), edge);
+        return edge;
     }
     
     public void setNode(String id, Node node) {
