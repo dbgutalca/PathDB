@@ -53,12 +53,14 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
             return p;
         }
         
-        while  (this.rightChild.hasNext() ) {
+        while (this.rightChild.hasNext() ) {
             this.nextRight = this.rightChild.next();
             
             if (!this.leftRows.contains(this.nextRight)) {
                 return this.nextRight;
             }
+            
+            return null;
         }
 
         return null;
