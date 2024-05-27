@@ -11,6 +11,7 @@ import com.gdblab.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Path;
+import com.gdblab.schema.impl.MemoryGraph;
 
 /**
  *
@@ -25,7 +26,7 @@ public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
 
     public PhysicalOpAllEdges(LogicalOpAllEdges lop) {
         this.lop = lop;
-        this.edges = this.lop.getGraph().getEdgeIterator();
+        this.edges = MemoryGraph.getInstance().getEdgeIterator();
     }
 
     @Override
@@ -38,8 +39,9 @@ public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
         if (slot != null) return true;
         while (edges.hasNext()){
             Edge edge = edges.next();
-            Path p = new Path(edge.getId());
-            p.insertEdge(edge);
+            // For now the id its the same of the edge
+            // Maybe change for a uuid or something else
+            Path p = new Path(edge.getId(), edge);
             slot = p;
             return true;
         }
