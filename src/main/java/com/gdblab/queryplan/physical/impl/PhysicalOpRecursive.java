@@ -68,8 +68,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
 
     protected Path getNextPath() {
         while (this.childIterator.hasNext()) {
-            final Path p = this.childIterator.next();
-            return p;
+            return this.childIterator.next();
         }
 
         for ( ;; ) {
