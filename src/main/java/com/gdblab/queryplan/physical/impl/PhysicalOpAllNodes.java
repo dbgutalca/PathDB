@@ -11,6 +11,7 @@ import com.gdblab.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
+import com.gdblab.schema.impl.MemoryGraph;
 
 /**
  *
@@ -25,7 +26,7 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
 
     public PhysicalOpAllNodes(LogicalOpAllNodes lop) {
         this.lop = lop;
-        this.nodes = this.lop.getGraph().getNodeIterator();
+        this.nodes = MemoryGraph.getInstance().getNodeIterator();
     }
     
     @Override
@@ -38,8 +39,7 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
         if (slot != null) return true;
         while (nodes.hasNext()){
             Node node = nodes.next();
-            Path p = new Path(node.getId());
-            p.insertNode(node);
+            Path p = new Path(node.getId(), node);
             slot = p;
             return true;
         }
