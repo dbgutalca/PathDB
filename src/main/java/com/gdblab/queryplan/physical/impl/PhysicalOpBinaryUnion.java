@@ -48,7 +48,7 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
 
     protected Path moveToNextPathOrNull() {
         while (this.leftChild.hasNext()) {
-            Path p = this.leftChild.next();
+            final Path p = this.leftChild.next();
             this.leftRows.add(p);
             return p;
         }
