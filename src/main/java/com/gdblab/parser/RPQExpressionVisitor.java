@@ -12,5 +12,6 @@ public interface RPQExpressionVisitor {
     void visit(final ZeroOrOneExpression zeroOrOneExpression);
 
     void visit(final LabelExpression labelExpression);
+    void visit(final NegatedLabelExpression negatedLabelExpression);
 
 }
