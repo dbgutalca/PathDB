@@ -17,8 +17,8 @@ public class CSR implements Graph {
     }
 
     @Override
-    public Node getNode(String id) {
-        for (Node node : nodes) {
+    public Node getNode(final String id) {
+        for (final Node node : nodes) {
             if (node.getId().equals(id)) {
                 return node;
             }
@@ -68,17 +68,17 @@ public class CSR implements Graph {
     }
 
     @Override
-    public Collection<Node> getNeighbours(String id) {
-        ArrayList<Node> neighbours = new ArrayList<>();
+    public Collection<Node> getNeighbours(final String id) {
+        final ArrayList<Node> neighbours = new ArrayList<>();
 
-        int index = nodes.indexOf(getNode(id));
+        final int index = nodes.indexOf(getNode(id));
 
         if ( index == -1 ) {
             return neighbours;
         }
 
-        int start = offsets.get(index);
-        int end = (index + 1 < offsets.size()) ? offsets.get(index + 1) : edges.size();
+        final int start = offsets.get(index);
+        final int end = (index + 1 < offsets.size()) ? offsets.get(index + 1) : edges.size();
 
         for (int i = start; i < end; i++) {
             neighbours.add(edges.get(i).getTarget());
@@ -88,17 +88,17 @@ public class CSR implements Graph {
     }
 
     @Override
-    public Collection<Node> getNeighbours(String id, String label) {
-        ArrayList<Node> neighbours = new ArrayList<>();
+    public Collection<Node> getNeighbours(final String id, final String label) {
+        final ArrayList<Node> neighbours = new ArrayList<>();
         
-        int index = nodes.indexOf(getNode(id));
+        final int index = nodes.indexOf(getNode(id));
 
         if ( index == -1 ) {
             return neighbours;
         }
 
-        int start = offsets.get(index);
-        int end = (index + 1 < offsets.size()) ? offsets.get(index + 1) : edges.size();
+        final int start = offsets.get(index);
+        final int end = (index + 1 < offsets.size()) ? offsets.get(index + 1) : edges.size();
 
         for (int i = start; i < end; i++) {
             if (edges.get(i).getLabel().equals(label)) {
@@ -110,7 +110,7 @@ public class CSR implements Graph {
     }
 
     @Override
-    public Node insertNode(Node node) {
+    public Node insertNode(final Node node) {
         if (getNode(node.getId()) != null) {
             return null;
         }
@@ -122,7 +122,7 @@ public class CSR implements Graph {
     }
 
     @Override
-    public Edge insertEdge(Edge edge) {
+    public Edge insertEdge(final Edge edge) {
         /*
          * Check if the source and target nodes exist in the graph.
          * If not, return null
@@ -137,12 +137,12 @@ public class CSR implements Graph {
         /*
          * Get the index of the source node in the nodes list.
          */
-        int index = nodes.indexOf(edge.getSource());
+        final int index = nodes.indexOf(edge.getSource());
 
         /*
          * Get the offset of the source node in the offsets list.
          */
-        int offset = offsets.get(index);
+        final int offset = offsets.get(index);
 
         /*
          * Add the edge to the edges list.
