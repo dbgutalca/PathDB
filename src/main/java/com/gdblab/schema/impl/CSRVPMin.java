@@ -41,22 +41,42 @@ public class CSRVPMin implements Graph{
 
     @Override
     public Iterator<Edge> getEdgeIterator() {
-        LinkedList<Edge> temp = new LinkedList<>();
-        for (Iterator<LinkedList<Edge>> iterator = edges.values().iterator(); iterator.hasNext();) 
-            temp.addAll(iterator.next());
-        return temp.iterator();
+        return new Iterator<Edge>() {
+
+            Edge slot = null;
+
+            LinkedList<Edge> edgesTemp = edges.values().stream().reduce(new LinkedList<Edge>(), (a, b) -> {
+                a.addAll(b);
+                return a;
+            });
+            
+            @Override
+            public boolean hasNext() {
+                if (edgesTemp.isEmpty()) return false;
+
+                slot = edgesTemp.removeFirst();
+                return true;
+            }
+
+            @Override
+            public Edge next() {
+                Edge e = slot;
+                slot = null;
+                return e;
+            }
+        };
     }
 
     @Override
-    public Iterator<Edge> getEdgesByLabel(String label) {
+    public Iterator<Edge> getEdgesByLabel(final String label) {
         return edges.get(label).iterator();
     }
 
     @Override
-    public Collection<Node> getNeighbours(String id) {
-        HashSet<Node> nodesTemp = new HashSet<>();
-        for (Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
-            Edge edge = edgeIt.next(); 
+    public Collection<Node> getNeighbours(final String id) {
+        final HashSet<Node> nodesTemp = new HashSet<>();
+        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
+            final Edge edge = edgeIt.next(); 
             if (edge.getTarget().getId().equals(id))
                 nodesTemp.add(edge.getTarget());
         }
@@ -65,10 +85,10 @@ public class CSRVPMin implements Graph{
     
 
     @Override
-    public Collection<Node> getNeighbours(String id, String label) {
-        HashSet<Node> nodesTemp = new HashSet<>();
-        for (Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
-            Edge edge = edgeIt.next(); 
+    public Collection<Node> getNeighbours(final String id, final String label) {
+        final HashSet<Node> nodesTemp = new HashSet<>();
+        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
+            final Edge edge = edgeIt.next(); 
             if (edge.getSource().getId().equals(id) && edge.getLabel().equals(label))
                 nodesTemp.add(edge.getTarget());
         }
@@ -76,7 +96,7 @@ public class CSRVPMin implements Graph{
     }
 
     @Override
-    public Node insertNode(Node node) {
+    public Node insertNode(final Node node) {
         if (! nodes.containsKey(node.getId())){
             nodes.put(node.getId(), node);
             return node;
@@ -86,17 +106,17 @@ public class CSRVPMin implements Graph{
     }
 
     @Override
-    public Edge insertEdge(Edge edge) {
+    public Edge insertEdge(final Edge edge) {
         if (!edges.containsKey(edge.getLabel())){
-            LinkedList<Edge> edgesByLabel = new LinkedList<>();
+            final LinkedList<Edge> edgesByLabel = new LinkedList<>();
             edges.put(edge.getLabel(), edgesByLabel);
             edgesByLabel.add(edge);
             return edge;
         }
         else{
-            LinkedList<Edge> edgesByLabel = edges.get(edge.getLabel());
+            final LinkedList<Edge> edgesByLabel = edges.get(edge.getLabel());
             boolean found = false;
-            for (Edge edge1 : edgesByLabel) 
+            for (final Edge edge1 : edgesByLabel) 
                 if (edge1.getId().equals(edge.getId())){
                     found = true;
                     break;
