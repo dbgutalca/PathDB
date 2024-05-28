@@ -54,7 +54,10 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
 
     @Override
     public void visit(final LabelExpression labelExpression) {
-        stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Label(labelExpression.getLabel(), 1)));
+        if (labelExpression.getLabel().startsWith("!")) 
+            stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Not(new Label( labelExpression.getLabel().substring(1), 1))));
+        else
+            stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Label( labelExpression.getLabel(), 1)));
     }
     
     @Override
