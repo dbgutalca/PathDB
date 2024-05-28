@@ -31,16 +31,13 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
         
         originalChild = Utils.iterToList(child);
         
-        LinkedList<Path> leftChilds = new LinkedList<>(originalChild);
-        LinkedList<Path> rightChilds = new LinkedList<>(originalChild);
-        
         childIterator = originalChild.iterator();
         
         this.loopChild = new LinkedList<>();
 
         this.join = new PhysicalOpNestedLoopNodeJoin(
-            new PhysicalOperatorListWrapper(leftChilds.iterator()),
-            new PhysicalOperatorListWrapper(rightChilds.iterator()),
+            new PhysicalOperatorListWrapper(originalChild.iterator()),
+            new PhysicalOperatorListWrapper(originalChild.iterator()),
             null);
 
     }
