@@ -4,15 +4,15 @@
  */
 package com.gdblab.schema.impl;
 
-import com.gdblab.schema.Edge;
-import com.gdblab.schema.Graph;
-import com.gdblab.schema.Node;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import com.gdblab.schema.Edge;
+import com.gdblab.schema.Graph;
+import com.gdblab.schema.Node;
 
 /**
  *
@@ -45,17 +45,31 @@ public class CSRVPMin implements Graph{
 
             Edge slot = null;
 
-            LinkedList<Edge> edgesTemp = edges.values().stream().reduce(new LinkedList<Edge>(), (a, b) -> {
-                a.addAll(b);
-                return a;
-            });
+            Iterator<LinkedList<Edge>> valuesIt = edges.values().iterator();
+            Iterator<Edge> currentIt = null;
             
             @Override
             public boolean hasNext() {
-                if (edgesTemp.isEmpty()) return false;
+                for(;;){
 
-                slot = edgesTemp.removeFirst();
-                return true;
+                    if (currentIt == null) {
+
+                        if (valuesIt.hasNext()) {
+                            currentIt = valuesIt.next().iterator();
+                        }
+
+                        else {
+                            return false;
+                        }
+                    }
+    
+                    if (currentIt.hasNext()) {
+                        slot = currentIt.next();
+                        return true;
+                    }
+    
+                    else currentIt = null;
+                }
             }
 
             @Override
