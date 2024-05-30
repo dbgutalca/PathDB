@@ -30,7 +30,7 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
     }
     
     @Override
-    public void acceptVisitor(PhysicalPlanVisitor visitor) {
+    public void acceptVisitor(final PhysicalPlanVisitor visitor) {
         visitor.visit(this);
     }
 
