@@ -2,7 +2,9 @@ grammar RPQGrammar;
 
 query: expression EOF;
 expression: label # edge
-    | '(' expression ')' # parenthesis
+        | '!' label # negatedEdge
+        | label '^' # reverseEdge
+        | '(' expression ')' # parenthesis
 	| expression '?' # optional
 	| expression '+' # plus
 	| expression '*' # star
@@ -10,7 +12,7 @@ expression: label # edge
 	| expression '|' expression # alternative
     ;
 
-label: '!'? LETTER ( LETTER | DIGIT )*;
+label: LETTER ( LETTER | DIGIT )*;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 WS: [ \t\r\n]+ -> skip;

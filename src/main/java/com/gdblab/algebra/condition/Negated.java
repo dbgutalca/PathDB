@@ -10,11 +10,11 @@ import com.gdblab.schema.Path;
  *
  * @author ramhg
  */
-public class Not extends Condition{
+public class Negated extends Condition{
     
     Condition c1;
 
-    public Not(Condition c1) {
+    public Negated(Condition c1) {
         this.c1 = c1;
     }
 

@@ -22,6 +22,10 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
         stack.push(new LabelExpression(ctx.getText()));
     }
 
+    @Override public void exitNegatedEdge(final RPQGrammarParser.NegatedEdgeContext ctx) {
+        stack.push(new NegatedLabelExpression(ctx.getText().substring(1)));
+    }
+    
     @Override public void exitConcatenation(final RPQGrammarParser.ConcatenationContext ctx) {
         final RPQExpression right = stack.pop();
         final RPQExpression left = stack.pop();
