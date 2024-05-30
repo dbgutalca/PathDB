@@ -24,7 +24,7 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
 
     private Path slot;
 
-    public PhysicalOpAllNodes(LogicalOpAllNodes lop) {
+    public PhysicalOpAllNodes(final LogicalOpAllNodes lop) {
         this.lop = lop;
         this.nodes = MemoryGraph.getInstance().getNodeIterator();
     }
