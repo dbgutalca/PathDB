@@ -33,7 +33,7 @@ public class Database {
 
     public Database(String url) {
         
-        this.graph = new MemoryGraph();
+        this.graph = MemoryGraph.getInstance();
         this.pathsWithoutEdges = new LinkedList<>();
 
         generateDemoDatabase(this.graph, url);

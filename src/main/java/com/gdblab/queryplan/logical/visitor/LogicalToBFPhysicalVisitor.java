@@ -4,8 +4,12 @@ import com.gdblab.queryplan.logical.LogicalPlanVisitor;
 import com.gdblab.queryplan.logical.impl.*;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlan;
+import com.gdblab.queryplan.physical.impl.PhysicalOpAllEdges;
+import com.gdblab.queryplan.physical.impl.PhysicalOpAllNodes;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
+import com.gdblab.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.queryplan.physical.impl.PhysicalOpNestedLoopNodeJoin;
+import com.gdblab.queryplan.physical.impl.PhysicalOpRecursive;
 import com.gdblab.queryplan.physical.impl.PhysicalOpSequentialScan;
 
 import java.util.Stack;
@@ -30,8 +34,8 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     @Override
     public void visit(final LogicalOpNodeJoin logicalOpNodeJoin) {
         //we visit both children, to get the two *push* operations, and thus we can do two *pop*s in the end
-        logicalOpNodeJoin.getLeftChild().acceptVisitor(this);
         logicalOpNodeJoin.getRightChild().acceptVisitor(this);
+        logicalOpNodeJoin.getLeftChild().acceptVisitor(this);
         stack.push(new PhysicalOpNestedLoopNodeJoin(stack.pop(), stack.pop(), logicalOpNodeJoin));
     }
 
@@ -52,7 +56,9 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
 
     @Override
     public void visit(final LogicalOpUnion logicalOpUnion) {
-
+        logicalOpUnion.getRightChild().acceptVisitor(this);
+        logicalOpUnion.getLeftChild().acceptVisitor(this);
+        stack.push(new PhysicalOpBinaryUnion(stack.pop(), stack.pop(), logicalOpUnion));
     }
 
     @Override
@@ -75,21 +81,23 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     public void visit(final LogicalOpRecursive logicalOpRecursive) {
         logicalOpRecursive.getChild().acceptVisitor(this);
         //TODO Link with Physical operator
+        stack.push(new PhysicalOpRecursive(stack.pop(), logicalOpRecursive));
     }
 
     @Override
     public void visit(final LogicalOpAllNodes logicalOpAllNodes) {
-        //TODO Link with Physical operator
+        //since nullary operators don't have children (are leaves of the plan tree), we just push to the stack
+        stack.push(new PhysicalOpAllNodes(logicalOpAllNodes));
     }
 
     @Override
     public void visit(final LogicalOpAllEdges logicalOpAllEdges) {
-        //TODO Link with Physical operator
+        //since nullary operators don't have children (are leaves of the plan tree), we just push to the stack
+        stack.push(new PhysicalOpAllEdges(logicalOpAllEdges));
     }
 
-    public PhysicalPlan getPhysicalPlan(){
+    public PhysicalPlan getPhysicalPlan() {
         return stack::peek;
     }
-
 
 }
