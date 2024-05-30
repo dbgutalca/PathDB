@@ -1,7 +1,7 @@
 package com.gdblab.parser.impl;
 
 import com.gdblab.algebra.condition.Label;
-import com.gdblab.algebra.condition.Not;
+import com.gdblab.algebra.condition.Negated;
 import com.gdblab.parser.RPQExpressionVisitor;
 import com.gdblab.queryplan.logical.LogicalOperator;
 import com.gdblab.queryplan.logical.impl.*;
@@ -59,7 +59,7 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
     
     @Override
     public void visit(final NegatedLabelExpression negatedLabelExpression) {
-        stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Not(new Label(negatedLabelExpression.getLabel(), 1))));
+        stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Negated(new Label(negatedLabelExpression.getLabel(), 1))));
     }
 
     public LogicalOperator getRoot() {
