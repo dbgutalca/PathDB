@@ -28,6 +28,12 @@ public class Path extends GraphObject {
         super(id);
         this.sequence = new ArrayList<>();
     }
+    
+    public Path(final String id, final Node node) {
+        super(id);
+        this.sequence = new ArrayList<>();
+        this.insertNode(node);
+    }
 
     public ArrayList<GraphObject> getSequence() {
         return sequence;

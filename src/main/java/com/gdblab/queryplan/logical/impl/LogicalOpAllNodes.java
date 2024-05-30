@@ -4,7 +4,7 @@ import com.gdblab.queryplan.logical.LogicalPlanVisitor;
 import com.gdblab.queryplan.logical.NullaryLogicalOperator;
 
 public class LogicalOpAllNodes implements NullaryLogicalOperator {
-
+    
     @Override
     public void acceptVisitor(final LogicalPlanVisitor visitor) {
         visitor.visit(this);
