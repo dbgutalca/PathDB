@@ -12,6 +12,7 @@ import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Path;
 import com.gdblab.schema.impl.MemoryGraph;
+import java.util.UUID;
 
 /**
  *
@@ -39,9 +40,7 @@ public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
         if (slot != null) return true;
         while (edges.hasNext()){
             Edge edge = edges.next();
-            // For now the id its the same of the edge
-            // Maybe change for a uuid or something else
-            Path p = new Path(edge.getId(), edge);
+            Path p = new Path(( UUID.randomUUID().toString()), edge);
             slot = p;
             return true;
         }
