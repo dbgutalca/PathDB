@@ -38,8 +38,8 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
     public boolean hasNext() {
         if (slot != null) return true;
         while (nodes.hasNext()){
-            Node node = nodes.next();
-            Path p = new Path(node.getId(), node);
+            final Node node = nodes.next();
+            final Path p = new Path(node.getId(), node);
             slot = p;
             return true;
         }
