@@ -14,33 +14,32 @@ import com.gdblab.schema.Path;
 public class PhysicalOpRecursive extends UnaryPhysicalOp {
 
     protected final LogicalOpRecursive lop;
-    protected final LogicalOpNodeJoin lon;
     protected Path slot = null;
 
     protected final List<Path> originalChild;
-    private List<Path> loopChild;
+    private final List<Path> loopChild;
 
     private PhysicalOpNestedLoopNodeJoin join;
 
-    private Iterator<Path> childIterator;
+    private final Iterator<Path> childIterator;
 
     private Integer counterFixPoint = 1;
 
     public PhysicalOpRecursive(final PhysicalOperator child, final LogicalOpRecursive lop) {
         super(child);
         this.lop = lop;
-
-        this.loopChild = new LinkedList<Path>();
-
-        this.lon = new LogicalOpNodeJoin(null, null);
-
-        join = new PhysicalOpNestedLoopNodeJoin(
-            new PhysicalOperatorListWrapper(child),
-            new PhysicalOperatorListWrapper(child),
-            lon);
-
+        
         originalChild = Utils.iterToList(child);
+        
         childIterator = originalChild.iterator();
+        
+        this.loopChild = new LinkedList<>();
+
+        this.join = new PhysicalOpNestedLoopNodeJoin(
+            new PhysicalOperatorListWrapper(originalChild.iterator()),
+            new PhysicalOperatorListWrapper(originalChild.iterator()),
+            null);
+
     }
 
     @Override
@@ -73,7 +72,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             if (this.counterFixPoint >= 3) {
                 return null;
             }
-
+            
             while (this.join.hasNext()) {
                 final Path path = this.join.next();
                 if (path != null) {
@@ -81,12 +80,12 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
                     return path;
                 }
             }
-
+            
             this.counterFixPoint++;
             this.join = new PhysicalOpNestedLoopNodeJoin(
                 new PhysicalOperatorListWrapper(this.loopChild.iterator()), 
                 new PhysicalOperatorListWrapper(this.originalChild.iterator()), 
-                lon);
+                null);
             this.loopChild.clear();
         }
     }

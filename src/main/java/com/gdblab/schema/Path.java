@@ -35,6 +35,12 @@ public class Path extends GraphObject {
         this.sequence = new ArrayList<>();
         this.insertEdge(edge);
     }
+    
+    public Path(final String id, final Node node) {
+        super(id);
+        this.sequence = new ArrayList<>();
+        this.insertNode(node);
+    }
 
     public Path(final String id, final List<Edge> edges) {
         super(id);
