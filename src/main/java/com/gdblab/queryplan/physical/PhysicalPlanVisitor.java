@@ -1,5 +1,6 @@
 package com.gdblab.queryplan.physical;
 
+import com.gdblab.queryplan.physical.impl.PhysicalOpAllEdges;
 import com.gdblab.queryplan.physical.impl.PhysicalOpAllNodes;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBinaryUnion;
@@ -20,8 +21,9 @@ public interface PhysicalPlanVisitor {
 
     void visit(final PhysicalOpRecursive physicalOpRecursive);
 
-    void visit(final PhysicalOperatorListWrapper phisicalOperatorListWrapper);
-
+    void visit(final PhysicalOperatorListWrapper physicalOperatorListWrapper);
+    
+    void visit(final PhysicalOpAllEdges physicalOperatorAllEdges);
+    
     void visit(final PhysicalOpAllNodes physicalOperatorAllNodes);
-
 }
