@@ -22,7 +22,7 @@ public class First  extends Condition{
     @Override
     public boolean eval(Path p) {
         if(p != null)
-            return p.First().getId().equals(this.getId());
+            return p.first().getId().equals(this.getId());
         return false;
     }
 

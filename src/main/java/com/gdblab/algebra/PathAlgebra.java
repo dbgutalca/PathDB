@@ -51,8 +51,8 @@ public class PathAlgebra {
             }
  
             join_path = new Path(UUID.randomUUID().toString());
-            if(pathA.getNodeNumber() == 1 && pathB.getNodeNumber() == 1){
-                join_path.insertNode(pathA.First());
+            if(pathA.getNodesAmount()== 1 && pathB.getNodesAmount()== 1){
+                join_path.insertNode(pathA.first());
             }
             else {
                 for (Edge ed : pathA.getEdgeSequence())
@@ -166,8 +166,8 @@ public class PathAlgebra {
     public ArrayList<Path> LeftSubPaths (ArrayList<Path> paths){
         ArrayList<Path> left_sub_paths = new ArrayList<>();
         for (Path path : paths){
-            for (int i = 0; i < path.getNodeNumber(); i++) {
-                Path lsp = path.LeftSubPath(i);
+            for (int i = 0; i < path.getNodesAmount(); i++) {
+                Path lsp = path.leftSubPath(i);
                 boolean contains = false;
                 for (Path elsp : left_sub_paths) 
                     if(lsp.equals(elsp))
@@ -182,8 +182,8 @@ public class PathAlgebra {
     public ArrayList<Path> RightSubPaths (ArrayList<Path> paths){
         ArrayList<Path> right_sub_paths = new ArrayList<>();
         for (Path path : paths){
-            for (int i = 0; i < path.getNodeNumber(); i++) {
-                Path rsp = path.RightSubPath(i);
+            for (int i = 0; i < path.getNodesAmount(); i++) {
+                Path rsp = path.rightSubPath(i);
                 boolean contains = false;
                 for (Path elsp : right_sub_paths) 
                     if(rsp.equals(elsp))
