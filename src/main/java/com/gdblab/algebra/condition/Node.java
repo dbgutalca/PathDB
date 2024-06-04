@@ -23,7 +23,7 @@ public class Node  extends Condition{
 
     @Override
     public boolean eval(Path p) {
-        return p.GetNodeX(this.getPos()).getId().equals(this.getId());
+        return p.getNodeAt(this.getPos()).getId().equals(this.getId());
     }
 
     public int getPos() {

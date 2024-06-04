@@ -21,10 +21,9 @@ public interface PhysicalPlanVisitor {
 
     void visit(final PhysicalOpRecursive physicalOpRecursive);
 
-    void visit(final PhysicalOperatorListWrapper phisicalOperatorListWrapper);
+    void visit(final PhysicalOperatorListWrapper physicalOperatorListWrapper);
     
     void visit(final PhysicalOpAllEdges physicalOperatorAllEdges);
     
     void visit(final PhysicalOpAllNodes physicalOperatorAllNodes);
-    
 }

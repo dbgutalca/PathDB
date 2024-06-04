@@ -21,7 +21,7 @@ public class Last  extends Condition{
 
     @Override
     public boolean eval(Path p) {
-        return p.Last().getId().equals(this.getId());
+        return p.last().getId().equals(this.getId());
     }
 
     public String getId() {

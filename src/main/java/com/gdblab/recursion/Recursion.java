@@ -87,11 +87,11 @@ public class Recursion {
             if(!reached_paths.contains(rs)){
                 boolean new_path = true;
                 for (Path rp: reached_paths){
-                    if(rs.getId() != rp.getId() && rs.First() == rp.First() &&  rs.Last() == rp.Last() && rp.lenght() <= rs.lenght()){
+                    if(rs.getId() != rp.getId() && rs.first() == rp.first() &&  rs.last() == rp.last() && rp.lenght() <= rs.lenght()){
                         results_clon.remove(rs);
                         new_path = false;
                     }
-                    else if (rs.getId() != rp.getId() && rs.First() == rp.First() &&  rs.Last() == rp.Last() && rp.lenght() > rs.lenght()){
+                    else if (rs.getId() != rp.getId() && rs.first() == rp.first() &&  rs.last() == rp.last() && rp.lenght() > rs.lenght()){
                         reached_paths_clon.add(rs);
                         reached_paths_clon.remove(rp);
                         new_path = false;
