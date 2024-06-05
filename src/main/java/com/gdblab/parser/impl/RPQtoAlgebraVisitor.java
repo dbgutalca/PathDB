@@ -61,6 +61,11 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
     public void visit(final NegatedLabelExpression negatedLabelExpression) {
         stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Negated(new Label(negatedLabelExpression.getLabel(), 1))));
     }
+    
+    @Override
+    public void visit(final ReverseLabelExpression reverseLabelExpression) {
+        stack.push(new LogicalOpReverse(new LogicalOpSelection(new LogicalOpAllEdges(), new Label( reverseLabelExpression.getLabel(), 1))));
+    }
 
     public LogicalOperator getRoot() {
         return stack.pop();
