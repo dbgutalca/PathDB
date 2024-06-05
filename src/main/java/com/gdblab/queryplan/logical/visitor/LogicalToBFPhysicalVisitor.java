@@ -10,6 +10,7 @@ import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.queryplan.physical.impl.PhysicalOpNestedLoopNodeJoin;
 import com.gdblab.queryplan.physical.impl.PhysicalOpRecursive;
+import com.gdblab.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.queryplan.physical.impl.PhysicalOpSequentialScan;
 
 import java.util.Stack;
@@ -94,6 +95,12 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     public void visit(final LogicalOpAllEdges logicalOpAllEdges) {
         //since nullary operators don't have children (are leaves of the plan tree), we just push to the stack
         stack.push(new PhysicalOpAllEdges(logicalOpAllEdges));
+    }
+
+    @Override
+    public void visit(final LogicalOpReverse logicalOpReverse) {
+        logicalOpReverse.getChild().acceptVisitor(this);
+        stack.push(new PhysicalOpReverse(stack.pop(), logicalOpReverse));
     }
 
     public PhysicalPlan getPhysicalPlan() {

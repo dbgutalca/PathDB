@@ -6,6 +6,7 @@ import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.queryplan.physical.impl.PhysicalOpNestedLoopNodeJoin;
 import com.gdblab.queryplan.physical.impl.PhysicalOpRecursive;
+import com.gdblab.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.queryplan.physical.impl.PhysicalOpSequentialScan;
 import com.gdblab.queryplan.physical.impl.PhysicalOperatorListWrapper;
 
@@ -26,4 +27,6 @@ public interface PhysicalPlanVisitor {
     void visit(final PhysicalOpAllEdges physicalOperatorAllEdges);
     
     void visit(final PhysicalOpAllNodes physicalOperatorAllNodes);
+
+    void visit(final PhysicalOpReverse physicalOpReverse);
 }
