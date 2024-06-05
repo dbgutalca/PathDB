@@ -13,5 +13,6 @@ public interface RPQExpressionVisitor {
 
     void visit(final LabelExpression labelExpression);
     void visit(final NegatedLabelExpression negatedLabelExpression);
+    void visit(final ReverseLabelExpression reverseLabelExpression);
 
 }
