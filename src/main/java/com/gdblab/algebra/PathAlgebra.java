@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.UUID;
 import com.gdblab.main.Main;
+import com.gdblab.schema.GraphObject;
 
 /**
  *
@@ -55,11 +56,8 @@ public class PathAlgebra {
                 join_path.insertNode(pathA.first());
             }
             else {
-                for (Edge ed : pathA.getEdgeSequence())
-                    join_path.insertEdge(ed);
-                for (Edge ed : pathB.getEdgeSequence())
-
-                    join_path.insertEdge(ed);
+                join_path.setSequence(pathA.getSequence());
+                join_path.appendSequence(pathB.getSequence().subList(1, pathB.getSequence().size()));
             }
         
             return join_path;
