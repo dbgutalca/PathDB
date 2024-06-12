@@ -6,12 +6,12 @@ package com.gdblab.queryplan.physical.impl;
 
 import java.util.Iterator;
 
+import com.gdblab.execution.Context;
 import com.gdblab.queryplan.logical.impl.LogicalOpAllEdges;
 import com.gdblab.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Path;
-import com.gdblab.schema.impl.MemoryGraph;
 import java.util.UUID;
 
 /**
@@ -27,7 +27,7 @@ public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
 
     public PhysicalOpAllEdges(LogicalOpAllEdges lop) {
         this.lop = lop;
-        this.edges = MemoryGraph.getInstance().getEdgeIterator();
+        this.edges = Context.getInstance().getGraph().getEdgeIterator();
     }
 
     @Override

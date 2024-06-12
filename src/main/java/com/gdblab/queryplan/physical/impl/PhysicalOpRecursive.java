@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.gdblab.execution.Context;
 import com.gdblab.queryplan.logical.impl.LogicalOpNodeJoin;
 import com.gdblab.queryplan.logical.impl.LogicalOpRecursive;
 import com.gdblab.queryplan.physical.PhysicalOperator;
@@ -69,7 +70,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
         }
 
         for ( ;; ) {
-            if (this.counterFixPoint >= 3) {
+            if (this.counterFixPoint >= Context.getInstance().getFixedPoint()) {
                 return null;
             }
             
