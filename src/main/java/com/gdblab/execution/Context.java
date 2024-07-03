@@ -1,9 +1,7 @@
 package com.gdblab.execution;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Scanner;
-import java.util.Set;
 
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
@@ -16,6 +14,8 @@ public final class Context {
     private Graph graph;
     private String data_type;
     private Integer fixedPoint;
+    private String nodesFile;
+    private String edgesFile;
     private String outputType;
     private String outputFileName;
     private Integer maxShowedPaths;
@@ -100,15 +100,13 @@ public final class Context {
         try {
             File file = new File(fileName);
             Scanner scanner = new Scanner(file);
-            int i = 1;
             while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                Node node = new Node("N" + i, line);
+                String[] data = scanner.nextLine().split(",");
+                Node node = new Node(data[0], data[1]);
                 graph.insertNode(node);
-                i++;
             }
             scanner.close();
-
+            nodesFile = fileName;
         } catch (Exception e) {}
     }
 
@@ -129,7 +127,15 @@ public final class Context {
                 i++;
             }
             scanner.close();
-
+            edgesFile = fileName;
         } catch (Exception e) {}
+    }
+
+    public String getNodesFileName() {
+        return nodesFile;
+    }
+
+    public String getEdgesFileName() {
+        return edgesFile;
     }
 }

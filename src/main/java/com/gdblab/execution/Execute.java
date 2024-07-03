@@ -63,16 +63,31 @@ public final class Execute {
     }
 
     private static void printPath(PhysicalOperator po){
+        Integer ms = Context.getInstance().getMaxShowedPaths();
+        if (ms <= 0) {
+            while (po.hasNext()) {
+                Path p = po.next();
+                System.out.print("Path #" + counter + " - ");
+                for (GraphObject go : p.getSequence()) {
+                    System.out.print( go.getLabel() + " ");
+                }
+                System.out.println();
+                counter++;
+            }
+            return;
+        }
+
         while ( po.hasNext() ) {
             Path p = po.next();
-            if (counter <= 5) {
+
+            if (counter <= ms) {
                 System.out.print("Path #" + counter + " - ");
                 for (GraphObject go : p.getSequence()) {
                     System.out.print( go.getLabel() + " ");
                 }
                 System.out.println();
             }
-            if (counter == 6) {
+            if (counter == (ms + 1)) {
                 System.out.println("...");
             }
             counter++;
