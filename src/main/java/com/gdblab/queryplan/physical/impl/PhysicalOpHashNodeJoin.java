@@ -51,6 +51,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
             if ( nextRight == null ) {
                 if ( rightChild.hasNext() ) {
                     nextRight = rightChild.next();
+                    partialLeft = null;
                 } else
                     return null;
             }
