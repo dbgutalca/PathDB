@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.UUID;
-import com.gdblab.main.Main;
+import com.gdblab.main.Main_2;
 import com.gdblab.schema.GraphObject;
 
 /**
@@ -30,7 +30,7 @@ public class PathAlgebra {
         if(pathA.isNodeLinkable(pathB)){
             Path join_path = null; 
 
-            if (Main.semantic.equals("Simple Path")) {
+            if (Main_2.semantic.equals("Simple Path")) {
                 ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringNodeSequence().split(" ")));
                 ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringNodeSequence().split(" ")));
                 pathBString.remove(0);
@@ -41,7 +41,7 @@ public class PathAlgebra {
                 }
             }
 
-            else if (Main.semantic.equals("Trail")) {
+            else if (Main_2.semantic.equals("Trail")) {
                 ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringEdgeSequence().split(" ")));
                 ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringEdgeSequence().split(" ")));
                 pathAString.addAll(pathBString);

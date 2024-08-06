@@ -1,6 +1,8 @@
 package com.gdblab.execution;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.Scanner;
 
 import com.gdblab.schema.Edge;
@@ -97,26 +99,27 @@ public final class Context {
     }
 
     public void uploadNodes(String fileName) {
-        try {
-            File file = new File(fileName);
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String[] data = scanner.nextLine().split(",");
+        try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null){
+                String[] data = line.split(",");
                 Node node = new Node(data[0], data[1]);
                 graph.insertNode(node);
             }
-            scanner.close();
+            System.out.println("Nodes uploaded successfully");
             nodesFile = fileName;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void uploadEdges(String fileName) {
-        try {
-            File file = new File(fileName);
-            Scanner scanner = new Scanner(file);
-            int i = 1;
-            while (scanner.hasNextLine()) {
-                String[] data = scanner.nextLine().split(",");
+
+        try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            long i = 1;
+            String line;
+            while ((line = br.readLine()) != null){
+                String[] data = line.split(",");
                 Edge edge = new Edge(
                     "E" + i,
                     data[1],
@@ -126,9 +129,11 @@ public final class Context {
                 this.graph.insertEdge(edge);
                 i++;
             }
-            scanner.close();
+            System.out.println("Edges uploaded successfully");
             edgesFile = fileName;
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getNodesFileName() {

@@ -19,6 +19,12 @@ import java.util.UUID;
  */
 public class Path extends GraphObject {
 
+    // Si se transformase a solamente una lista de edges
+    // seria imposible almacenar paths de largo 0
+    // ya que el Edge como objeto debe si o si tener un source y un target
+    // Podria ser el target null pero traería problemas con los joins
+    // y habría que modificar demasiado codigo para implementar solo
+    // la lista de Edges en vez de una lista de Nodes y Edges.
     private List<GraphObject> sequence;
 
     public Path(final String id, final String label) {
@@ -32,7 +38,7 @@ public class Path extends GraphObject {
     }
     
     public Path (final String id, final Edge edge) {
-        super(id);
+        super(id); 
         this.sequence = new ArrayList<>();
         this.insertEdge(edge);
     }

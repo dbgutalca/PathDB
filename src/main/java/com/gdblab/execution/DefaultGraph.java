@@ -17,10 +17,11 @@ public final class DefaultGraph {
     public static Edge[] loadDefaultEdges(){
         Edge[] edges = new Edge[5];
         edges[0] = new Edge("E1", "A", Context.getInstance().getGraph().getNode("N1"), Context.getInstance().getGraph().getNode("N2"));
-        edges[1] = new Edge("E2", "A", Context.getInstance().getGraph().getNode("N3"), Context.getInstance().getGraph().getNode("N2"));
-        edges[2] = new Edge("E3", "B", Context.getInstance().getGraph().getNode("N2"), Context.getInstance().getGraph().getNode("N2"));
+        edges[1] = new Edge("E3", "B", Context.getInstance().getGraph().getNode("N2"), Context.getInstance().getGraph().getNode("N2"));
+        edges[2] = new Edge("E6", "D", Context.getInstance().getGraph().getNode("N2"), Context.getInstance().getGraph().getNode("N3"));
         edges[3] = new Edge("E4", "C", Context.getInstance().getGraph().getNode("N2"), Context.getInstance().getGraph().getNode("N2"));
-        edges[4] = new Edge("E6", "D", Context.getInstance().getGraph().getNode("N2"), Context.getInstance().getGraph().getNode("N3"));
+        edges[4] = new Edge("E2", "A", Context.getInstance().getGraph().getNode("N3"), Context.getInstance().getGraph().getNode("N2"));
+        
 
         return edges;
     }

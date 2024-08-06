@@ -129,18 +129,8 @@ public class CSRVPMin implements Graph{
         }
         else{
             final LinkedList<Edge> edgesByLabel = edges.get(edge.getLabel());
-            boolean found = false;
-            for (final Edge edge1 : edgesByLabel) 
-                if (edge1.getId().equals(edge.getId())){
-                    found = true;
-                    break;
-                }
-            if(!found){
-                edgesByLabel.add(edge);
-                return edge;
-            }
-            else
-                return null;
+            edgesByLabel.add(edge);
+            return edge;
         }
     }
     

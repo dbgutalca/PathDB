@@ -25,7 +25,7 @@ public class ReverseLabelExpression extends NullaryRPQExpression{
 
     @Override
     public String toString() {
-        return label;
+        return label + "^";
     }
 
     public String getLabel() {
