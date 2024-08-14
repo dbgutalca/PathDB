@@ -20,7 +20,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
     protected final List<Path> originalChild;
     private final List<Path> loopChild;
 
-    private PhysicalOpNestedLoopNodeJoin join;
+    private PhysicalOpHashNodeJoin join;
 
     private final Iterator<Path> childIterator;
 
@@ -36,10 +36,9 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
         
         this.loopChild = new LinkedList<>();
 
-        this.join = new PhysicalOpNestedLoopNodeJoin(
+        this.join = new PhysicalOpHashNodeJoin(
             new PhysicalOperatorListWrapper(originalChild.iterator()),
-            new PhysicalOperatorListWrapper(originalChild.iterator()),
-            null);
+            new PhysicalOperatorListWrapper(originalChild.iterator()));
 
     }
 
@@ -70,7 +69,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
         }
 
         for ( ;; ) {
-            if (this.counterFixPoint >= Context.getInstance().getFixedPoint()) {
+            if (this.counterFixPoint >= Context.getInstance().getFixPoint()) {
                 return null;
             }
             
@@ -83,10 +82,9 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             }
             
             this.counterFixPoint++;
-            this.join = new PhysicalOpNestedLoopNodeJoin(
+            this.join = new PhysicalOpHashNodeJoin(
                 new PhysicalOperatorListWrapper(this.loopChild.iterator()), 
-                new PhysicalOperatorListWrapper(this.originalChild.iterator()), 
-                null);
+                new PhysicalOperatorListWrapper(this.originalChild.iterator()));
             this.loopChild.clear();
         }
     }
