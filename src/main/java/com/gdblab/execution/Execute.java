@@ -7,10 +7,15 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import com.gdblab.algebra.condition.And;
+import com.gdblab.algebra.condition.First;
+import com.gdblab.algebra.condition.Label;
+import com.gdblab.algebra.condition.Last;
 import com.gdblab.parser.RPQExpression;
 import com.gdblab.parser.RPQGrammarListener;
 import com.gdblab.parser.impl.RPQtoAlgebraVisitor;
 import com.gdblab.queryplan.logical.LogicalOperator;
+import com.gdblab.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.util.Utils;
@@ -21,7 +26,7 @@ import com.gdlab.parser.RPQGrammarParser;
 
 public final class Execute {
 
-    private static Integer counter;
+    private static long counter;
     
     public static void EvalRPQ(String rpq){
 
@@ -41,6 +46,12 @@ public final class Execute {
         rpqExp.acceptVisit(visitor);
 
         LogicalOperator lo = visitor.getRoot();
+
+        // Adding filter on top of the logical operator
+        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("X") ||! Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
+            lo = filterOnTop(lo);
+        }
+
         LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
         lo.acceptVisitor(visitor2);
         PhysicalOperator po = visitor2.getPhysicalPlan().getRootOperator();
@@ -109,5 +120,41 @@ public final class Execute {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private static LogicalOperator filterOnTop(LogicalOperator lo) {
+        LogicalOpSelection los = null;
+
+        if (!Context.getInstance().getStartingNode().equalsIgnoreCase("X")) {
+            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
+                // Starting and Ending is defined
+                los = new LogicalOpSelection(
+                    lo,
+                    new And(
+                        new First(Context.getInstance().getStartingNode()),
+                        new Last(Context.getInstance().getEndingNode())
+                    )
+                );
+            }
+            else {
+                // Starting is defined and Ending is not defined
+                los = new LogicalOpSelection(
+                    lo,
+                    new First(Context.getInstance().getStartingNode())
+                );
+            }
+        }
+
+        else {
+            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
+                // Starting is not defined and Ending is defined
+                los = new LogicalOpSelection(
+                    lo,
+                    new Last(Context.getInstance().getEndingNode())
+                );
+            }
+        }
+
+        return los;
     }
 }
