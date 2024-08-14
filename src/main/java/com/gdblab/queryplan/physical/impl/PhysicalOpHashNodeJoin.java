@@ -17,6 +17,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
     private Path slot;
     private Path nextRight = null;
     private Iterator<Path> partialLeft = null;
+    private List <Path> left = null;
 
     public PhysicalOpHashNodeJoin(final PhysicalOperator leftChild, final PhysicalOperator rightChild) {
         super(leftChild, rightChild);
@@ -56,12 +57,12 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
                     return null;
             }
             if (partialLeft == null) {
-                List <Path> left = hashTable.get(nextRight.first());
-                if (left == null) {
+                this.left = hashTable.get(nextRight.first());
+                if (this.left == null) {
                     nextRight = null;
                     continue;
                 }
-                partialLeft = left.iterator();
+                partialLeft = this.left.iterator();
             }
 
             // There is a rowRight
