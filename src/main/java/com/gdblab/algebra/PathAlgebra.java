@@ -27,37 +27,18 @@ public class PathAlgebra {
     }
     
     public static Path NodeLink (Path pathA, Path pathB){
+
         if(pathA.isNodeLinkable(pathB)){
             Path join_path = null; 
-
-            if (Main_2.semantic.equals("Simple Path")) {
-                ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringNodeSequence().split(" ")));
-                ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringNodeSequence().split(" ")));
-                pathBString.remove(0);
-                pathAString.addAll(pathBString);
-
-                if(hasDuplicateNodes(pathAString)) {
-                    return null;
-                }
-            }
-
-            else if (Main_2.semantic.equals("Trail")) {
-                ArrayList<String> pathAString = new ArrayList<>(Arrays.asList(pathA.getStringEdgeSequence().split(" ")));
-                ArrayList<String> pathBString = new ArrayList<>(Arrays.asList(pathB.getStringEdgeSequence().split(" ")));
-                pathAString.addAll(pathBString);
-                
-                if(hasDuplicateEdges(pathAString)) {
-                    return null;
-                }
-            }
  
-            join_path = new Path(UUID.randomUUID().toString());
+            join_path = new Path("");
             if(pathA.getNodesAmount()== 1 && pathB.getNodesAmount()== 1){
                 join_path.insertNode(pathA.first());
             }
             else {
                 join_path.setSequence(pathA.getSequence());
-                join_path.appendSequence(pathB.getSequence().subList(1, pathB.getSequence().size()));
+                join_path.appendSequence(pathB.getSequence());
+                
             }
         
             return join_path;
