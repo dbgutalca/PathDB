@@ -1,7 +1,5 @@
 package com.gdblab.main;
 
-import java.util.Scanner;
-
 import com.gdblab.execution.Context;
 import com.gdblab.execution.DefaultGraph;
 import com.gdblab.execution.Execute;
@@ -19,10 +17,11 @@ public class Main {
     private static Boolean defaultGraph = true;
     private static String nodesUploadTime = "";
     private static String edgesUploadTime = "";
-    
-    public static void main(String[] args){
-        
-        for( String string : args ){
+    private static String[] data;
+
+    public static void main(String[] args) {
+
+        for (String string : args) {
             String[] arg = string.split("=");
 
             switch (arg[0]) {
@@ -34,7 +33,7 @@ public class Main {
                     printUsage();
                     System.exit(0);
                     break;
-                    
+
                 case "-gs":
                     context.setDataType(arg[1]);
                     context.setGraph(getGraphStructure(arg[1]));
@@ -43,7 +42,7 @@ public class Main {
                     context.setDataType(arg[1]);
                     context.setGraph(getGraphStructure(arg[1]));
                     break;
-                    
+
                 case "-nf":
                     long startnf = System.nanoTime();
                     context.uploadNodes(arg[1]);
@@ -85,10 +84,10 @@ public class Main {
                     break;
 
                 case "-fp":
-                    context.setFixedPoint(Integer.valueOf(arg[1]));
+                    context.setFixPoint(Integer.valueOf(arg[1]));
                     break;
-                case "--fixed_point":
-                    context.setFixedPoint(Integer.valueOf(arg[1]));
+                case "--fix_point":
+                    context.setFixPoint(Integer.valueOf(arg[1]));
                     break;
 
                 case "-of":
@@ -101,29 +100,45 @@ public class Main {
                     break;
 
                 case "-ms":
-                    if(arg[1].equalsIgnoreCase("all")) {
+                    if (arg[1].equalsIgnoreCase("all")) {
                         System.out.println("Showing all paths");
                         context.setMaxShowedPaths(-1);
-                    }
-                    else {
+                    } else {
                         context.setMaxShowedPaths(Integer.valueOf(arg[1]));
                     }
                     break;
                 case "--max_showed":
-                    if(arg[1].equalsIgnoreCase("all")) {
+                    if (arg[1].equalsIgnoreCase("all")) {
                         context.setMaxShowedPaths(-1);
-                    }
-                    else {
+                    } else {
                         context.setMaxShowedPaths(Integer.valueOf(arg[1]));
                     }
                     break;
-                
+
+                case "-rpq":
+                    data = preProcessRPQData(arg[1]);
+                    context.setStartingNode(data[0]);
+                    context.setRPQ(data[1]);
+                    context.setEndingNode(data[2]);
+                    break;
+                case "--regular_path_query":
+                    data = preProcessRPQData(arg[1]);
+                    context.setStartingNode(data[0]);
+                    context.setRPQ(data[1]);
+                    context.setEndingNode(data[2]);
+                    break;
+
                 default:
                     System.out.println("Invalid argument: " + arg[0]);
                     printUsage();
                     System.exit(1);
                     break;
             }
+        }
+
+        if (context.getRPQ().equals("")) {
+            System.out.println("Regular Path Query is obligatory, use -rpq=X or --regular_path_query=X flag");
+            System.exit(1);
         }
 
         if (!isNodeFile && !isEdgeFile) {
@@ -136,75 +151,99 @@ public class Main {
         }
 
         printConfiguration();
-    
-        String rpq;
-        Scanner sc = new Scanner(System.in);
-        System.out.print("RPQ: ");
-        rpq = sc.nextLine();
-        while (!rpq.equals("\\q")) {
-            Execute.EvalRPQ(rpq);
-            System.out.print("\nRPQ: ");
-            rpq = sc.nextLine();
-            
-            if (rpq.equals("\\q")) System.out.println("Good bye!");
-        }
+        Execute.EvalRPQ(context.getRPQ());
     }
 
-    private static Graph getGraphStructure(String data_type){
+    private static void printUsage() {
+        System.out.println("Usage: java -jar PathDB.jar [options]");
+        // System.out.println(" -dt, --data_type: Structure of the graph, default is
+        // CSRVPMin");
+        System.out.println(
+                "  -nf, --nodes_file: File path of the nodes, if -nf and -ef are not set, the default graph will be used.");
+        System.out.println(
+                "  -ef, --edges_file: File path of the edges, if -nf and -ef are not set, the default graph will be used.");
+        System.out.println("  -rpq, --regular_path_query: The Regular Path Query to be executed (Obligatory) with format '(X,rpq,Y)'.");
+        System.out.println("  -fp, --fixed_point: Fixed point of the recursion.");
+        System.out.println(
+                "  -of, --output_file: Output file name [Make a copy of the file for each RPQ, the file will be overwritten].");
+        System.out.println("  -ms, --max_showed: Max showed paths on console, default is 10, all to show all paths.");
+        System.out.println("  -h, --help: Show usage.");
+        System.out.println("  \\q: Exit the program\n");
+        System.out
+                .println("Example: java -jar PathDB.jar -nf=nodes.txt -ef=edges.txt -rpq=A.B* -fp=3 -of=output.txt\n");
+    }
+
+    private static void printConfiguration() {
+        System.out.println("Configuration:");
+        System.out.println("    Graph Structure: " + context.getDataType() + ".");
+
+        if (defaultGraph) {
+            System.out.println("    Graph: Default.");
+        } else {
+            System.out.println("    Graph:");
+            System.out.println(
+                    "        Nodes file: " + context.getNodesFileName() + " (Loaded in " + nodesUploadTime + ").");
+            System.out.println(
+                    "        Edges file: " + context.getEdgesFileName() + " (Loaded in " + edgesUploadTime + ").");
+        }
+
+        System.out.println("    Regular Path Query: " + context.getRPQ() + ".");
+
+        if (context.getStartingNode().equals("X")) {
+            System.out.println("    Starting Node: Any.");
+        } else {
+            System.out.println("    Starting Node: " + context.getStartingNode() + ".");
+        }
+
+        if (context.getEndingNode().equals("Y")) {
+            System.out.println("    Ending Node: Any.");
+        } else {
+            System.out.println("    Ending Node: " + context.getEndingNode() + ".");
+        }
+
+        System.out.println("    Fix Point: " + context.getFixPoint() + ".");
+
+        if (context.getOutputType().equals("console")) {
+            System.out.println("    Output Type: Console.");
+            System.out.println("    Max Showed Paths: " + context.getMaxShowedPaths() + ".");
+        } else {
+            System.out.println("    Output Type: File.");
+            System.out.println("    Output File Name: " + context.getOutputFileName() + ".");
+        }
+        System.out.println();
+    }
+
+    private static Graph getGraphStructure(String data_type) {
         switch (data_type) {
             case "csrvpmin":
                 return new CSRVPMin();
 
             case "csr":
                 return null;
-            
+
             case "csrvp":
                 return null;
 
             case "memorygraph":
                 return null;
-        
+
             default:
                 return null;
         }
     }
-    
-    private static void printUsage() {
-        System.out.println("Usage: java -jar PathDB.jar [options]");
-        // System.out.println("  -dt, --data_type: Structure of the graph, default is CSRVPMin");
-        System.out.println("  -nf, --nodes_file: File path of the nodes, if -nf and -ef are not set, the default graph will be used.");
-        System.out.println("  -ef, --edges_file: File path of the edges, if -nf and -ef are not set, the default graph will be used.");
-        System.out.println("  -fp, --fixed_point: Fixed point of the recursion.");
-        System.out.println("  -of, --output_file: Output file name [Make a copy of the file for each RPQ, the file will be overwritten].");
-        System.out.println("  -ms, --max_showed: Max showed paths on console, default is 10, all to show all paths.");
-        System.out.println("  -h, --help: Show usage.");
-        System.out.println("  \\q: Exit the program\n");
-        System.out.println("Example: java -jar PathDB.jar -nf=nodes.txt -ef=edges.txt -fp=3 -of=output.txt\n");
-    }
 
-    private static void printConfiguration() {
-        System.out.println("Configuration:");
-        System.out.println("    Graph Structure: " + Context.getInstance().getDataType() + ".");
+    private static String[] preProcessRPQData(String rpq) {
+        String[] data = rpq.trim()
+                        .replaceAll("(", "")
+                        .replaceAll(")", "")
+                        .split(","); // [X,rpq,Y]
 
-        if (defaultGraph) {
-            System.out.println("    Graph: Default.");
-        }
-        else {
-            System.out.println("    Graph:");
-            System.out.println("        Nodes file: " + Context.getInstance().getNodesFileName() + " (Loaded in " + nodesUploadTime + ").");
-            System.out.println("        Edges file: " + Context.getInstance().getEdgesFileName() + " (Loaded in " + edgesUploadTime + ").");
+        if (data.length != 3) {
+            System.out.println("Invalid Regular Path Query: " + rpq);
+            printUsage();
+            System.exit(1);
         }
         
-        System.out.println("    Fixed Point: " + Context.getInstance().getFixedPoint() + ".");
-        
-        if (context.getOutputType().equals("console")) {
-            System.out.println("    Output Type: Console.");
-            System.out.println("    Max Showed Paths: " + Context.getInstance().getMaxShowedPaths() + ".");
-        }
-        else {
-            System.out.println("    Output Type: File.");
-            System.out.println("    Output File Name: " + Context.getInstance().getOutputFileName() + ".");
-        }
-        System.out.println();
+        return data;
     }
 }
