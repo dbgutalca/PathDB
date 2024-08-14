@@ -216,8 +216,9 @@ public class Path extends GraphObject {
     }
     
     public void appendSequence(List<GraphObject> sequence) {
-        for (GraphObject go: sequence)
-            this.sequence.add(go);
+        for (int i = 1; i < sequence.size(); i++) {
+            this.sequence.add(sequence.get(i));
+        }
     }
 
     @Override
