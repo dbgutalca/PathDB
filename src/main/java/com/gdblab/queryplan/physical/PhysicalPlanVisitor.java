@@ -21,4 +21,6 @@ public interface PhysicalPlanVisitor {
     void visit(final PhysicalOpAllNodes physicalOperatorAllNodes);
 
     void visit(final PhysicalOpHashNodeJoin physicalOpHashNodeJoin);
+
+    void visit(final PhysicalOpReverse physicalOpReverse);
 }
