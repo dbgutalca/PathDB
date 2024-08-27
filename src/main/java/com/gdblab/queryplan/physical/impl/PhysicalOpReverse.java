@@ -28,7 +28,8 @@ public class PhysicalOpReverse extends UnaryPhysicalOp {
         if ( slot != null ) return true;
         
         while ( getChild().hasNext() ){
-            slot = new Path( UUID.randomUUID().toString(), true, getChild().next().getSequence() );
+            // slot = new Path( UUID.randomUUID().toString(), true, getChild().next().getSequence() );
+            // Trying to fix the error
             return true;
         }
         

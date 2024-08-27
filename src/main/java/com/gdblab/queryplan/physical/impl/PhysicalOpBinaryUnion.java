@@ -9,12 +9,14 @@ import com.gdblab.queryplan.logical.impl.LogicalOpUnion;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Path;
+import com.gdblab.schema.PathInterface;
+
 import java.util.LinkedList;
 
 public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
 
     protected final LogicalOpUnion lop;
-    protected Path slot = null;
+    protected PathInterface slot = null;
     protected final List<Path> leftRows = new LinkedList<>();
     private Path nextRight = null;
 
@@ -39,13 +41,13 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
     }
 
     @Override
-    public Path next() {
-        final Path r = slot;
+    public PathInterface next() {
+        final PathInterface r = slot;
         slot = null;
         return r;
     }
 
-    protected Path moveToNextPathOrNull() {
+    protected PathInterface moveToNextPathOrNull() {
         while (this.leftChild.hasNext()) return this.leftChild.next();
         while (this.rightChild.hasNext()) return this.rightChild.next();
 

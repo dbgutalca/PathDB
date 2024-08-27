@@ -17,7 +17,7 @@ import java.util.UUID;
  *
  * @author ramhg
  */
-public class Path extends GraphObject {
+public class Path extends GraphObject implements PathInterface {
 
     // Si se transformase a solamente una lista de edges
     // seria imposible almacenar paths de largo 0
@@ -207,9 +207,7 @@ public class Path extends GraphObject {
         return graph.getEdge(node1_id, node2_id);
     }
 
-    public int lenght() {
-        return sequence.size();
-    }
+    
     
     public void setSequence(List<GraphObject> sequence) {
         this.sequence = new ArrayList<GraphObject>(sequence);
@@ -244,6 +242,18 @@ public class Path extends GraphObject {
         }
 
         return false;
+    }
+
+
+    @Override
+    public int lenght() {
+        return sequence.size();
+    }
+    
+    @Override
+    public PathInterface join(PathInterface pathB) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'join'");
     }
 
 }

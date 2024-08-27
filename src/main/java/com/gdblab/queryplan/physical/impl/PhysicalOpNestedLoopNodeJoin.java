@@ -6,7 +6,7 @@ import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.queryplan.util.Utils;
 import com.gdblab.schema.Node;
-import com.gdblab.schema.Path;
+import com.gdblab.schema.PathInterface;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,10 +18,10 @@ import java.util.stream.Collectors;
 public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
 
     protected final LogicalOpNodeJoin lop;
-    protected Path slot = null;
-    protected final List<Path> leftRows;
-    private Iterator<Path> left;
-    private Path nextRight = null;
+    protected PathInterface slot = null;
+    protected final List<PathInterface> leftRows;
+    private Iterator<PathInterface> left;
+    private PathInterface nextRight = null;
     private boolean firstMatch = false;
     
 
@@ -31,9 +31,9 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
         this.lop = lop;
         leftRows = Utils.iterToList(leftChild);
         
-        Collections.sort(leftRows, new Comparator<Path>() {
+        Collections.sort(leftRows, new Comparator<PathInterface>() {
             @Override
-            public int compare(Path o1, Path o2) {
+            public int compare(PathInterface o1, PathInterface o2) {
                 Node lastP1 = o1.last();
                 Node lastP2 = o2.last();
                 return lastP1.getId().compareTo(lastP2.getId());
@@ -52,22 +52,22 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
     @Override
     public boolean hasNext() {
         if ( slot == null ) {
-            slot = moveToNextPathOrNull2();
+            slot = moveToNextPathInterfaceOrNull2();
             return slot != null;
         }
         return true;
     }
 
     @Override
-    public Path next() {
-        final Path r = slot;
+    public PathInterface next() {
+        final PathInterface r = slot;
         slot = null;
         return r;
     }
 
 
     // Poda el bloque final que no corresponde una vez ordenado el leftRows
-    protected Path moveToNextPathOrNull2() {
+    protected PathInterface moveToNextPathInterfaceOrNull2() {
         for ( ;; ) { // For rows from the right.
             if ( nextRight == null ) {
                 if ( rightChild.hasNext() ) {
@@ -80,8 +80,8 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
 
             // There is a rowRight
             while (left.hasNext()) {
-                final Path rowLeft = left.next();
-                final Path r = PathAlgebra.NodeLink(rowLeft, nextRight); //Algebra.merge(rowLeft, rowRight);
+                final PathInterface rowLeft = left.next();
+                final PathInterface r = rowLeft.join(nextRight); //Algebra.merge(rowLeft, rowRight);
                 if ( r != null ) {
                     if (!firstMatch) firstMatch = true;
                     return r;
@@ -96,13 +96,13 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
     /**
      * Code taken from Apache Jena. It gets the next match, or null if there isn't one.
      */
-    protected Path moveToNextPathOrNull() {
+    protected PathInterface moveToNextPathInterfaceOrNull() {
         for ( ;; ) { // For rows from the right.
             if ( nextRight == null ) {
                 if ( rightChild.hasNext() ) {
                     nextRight = rightChild.next();
 
-                    List<Path> filteredLeftRows = filterLeftRowsByRightNode(nextRight.first());
+                    List<PathInterface> filteredLeftRows = filterLeftRowsByRightNode(nextRight.first());
                     if (filteredLeftRows.size() > 0) {
                         left = filteredLeftRows.iterator();
                     }
@@ -113,8 +113,8 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
 
             // There is a rowRight
             while (left.hasNext()) {
-                final Path rowLeft = left.next();
-                final Path r = PathAlgebra.NodeLink(rowLeft, nextRight); //Algebra.merge(rowLeft, rowRight);
+                final PathInterface rowLeft = left.next();
+                final PathInterface r = rowLeft.join(nextRight); //Algebra.merge(rowLeft, rowRight);
                 if ( r != null ) {
                     return r;
                 }
@@ -124,8 +124,8 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
         }
     }
 
-    private List<Path> filterLeftRowsByRightNode(Node n) {
-        return leftRows.stream().filter( path -> { return path.last().equals(n); })
+    private List<PathInterface> filterLeftRowsByRightNode(Node n) {
+        return leftRows.stream().filter( PathInterface -> { return PathInterface.last().equals(n); })
         .collect(Collectors.toList());
     }
 

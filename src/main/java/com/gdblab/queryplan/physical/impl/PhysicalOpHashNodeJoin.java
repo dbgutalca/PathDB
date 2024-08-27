@@ -4,7 +4,7 @@ import com.gdblab.algebra.PathAlgebra;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Node;
-import com.gdblab.schema.Path;
+import com.gdblab.schema.PathInterface;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,18 +13,18 @@ import java.util.List;
 
 public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
 
-    final HashMap<Node, List<Path>> hashTable = new HashMap<>();
-    private Path slot;
-    private Path nextRight = null;
-    private Iterator<Path> partialLeft = null;
-    private List <Path> left = null;
+    final HashMap<Node, List<PathInterface>> hashTable = new HashMap<>();
+    private PathInterface slot;
+    private PathInterface nextRight = null;
+    private Iterator<PathInterface> partialLeft = null;
+    private List <PathInterface> left = null;
 
     public PhysicalOpHashNodeJoin(final PhysicalOperator leftChild, final PhysicalOperator rightChild) {
         super(leftChild, rightChild);
         // This implementation hashes the left input and probes the right
         // a smarter implementation would hash the smaller input, but we don't have an optimizer yet
         while (leftChild.hasNext()) {
-            final Path current = leftChild.next();
+            final PathInterface current = leftChild.next();
             final Node key = current.last();
             if (!hashTable.containsKey(key)) {
                 hashTable.put(key, new LinkedList<>());
@@ -41,13 +41,13 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
     @Override
     public boolean hasNext() {
         if ( slot == null ) {
-            slot = moveToNextPathOrNull();
+            slot = moveToNextPathInterfaceOrNull();
             return slot != null;
         }
         return true;
     }
 
-    private Path moveToNextPathOrNull() {
+    private PathInterface moveToNextPathInterfaceOrNull() {
         for ( ;; ) { // For rows from the right.
             if ( nextRight == null ) {
                 if ( rightChild.hasNext() ) {
@@ -67,7 +67,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
 
             // There is a rowRight
             if (partialLeft.hasNext()) {
-                return PathAlgebra.NodeLink(partialLeft.next(), nextRight); // no need to check if null
+                return partialLeft.next().join(nextRight);
             }
             // Nothing more for this rowRight.
             nextRight = null;
@@ -75,8 +75,8 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
     }
 
     @Override
-    public Path next() {
-        final Path r = slot;
+    public PathInterface next() {
+        final PathInterface r = slot;
         slot = null;
         return r;
     }

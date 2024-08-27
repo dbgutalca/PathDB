@@ -5,6 +5,7 @@
 package com.gdblab.algebra.condition;
 
 import com.gdblab.schema.Path;
+import com.gdblab.schema.PathInterface;
 
 /**
  *
@@ -15,6 +16,6 @@ public abstract class Condition {
     public Condition() {
     }
     
-    public abstract boolean eval (Path p);
+    public abstract boolean eval (PathInterface p);
     
 }

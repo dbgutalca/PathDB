@@ -10,19 +10,19 @@ import com.gdblab.queryplan.logical.impl.LogicalOpRecursive;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.queryplan.util.Utils;
-import com.gdblab.schema.Path;
+import com.gdblab.schema.PathInterface;
 
 public class PhysicalOpRecursive extends UnaryPhysicalOp {
 
     protected final LogicalOpRecursive lop;
-    protected Path slot = null;
+    protected PathInterface slot = null;
 
-    protected final List<Path> originalChild;
-    private final List<Path> loopChild;
+    protected final List<PathInterface> originalChild;
+    private final List<PathInterface> loopChild;
 
     private PhysicalOpHashNodeJoin join;
 
-    private final Iterator<Path> childIterator;
+    private final Iterator<PathInterface> childIterator;
 
     private Integer counterFixPoint = 1;
 
@@ -50,20 +50,20 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
     @Override
     public boolean hasNext() {
         if ( slot == null ) {
-            slot = getNextPath();
+            slot = getNextPathInterface();
             return slot != null;
         }
         return true;
     }
 
     @Override
-    public Path next() {
-        final Path r = slot;
+    public PathInterface next() {
+        final PathInterface r = slot;
         slot = null;
         return r;
     }
 
-    protected Path getNextPath() {
+    protected PathInterface getNextPathInterface() {
         while (this.childIterator.hasNext()) {
             return this.childIterator.next();
         }
@@ -74,10 +74,10 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             }
             
             while (this.join.hasNext()) {
-                final Path path = this.join.next();
-                if (path != null) {
-                    this.loopChild.add(path);
-                    return path;
+                final PathInterface PathInterface = this.join.next();
+                if (PathInterface != null) {
+                    this.loopChild.add(PathInterface);
+                    return PathInterface;
                 }
             }
             
