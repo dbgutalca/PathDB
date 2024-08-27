@@ -48,8 +48,12 @@ public final class Execute {
         LogicalOperator lo = visitor.getRoot();
 
         // Adding filter on top of the logical operator
-        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("X") ||! Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
-            lo = filterOnTop(lo);
+        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("X") ) {
+            lo = filterOnTopLeft(lo);
+        }
+
+        if ( !Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
+            lo = filterOnTopRight(lo);
         }
 
         LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
@@ -122,39 +126,11 @@ public final class Execute {
         }
     }
 
-    private static LogicalOperator filterOnTop(LogicalOperator lo) {
-        LogicalOpSelection los = null;
+    private static LogicalOperator filterOnTopLeft(LogicalOperator lo) {
+        return new LogicalOpSelection(lo, new First(Context.getInstance().getStartingNode()));
+    }
 
-        if (!Context.getInstance().getStartingNode().equalsIgnoreCase("X")) {
-            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
-                // Starting and Ending is defined
-                los = new LogicalOpSelection(
-                    lo,
-                    new And(
-                        new First(Context.getInstance().getStartingNode()),
-                        new Last(Context.getInstance().getEndingNode())
-                    )
-                );
-            }
-            else {
-                // Starting is defined and Ending is not defined
-                los = new LogicalOpSelection(
-                    lo,
-                    new First(Context.getInstance().getStartingNode())
-                );
-            }
-        }
-
-        else {
-            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
-                // Starting is not defined and Ending is defined
-                los = new LogicalOpSelection(
-                    lo,
-                    new Last(Context.getInstance().getEndingNode())
-                );
-            }
-        }
-
-        return los;
+    private static LogicalOperator filterOnTopRight(LogicalOperator lo) {
+        return new LogicalOpSelection(lo, new Last(Context.getInstance().getEndingNode()));
     }
 }
