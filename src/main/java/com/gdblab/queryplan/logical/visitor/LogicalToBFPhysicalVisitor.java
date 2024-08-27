@@ -8,8 +8,10 @@ import com.gdblab.queryplan.physical.impl.PhysicalOpAllEdges;
 import com.gdblab.queryplan.physical.impl.PhysicalOpAllNodes;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBinaryUnion;
+import com.gdblab.queryplan.physical.impl.PhysicalOpHashNodeJoin;
 import com.gdblab.queryplan.physical.impl.PhysicalOpNestedLoopNodeJoin;
 import com.gdblab.queryplan.physical.impl.PhysicalOpRecursive;
+import com.gdblab.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.queryplan.physical.impl.PhysicalOpSequentialScan;
 
 import java.util.Stack;
@@ -36,7 +38,7 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
         //we visit both children, to get the two *push* operations, and thus we can do two *pop*s in the end
         logicalOpNodeJoin.getRightChild().acceptVisitor(this);
         logicalOpNodeJoin.getLeftChild().acceptVisitor(this);
-        stack.push(new PhysicalOpNestedLoopNodeJoin(stack.pop(), stack.pop(), logicalOpNodeJoin));
+        stack.push(new PhysicalOpHashNodeJoin(stack.pop(), stack.pop()));
     }
 
     @Override
@@ -94,6 +96,12 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     public void visit(final LogicalOpAllEdges logicalOpAllEdges) {
         //since nullary operators don't have children (are leaves of the plan tree), we just push to the stack
         stack.push(new PhysicalOpAllEdges(logicalOpAllEdges));
+    }
+
+    @Override
+    public void visit(final LogicalOpReverse logicalOpReverse) {
+        logicalOpReverse.getChild().acceptVisitor(this);
+        stack.push(new PhysicalOpReverse(stack.pop(), logicalOpReverse));
     }
 
     public PhysicalPlan getPhysicalPlan() {

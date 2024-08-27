@@ -33,4 +33,6 @@ public interface LogicalPlanVisitor {
 
     void visit(final LogicalOpAllEdges logicalOpAllEdges);
 
+    void visit(final LogicalOpReverse logicalOpReverse);
+
 }

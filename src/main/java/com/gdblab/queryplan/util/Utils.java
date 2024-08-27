@@ -1,5 +1,6 @@
 package com.gdblab.queryplan.util;
 
+import com.gdblab.execution.Context;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.schema.Path;
 
@@ -14,4 +15,11 @@ public class Utils {
         }
         return l;
     }
+
+    public static String getTime(long start, long end){
+        long duration = end - start;
+        double durationInSeconds = (double) duration / 1_000_000_000.0;
+        return String.format("%.3f", durationInSeconds);
+    }
+    
 }

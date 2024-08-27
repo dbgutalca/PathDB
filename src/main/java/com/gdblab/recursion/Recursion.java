@@ -5,7 +5,7 @@
 package com.gdblab.recursion;
 
 import com.gdblab.algebra.PathAlgebra;
-import com.gdblab.main.Main;
+import com.gdblab.main.Main_2;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
@@ -19,8 +19,8 @@ import java.util.*;
 public class Recursion {
     
     public static LinkedList<Path> arbitrary (LinkedList<Path> s , int n){
-        if (Main.semantic.equals("Simple Path")) s = removeDuplicatedNodes(s);
-        else if (Main.semantic.equals("Trail")) s = removeDuplicatedEdges(s);
+        if (Main_2.semantic.equals("Simple Path")) s = removeDuplicatedNodes(s);
+        else if (Main_2.semantic.equals("Trail")) s = removeDuplicatedEdges(s);
         
         LinkedList<Path> results = (LinkedList<Path>) s.clone();
         LinkedList<Path> last_results = new LinkedList<>();

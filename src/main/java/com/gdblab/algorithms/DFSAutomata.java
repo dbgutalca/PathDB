@@ -12,7 +12,7 @@ import java.util.Set;
 
 import com.gdblab.automata.RegexMatcher;
 import com.gdblab.database.Database;
-import com.gdblab.main.Main;
+import com.gdblab.main.Main_2;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Node;
 
@@ -44,7 +44,7 @@ public class DFSAutomata {
                 break;
             case "Arbitrary":
                 startTime = System.currentTimeMillis();
-                DFSArbitrary(1);
+                DFSArbitrary(3);
                 endTime = System.currentTimeMillis();
                 this.totalTime = endTime - startTime;
                 break;
@@ -179,15 +179,15 @@ public class DFSAutomata {
 
     public void printPath(String output) {
 
-		String outputFile = Main.output;
+		String outputFile = Main_2.output;
 
         try (FileWriter fstream = new FileWriter(outputFile);
             BufferedWriter writer = new BufferedWriter(fstream)) {
             writer.write("--Configuration--"); writer.newLine();
-			writer.write("Algorithm: " + Main.algorithm); writer.newLine();
-			writer.write("Database: " + Main.dburl); writer.newLine();
-			writer.write("Semantic: " + Main.semantic); writer.newLine();
-			writer.write("RPQ: " + Main.rpq); writer.newLine();
+			writer.write("Algorithm: " + Main_2.algorithm); writer.newLine();
+			writer.write("Database: " + Main_2.dburl); writer.newLine();
+			writer.write("Semantic: " + Main_2.semantic); writer.newLine();
+			writer.write("RPQ: " + Main_2.rpq); writer.newLine();
 			writer.write("Time: " + this.totalTime + " ms"); writer.newLine();
             writer.write("--Configuration--"); writer.newLine();
             writer.write("--Paths--"); writer.newLine();

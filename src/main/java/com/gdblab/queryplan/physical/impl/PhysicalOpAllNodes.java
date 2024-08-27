@@ -6,12 +6,12 @@ package com.gdblab.queryplan.physical.impl;
 
 import java.util.Iterator;
 
+import com.gdblab.execution.Context;
 import com.gdblab.queryplan.logical.impl.LogicalOpAllNodes;
 import com.gdblab.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
-import com.gdblab.schema.impl.MemoryGraph;
 
 /**
  *
@@ -26,7 +26,7 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
 
     public PhysicalOpAllNodes(final LogicalOpAllNodes lop) {
         this.lop = lop;
-        this.nodes = MemoryGraph.getInstance().getNodeIterator();
+        this.nodes = Context.getInstance().getGraph().getNodeIterator();
     }
     
     @Override

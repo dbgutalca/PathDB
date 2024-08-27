@@ -8,6 +8,7 @@ package com.gdblab.schema;
 import com.gdblab.schema.impl.MemoryGraph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,6 +19,12 @@ import java.util.UUID;
  */
 public class Path extends GraphObject {
 
+    // Si se transformase a solamente una lista de edges
+    // seria imposible almacenar paths de largo 0
+    // ya que el Edge como objeto debe si o si tener un source y un target
+    // Podria ser el target null pero traería problemas con los joins
+    // y habría que modificar demasiado codigo para implementar solo
+    // la lista de Edges en vez de una lista de Nodes y Edges.
     private List<GraphObject> sequence;
 
     public Path(final String id, final String label) {
@@ -31,7 +38,7 @@ public class Path extends GraphObject {
     }
     
     public Path (final String id, final Edge edge) {
-        super(id);
+        super(id); 
         this.sequence = new ArrayList<>();
         this.insertEdge(edge);
     }
@@ -48,6 +55,12 @@ public class Path extends GraphObject {
         for (final Edge e : edges) {
             this.insertEdge(e);
         }
+    }
+    
+    public Path(final String id, final boolean reverse, final List<GraphObject> sequence) {
+        super(id);
+        this.sequence = new ArrayList<GraphObject>(sequence);
+        Collections.reverse(this.sequence);
     }
 
     public List<GraphObject> getSequence() {
@@ -110,17 +123,25 @@ public class Path extends GraphObject {
         }
         return edges;
     }
+    
+    public String getStringSequence() {
+        String seq = "";
+        for (int i = 0; i < sequence.size(); i++) {
+            seq += sequence.get(i).getLabel() + " ";
+        }
+        return seq;
+    }
 
     public int getNodesAmount() {
         return getNodeSequence().size();
     }
 
     public Node first() {
-        return this.getNodeSequence().get(0);
+        return (Node) this.sequence.get(0);
     }
 
     public Node last() {
-        return this.getNodeSequence().get(this.getNodeSequence().size() - 1);
+        return (Node) this.sequence.get( this.sequence.size() - 1 );
     }
 
     public Node getNodeAt(final int pos) {
@@ -188,6 +209,16 @@ public class Path extends GraphObject {
 
     public int lenght() {
         return sequence.size();
+    }
+    
+    public void setSequence(List<GraphObject> sequence) {
+        this.sequence = new ArrayList<GraphObject>(sequence);
+    }
+    
+    public void appendSequence(List<GraphObject> sequence) {
+        for (int i = 1; i < sequence.size(); i++) {
+            this.sequence.add(sequence.get(i));
+        }
     }
 
     @Override
