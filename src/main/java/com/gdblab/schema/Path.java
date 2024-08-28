@@ -256,4 +256,20 @@ public class Path extends GraphObject implements PathInterface {
         throw new UnsupportedOperationException("Unimplemented method 'join'");
     }
 
+    @Override
+    public boolean isTrail() {
+
+        int n = sequence.size();
+        
+        for (int i = 1; i < n - 1; i += 2) {
+            GraphObject edge = sequence.get(i);
+            
+            for (int j = i + 2; j < n; j += 2) {
+                if (edge.equals(sequence.get(j))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
