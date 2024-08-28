@@ -10,4 +10,5 @@ public interface PathInterface {
     public void insertEdge(final Edge e);
     public void insertNode(final Node n);
     
+    public boolean isTrail();
 }
