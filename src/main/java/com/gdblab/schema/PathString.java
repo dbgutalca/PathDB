@@ -90,5 +90,11 @@ public class PathString implements PathInterface {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'edgeLabelAt'");
     }
+
+    @Override
+    public String getIdAt(int pos) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIdAt'");
+    }
     
 }

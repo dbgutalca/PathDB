@@ -17,4 +17,5 @@ public interface PathInterface {
     public boolean isTrail();
 
     public String getLabelAt(int pos);
+    public String getIdAt(int pos);
 }
