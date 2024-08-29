@@ -3,14 +3,13 @@ package com.gdblab.queryplan.util;
 import com.gdblab.execution.Context;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.schema.Path;
-import com.gdblab.schema.PathInterface;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class Utils {
-    public static List<PathInterface> iterToList(final PhysicalOperator physicalOp) {
-        List<PathInterface> l = new LinkedList<>();
+    public static List<Path> iterToList(final PhysicalOperator physicalOp) {
+        List<Path> l = new LinkedList<>();
         while (physicalOp.hasNext()) {
             l.add(physicalOp.next());
         }

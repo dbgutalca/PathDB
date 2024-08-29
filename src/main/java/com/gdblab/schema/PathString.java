@@ -6,7 +6,7 @@ import java.util.List;
 public class PathString implements PathInterface {
 
     private Node start;
-    private ArrayList<String> path; // This is the path in string format of Label_1, Label_2, Label_3, ...
+    private ArrayList<String> path; // This is the path in string format of [ID_NODE_1, ID_EDGE_1, ID_NODE_2 ...
     private Node end;
 
     // Constructor for S0
@@ -50,10 +50,10 @@ public class PathString implements PathInterface {
     }
 
     @Override
-    public PathInterface join(PathInterface pathB) {
-        if (this.isJoinable(pathB)) {
-            return new PathString(this.start, this, (PathString) pathB , end);
-        }
+    public Path join(Path pathB) {
+        // if (this.isLinkeable(pathB)) {
+        //     return new Path(this.start, this, (Path) pathB , end);
+        // }
         return null;
     }
 
@@ -71,12 +71,24 @@ public class PathString implements PathInterface {
     }
 
     @Override
-    public boolean isJoinable(PathInterface that) {
+    public boolean isLinkeable(Path that) {
         return this.end.equals(that.first());
     }
 
     public List<String> getPath() {
         return this.path;
+    }
+
+    @Override
+    public boolean isTrail() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'isTrail'");
+    }
+
+    @Override
+    public String getLabelAt(int pos) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'edgeLabelAt'");
     }
     
 }

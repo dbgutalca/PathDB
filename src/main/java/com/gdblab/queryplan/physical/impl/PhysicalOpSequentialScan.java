@@ -4,7 +4,7 @@ import com.gdblab.queryplan.exception.IteratorAlreadyConsumedException;
 import com.gdblab.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.schema.PathInterface;
+import com.gdblab.schema.Path;
 
 /**
  * Sequential Scan resolves a brute-force Selection
@@ -12,7 +12,7 @@ import com.gdblab.schema.PathInterface;
 public class PhysicalOpSequentialScan extends UnaryPhysicalOp {
 
     protected final LogicalOpSelection lop;
-    private PathInterface slot = null;
+    private Path slot = null;
 
     public PhysicalOpSequentialScan(final PhysicalOperator child, final LogicalOpSelection lop) {
         super(child);
@@ -26,14 +26,14 @@ public class PhysicalOpSequentialScan extends UnaryPhysicalOp {
 
     /**
      * This method not only checks if there are more results, but also "saves"
-     * the next PathInterface in the slot variable
-     * @return true if there is a new PathInterface, or if there is already one stored. False otherwise
+     * the next Path in the slot variable
+     * @return true if there is a new Path, or if there is already one stored. False otherwise
      */
     @Override
     public boolean hasNext() {
         if (slot != null) return true;
         while (getChild().hasNext()){
-            PathInterface candidate = getChild().next();
+            Path candidate = getChild().next();
             if (lop.getCondition().eval(candidate)){
                 slot = candidate;
                 return true;
@@ -46,14 +46,14 @@ public class PhysicalOpSequentialScan extends UnaryPhysicalOp {
      * Always calls hasNext(). If there's something in the slot after the call,
      * this method returns the slot and restores its value to 0.
      *
-     * It must throw an exception if the child does not have more PathInterfaces. This
+     * It must throw an exception if the child does not have more Paths. This
      * exception is avoided by manually calling hasNext outside.
-     * @return the next PathInterface
+     * @return the next Path
      */
     @Override
-    public PathInterface next() {
+    public Path next() {
         if (hasNext()){
-            final PathInterface p = slot;
+            final Path p = slot;
             slot = null;
             return p;
         }

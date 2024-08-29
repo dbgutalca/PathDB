@@ -48,8 +48,8 @@ public final class Execute {
 
         LogicalOperator lo = visitor.getRoot();
 
-        // Adding filter on top of the logical operator
-        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("X") ||! Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
+       
+        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("") ||! Context.getInstance().getEndingNode().equalsIgnoreCase("") ) {
             lo = filterOnTop(lo);
         }
 
@@ -126,8 +126,8 @@ public final class Execute {
     private static LogicalOperator filterOnTop(LogicalOperator lo) {
         LogicalOpSelection los = null;
 
-        if (!Context.getInstance().getStartingNode().equalsIgnoreCase("X")) {
-            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
+        if (!Context.getInstance().getStartingNode().equalsIgnoreCase("")) {
+            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("")) {
                 // Starting and Ending is defined
                 los = new LogicalOpSelection(
                     lo,
@@ -147,7 +147,7 @@ public final class Execute {
         }
 
         else {
-            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
+            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("")) {
                 // Starting is not defined and Ending is defined
                 los = new LogicalOpSelection(
                     lo,

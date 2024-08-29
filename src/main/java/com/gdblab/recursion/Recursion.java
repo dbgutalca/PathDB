@@ -5,9 +5,7 @@
 package com.gdblab.recursion;
 
 import com.gdblab.algebra.PathAlgebra;
-import com.gdblab.main.Main_2;
 import com.gdblab.schema.Edge;
-import com.gdblab.schema.Node;
 import com.gdblab.schema.Path;
 
 import java.util.*;
@@ -19,8 +17,6 @@ import java.util.*;
 public class Recursion {
     
     public static LinkedList<Path> arbitrary (LinkedList<Path> s , int n){
-        if (Main_2.semantic.equals("Simple Path")) s = removeDuplicatedNodes(s);
-        else if (Main_2.semantic.equals("Trail")) s = removeDuplicatedEdges(s);
         
         LinkedList<Path> results = (LinkedList<Path>) s.clone();
         LinkedList<Path> last_results = new LinkedList<>();
@@ -38,33 +34,33 @@ public class Recursion {
     }
     
     //Obs: fue necesario revisar si el conjunto de entrada tenía nodos repetidos en sus caminos (bucles)
-    public static LinkedList<Path> noRepeatedNodes (LinkedList<Path> s , int n){
-        LinkedList<Path> results = removePathsWithRepeatedNodes(s);
-        LinkedList<Path> last_results = new LinkedList<>();
-        int i = 0;
-        while (results.size() > last_results.size() && i < n){
-            last_results = (LinkedList<Path>) results.clone();
-            results = PathAlgebra.NodeJoin(results, s);
-            results = removePathsWithRepeatedNodes(results);
-            results = PathAlgebra.Union(results, last_results);
-            i++;
-        }
-        return results;
-    }
+    // public static LinkedList<Path> noRepeatedNodes (LinkedList<Path> s , int n){
+    //     LinkedList<Path> results = removePathsWithRepeatedNodes(s);
+    //     LinkedList<Path> last_results = new LinkedList<>();
+    //     int i = 0;
+    //     while (results.size() > last_results.size() && i < n){
+    //         last_results = (LinkedList<Path>) results.clone();
+    //         results = PathAlgebra.NodeJoin(results, s);
+    //         results = removePathsWithRepeatedNodes(results);
+    //         results = PathAlgebra.Union(results, last_results);
+    //         i++;
+    //     }
+    //     return results;
+    // }
     
-    public static LinkedList<Path> noRepeatedEdges (LinkedList<Path> s , int n){
-        LinkedList<Path> results = (LinkedList<Path>) s.clone();
-        LinkedList<Path> last_results = new LinkedList<>();
-        int i = 0;
-        while (results.size() > last_results.size() && i < n){
-            last_results = (LinkedList<Path>) results.clone();
-            results = PathAlgebra.NodeJoin(results, s);
-            results = removePathsWithRepeatedEdges(results);
-            results = PathAlgebra.Union(results, last_results);
-            i++;
-        }
-        return results;
-    }
+    // public static LinkedList<Path> noRepeatedEdges (LinkedList<Path> s , int n){
+    //     LinkedList<Path> results = (LinkedList<Path>) s.clone();
+    //     LinkedList<Path> last_results = new LinkedList<>();
+    //     int i = 0;
+    //     while (results.size() > last_results.size() && i < n){
+    //         last_results = (LinkedList<Path>) results.clone();
+    //         results = PathAlgebra.NodeJoin(results, s);
+    //         results = removePathsWithRepeatedEdges(results);
+    //         results = PathAlgebra.Union(results, last_results);
+    //         i++;
+    //     }
+    //     return results;
+    // }
     
     public static LinkedList<Path> shortestPath (LinkedList<Path> s , int n){
         LinkedList<Path> results = (LinkedList<Path>) s.clone();
@@ -107,36 +103,32 @@ public class Recursion {
         reached_paths = (LinkedList<Path>) reached_paths_clon.clone();
         return results_clon;
     }
-    
-    
-    
-    
 
-    public static LinkedList<Path> removePathsWithRepeatedNodes(LinkedList<Path> s) {
-        LinkedList<Path> result = (LinkedList<Path>) s.clone();
-        for(Path p : s){
-            for(Node n: p.getNodeSequence()){
-                if (Collections.frequency(p.getNodeSequence(), n) >1){
-                    result.remove(p);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
+    // public static LinkedList<Path> removePathsWithRepeatedNodes(LinkedList<Path> s) {
+    //     LinkedList<Path> result = (LinkedList<Path>) s.clone();
+    //     for(Path p : s){
+    //         for(Node n: p.getNodeSequence()){
+    //             if (Collections.frequency(p.getNodeSequence(), n) >1){
+    //                 result.remove(p);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     return result;
+    // }
     
-    public static LinkedList<Path> removePathsWithRepeatedEdges(LinkedList<Path> s) {
-        LinkedList<Path> result = (LinkedList<Path>) s.clone();
-        for(Path p : s){
-            for(Edge e: p.getEdgeSequence()){
-                if (Collections.frequency(p.getEdgeSequence(), e) >1){
-                    result.remove(p);
-                    break;
-                }
-            }
-        }
-        return result;
-    }
+    // public static LinkedList<Path> removePathsWithRepeatedEdges(LinkedList<Path> s) {
+    //     LinkedList<Path> result = (LinkedList<Path>) s.clone();
+    //     for(Path p : s){
+    //         for(Edge e: p.getEdgeSequence()){
+    //             if (Collections.frequency(p.getEdgeSequence(), e) >1){
+    //                 result.remove(p);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     return result;
+    // }
 
     private static void checkPath(LinkedList<Path> paths) {
         LinkedList<Path> pathsToRemove = new LinkedList<>();

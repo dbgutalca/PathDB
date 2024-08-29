@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.UUID;
-import com.gdblab.main.Main_2;
 import com.gdblab.schema.GraphObject;
 
 /**
@@ -32,7 +31,7 @@ public class PathAlgebra {
             Path join_path = null; 
  
             join_path = new Path("");
-            if(pathA.getNodesAmount()== 1 && pathB.getNodesAmount()== 1){
+            if(pathA.lenght()== 1 && pathB.lenght()== 1){
                 join_path.insertNode(pathA.first());
             }
             else {
@@ -142,74 +141,74 @@ public class PathAlgebra {
         return difference_path;
     }
     
-    public ArrayList<Path> LeftSubPaths (ArrayList<Path> paths){
-        ArrayList<Path> left_sub_paths = new ArrayList<>();
-        for (Path path : paths){
-            for (int i = 0; i < path.getNodesAmount(); i++) {
-                Path lsp = path.leftSubPath(i);
-                boolean contains = false;
-                for (Path elsp : left_sub_paths) 
-                    if(lsp.equals(elsp))
-                        contains=true;
-                if (!contains)
-                    left_sub_paths.add(lsp);
-            }
-        }
-        return left_sub_paths;
-    }
+    // public ArrayList<Path> LeftSubPaths (ArrayList<Path> paths){
+    //     ArrayList<Path> left_sub_paths = new ArrayList<>();
+    //     for (Path path : paths){
+    //         for (int i = 0; i < path.getNodesAmount(); i++) {
+    //             Path lsp = path.leftSubPath(i);
+    //             boolean contains = false;
+    //             for (Path elsp : left_sub_paths) 
+    //                 if(lsp.equals(elsp))
+    //                     contains=true;
+    //             if (!contains)
+    //                 left_sub_paths.add(lsp);
+    //         }
+    //     }
+    //     return left_sub_paths;
+    // }
     
-    public ArrayList<Path> RightSubPaths (ArrayList<Path> paths){
-        ArrayList<Path> right_sub_paths = new ArrayList<>();
-        for (Path path : paths){
-            for (int i = 0; i < path.getNodesAmount(); i++) {
-                Path rsp = path.rightSubPath(i);
-                boolean contains = false;
-                for (Path elsp : right_sub_paths) 
-                    if(rsp.equals(elsp))
-                        contains=true;
-                if (!contains)
-                    right_sub_paths.add(rsp);
-            }
-        }
-        return right_sub_paths;
-    }
+    // public ArrayList<Path> RightSubPaths (ArrayList<Path> paths){
+    //     ArrayList<Path> right_sub_paths = new ArrayList<>();
+    //     for (Path path : paths){
+    //         for (int i = 0; i < path.getNodesAmount(); i++) {
+    //             Path rsp = path.rightSubPath(i);
+    //             boolean contains = false;
+    //             for (Path elsp : right_sub_paths) 
+    //                 if(rsp.equals(elsp))
+    //                     contains=true;
+    //             if (!contains)
+    //                 right_sub_paths.add(rsp);
+    //         }
+    //     }
+    //     return right_sub_paths;
+    // }
     
-    public ArrayList<Path> NodeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-       ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
-       ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
-       ArrayList<Path> join_path = new ArrayList<>();
-       for (Path path1 : left_sub_paths) {
-           for (Path path2 : right_sub_paths) {
-               Path p = NodeLink(path1, path2);
-               if(p != null)
-                   if(!IsPathInSet(join_path, p))
-                       join_path.add(p);
-           } 
-       }
-       return join_path;
-    }
+    // public ArrayList<Path> NodeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+    //    ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
+    //    ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
+    //    ArrayList<Path> join_path = new ArrayList<>();
+    //    for (Path path1 : left_sub_paths) {
+    //        for (Path path2 : right_sub_paths) {
+    //            Path p = NodeLink(path1, path2);
+    //            if(p != null)
+    //                if(!IsPathInSet(join_path, p))
+    //                    join_path.add(p);
+    //        } 
+    //    }
+    //    return join_path;
+    // }
 
-    public ArrayList<Path> EdgeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-       ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
-       ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
-       ArrayList<Path> join_path = new ArrayList<>();
-       for (Path path1 : left_sub_paths) {
-           for (Path path2 : right_sub_paths) {
-               Path p = EdgeLink(path1, path2);
-               if(p != null)
-                   if(!IsPathInSet(join_path, p))
-                       join_path.add(p);
-           } 
-       }
-       return join_path;
-    }
+    // public ArrayList<Path> EdgeCrossJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+    //    ArrayList<Path> left_sub_paths = LeftSubPaths(pathsA);
+    //    ArrayList<Path> right_sub_paths = RightSubPaths(pathsB);
+    //    ArrayList<Path> join_path = new ArrayList<>();
+    //    for (Path path1 : left_sub_paths) {
+    //        for (Path path2 : right_sub_paths) {
+    //            Path p = EdgeLink(path1, path2);
+    //            if(p != null)
+    //                if(!IsPathInSet(join_path, p))
+    //                    join_path.add(p);
+    //        } 
+    //    }
+    //    return join_path;
+    // }
  
-    private boolean IsPathInSet (ArrayList<Path> paths, Path path){
-        for (Path p : paths)
-            if(p.equals(path))
-                return true;
-        return false;
-    }
+    // private boolean IsPathInSet (ArrayList<Path> paths, Path path){
+    //     for (Path p : paths)
+    //         if(p.equals(path))
+    //             return true;
+    //     return false;
+    // }
     
     public static boolean hasDuplicateNodes(ArrayList<String> tokens) {
         HashSet<String> visitedNodes = new HashSet<>();

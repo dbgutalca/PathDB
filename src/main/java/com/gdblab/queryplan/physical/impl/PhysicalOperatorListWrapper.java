@@ -3,14 +3,14 @@ package com.gdblab.queryplan.physical.impl;
 import java.util.Iterator;
 
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.schema.PathInterface;
+import com.gdblab.schema.Path;
 
 public class PhysicalOperatorListWrapper extends PhysicalOp {
 
-    protected final Iterator<PathInterface> PathInterfaces;
+    protected final Iterator<Path> Paths;
 
-    public PhysicalOperatorListWrapper(final Iterator<PathInterface> PathInterfaces) {
-        this.PathInterfaces = PathInterfaces;
+    public PhysicalOperatorListWrapper(final Iterator<Path> Paths) {
+        this.Paths = Paths;
     }
 
     @Override
@@ -20,11 +20,11 @@ public class PhysicalOperatorListWrapper extends PhysicalOp {
 
     @Override
     public boolean hasNext() {
-        return this.PathInterfaces.hasNext();
+        return this.Paths.hasNext();
     }
 
     @Override
-    public PathInterface next() {
-        return this.PathInterfaces.next();
+    public Path next() {
+        return this.Paths.next();
     }
 }

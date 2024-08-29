@@ -10,19 +10,19 @@ import com.gdblab.queryplan.logical.impl.LogicalOpRecursive;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.queryplan.util.Utils;
-import com.gdblab.schema.PathInterface;
+import com.gdblab.schema.Path;
 
 public class PhysicalOpRecursive extends UnaryPhysicalOp {
 
     protected final LogicalOpRecursive lop;
-    protected PathInterface slot = null;
+    protected Path slot = null;
 
-    protected final List<PathInterface> originalChild;
-    private final List<PathInterface> loopChild;
+    protected final List<Path> originalChild;
+    private final List<Path> loopChild;
 
     private PhysicalOpHashNodeJoin join;
 
-    private final Iterator<PathInterface> childIterator;
+    private final Iterator<Path> childIterator;
 
     private Integer counterFixPoint = 1;
 
@@ -50,20 +50,20 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
     @Override
     public boolean hasNext() {
         if ( slot == null ) {
-            slot = getNextPathInterface();
+            slot = getNextPath();
             return slot != null;
         }
         return true;
     }
 
     @Override
-    public PathInterface next() {
-        final PathInterface r = slot;
+    public Path next() {
+        final Path r = slot;
         slot = null;
         return r;
     }
 
-    protected PathInterface getNextPathInterface() {
+    protected Path getNextPath() {
         while (this.childIterator.hasNext()) {
             return this.childIterator.next();
         }
@@ -74,10 +74,10 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             }
             
             while (this.join.hasNext()) {
-                final PathInterface PathInterface = this.join.next();
-                if (PathInterface != null) {
-                    this.loopChild.add(PathInterface);
-                    return PathInterface;
+                final Path path = this.join.next();
+                if (path != null && path.isTrail()) {
+                    this.loopChild.add(path);
+                    return path;
                 }
             }
             
