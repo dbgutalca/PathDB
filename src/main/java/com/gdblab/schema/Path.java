@@ -231,4 +231,9 @@ public class Path extends GraphObject implements PathInterface {
     public String getLabelAt(int pos) {
         return this.sequence.get(pos).getLabel();
     }
+
+    @Override
+    public String getIdAt(int pos) {
+        return this.sequence.get(pos).getId();
+    }
 }
