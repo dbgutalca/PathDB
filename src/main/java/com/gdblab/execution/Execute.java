@@ -21,6 +21,7 @@ import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.util.Utils;
 import com.gdblab.schema.GraphObject;
 import com.gdblab.schema.Path;
+import com.gdblab.schema.PathInterface;
 import com.gdlab.parser.RPQGrammarLexer;
 import com.gdlab.parser.RPQGrammarParser;
 
@@ -47,8 +48,8 @@ public final class Execute {
 
         LogicalOperator lo = visitor.getRoot();
 
-        // Adding filter on top of the logical operator
-        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("X") ||! Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
+       
+        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("") ||! Context.getInstance().getEndingNode().equalsIgnoreCase("") ) {
             lo = filterOnTop(lo);
         }
 
@@ -77,9 +78,9 @@ public final class Execute {
         Integer ms = Context.getInstance().getMaxShowedPaths();
         if (ms <= 0) {
             while (po.hasNext()) {
-                Path p = po.next();
+                PathInterface p = po.next();
                 System.out.print("Path #" + counter + " - ");
-                for (GraphObject go : p.getSequence()) {
+                for (GraphObject go : ((Path) p).getSequence()) {
                     System.out.print( go.getLabel() + " ");
                 }
                 System.out.println();
@@ -89,11 +90,11 @@ public final class Execute {
         }
 
         while ( po.hasNext() ) {
-            Path p = po.next();
+            PathInterface p = po.next();
 
             if (counter <= ms) {
                 System.out.print("Path #" + counter + " - ");
-                for (GraphObject go : p.getSequence()) {
+                for (GraphObject go : ((Path) p).getSequence()) {
                     System.out.print( go.getLabel() + " ");
                 }
                 System.out.println();
@@ -109,9 +110,9 @@ public final class Execute {
         File file = new File(Context.getInstance().getOutputFileName());
         try (FileWriter writer = new FileWriter(file)) {
             while ( po.hasNext() ) {
-                Path p = po.next();
+                PathInterface p = po.next();
                 writer.write("Path #" + counter + " - ");
-                for (GraphObject go : p.getSequence()) {
+                for (GraphObject go : ((Path) p).getSequence()) {
                     writer.write( go.getLabel() + " ");
                 }
                 writer.write("\n");
@@ -125,8 +126,8 @@ public final class Execute {
     private static LogicalOperator filterOnTop(LogicalOperator lo) {
         LogicalOpSelection los = null;
 
-        if (!Context.getInstance().getStartingNode().equalsIgnoreCase("X")) {
-            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
+        if (!Context.getInstance().getStartingNode().equalsIgnoreCase("")) {
+            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("")) {
                 // Starting and Ending is defined
                 los = new LogicalOpSelection(
                     lo,
@@ -146,7 +147,7 @@ public final class Execute {
         }
 
         else {
-            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("Y")) {
+            if (!Context.getInstance().getEndingNode().equalsIgnoreCase("")) {
                 // Starting is not defined and Ending is defined
                 los = new LogicalOpSelection(
                     lo,

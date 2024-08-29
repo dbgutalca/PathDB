@@ -17,7 +17,7 @@ import java.util.UUID;
  *
  * @author ramhg
  */
-public class Path extends GraphObject {
+public class Path extends GraphObject implements PathInterface {
 
     // Si se transformase a solamente una lista de edges
     // seria imposible almacenar paths de largo 0
@@ -67,6 +67,7 @@ public class Path extends GraphObject {
         return sequence;
     }
 
+    @Override
     public void insertEdge(final Edge edge) {
         if (sequence.isEmpty()) {
             sequence.add(edge.getSource());
@@ -78,20 +79,11 @@ public class Path extends GraphObject {
         }
     }
 
+    @Override
     public void insertNode(final Node node) {
         if (sequence.isEmpty()) {
             sequence.add(node);
         }
-    }
-
-    public List<Node> getNodeSequence() {
-        final ArrayList<Node> nodes = new ArrayList<>();
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Node node) {
-                nodes.add(node);
-            }
-        }
-        return nodes;
     }
 
     public String getStringNodeSequence() {
@@ -132,10 +124,6 @@ public class Path extends GraphObject {
         return seq;
     }
 
-    public int getNodesAmount() {
-        return getNodeSequence().size();
-    }
-
     public Node first() {
         return (Node) this.sequence.get(0);
     }
@@ -144,56 +132,12 @@ public class Path extends GraphObject {
         return (Node) this.sequence.get( this.sequence.size() - 1 );
     }
 
-    public Node getNodeAt(final int pos) {
-        final List<Node> seq = this.getNodeSequence();
-        if (seq.size() >= pos) {
-            return seq.get(pos);
-        }
-        return null;
-    }
-
     public Edge getEdgeAt(final int pos) {
         final ArrayList<Edge> seq = this.getEdgeSequence();
         if (seq.size() >= pos) {
             return seq.get(pos);
         }
         return null;
-    }
-
-    public Path subPath(final int i, final int j) {
-        final Node first = getNodeAt(i);
-        final Node last = getNodeAt(j);
-        final ArrayList<Edge> seq = this.getEdgeSequence();
-        final Path new_path = new Path(UUID.randomUUID().toString(), "path");
-
-        boolean last_reached = false;
-        boolean first_reached = false;
-
-        if (i == j) {
-            new_path.insertNode(first);
-        }
-
-        for (int k = 0; k < seq.size() && !last_reached; k++) {
-            if (seq.get(k).getSource().getId().equals(first.getId()) && !first_reached) {
-                first_reached = true;
-            }
-            if (seq.get(k).getTarget().getId().equals(last.getId())) {
-                last_reached = true;
-            }
-
-            if (first_reached) {
-                new_path.insertEdge(seq.get(k));
-            }
-        }
-        return new_path;
-    }
-
-    public Path leftSubPath(final int i) {
-        return subPath(0, i);
-    }
-
-    public Path rightSubPath(final int j) {
-        return subPath(j, this.getNodesAmount() - 1);
     }
 
     public boolean isNodeLinkable(final Path path2) {
@@ -207,9 +151,7 @@ public class Path extends GraphObject {
         return graph.getEdge(node1_id, node2_id);
     }
 
-    public int lenght() {
-        return sequence.size();
-    }
+    
     
     public void setSequence(List<GraphObject> sequence) {
         this.sequence = new ArrayList<GraphObject>(sequence);
@@ -246,4 +188,47 @@ public class Path extends GraphObject {
         return false;
     }
 
+
+    @Override
+    public int lenght() {
+        return sequence.size();
+    }
+    
+    @Override
+    public Path join(Path pathB) {
+        if (isLinkeable(pathB)) {
+            Path path = new Path(UUID.randomUUID().toString());
+            path.setSequence(this.sequence);
+            path.appendSequence(pathB.getSequence());
+            return path;
+        }
+        return  null;
+    }
+
+    @Override
+    public boolean isTrail() {
+
+        int n = sequence.size();
+        
+        for (int i = 1; i < n - 1; i += 2) {
+            GraphObject edge = sequence.get(i);
+            
+            for (int j = i + 2; j < n; j += 2) {
+                if (edge.equals(sequence.get(j))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean isLinkeable(Path pathB) {
+        return this.last().getId().equals(pathB.first().getId());
+    }
+
+    @Override
+    public String getLabelAt(int pos) {
+        return this.sequence.get(pos).getLabel();
+    }
 }

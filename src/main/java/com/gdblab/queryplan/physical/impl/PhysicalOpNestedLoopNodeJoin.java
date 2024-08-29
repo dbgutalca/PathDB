@@ -81,7 +81,7 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
             // There is a rowRight
             while (left.hasNext()) {
                 final Path rowLeft = left.next();
-                final Path r = PathAlgebra.NodeLink(rowLeft, nextRight); //Algebra.merge(rowLeft, rowRight);
+                final Path r = rowLeft.join(nextRight); //Algebra.merge(rowLeft, rowRight);
                 if ( r != null ) {
                     if (!firstMatch) firstMatch = true;
                     return r;
@@ -114,7 +114,7 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
             // There is a rowRight
             while (left.hasNext()) {
                 final Path rowLeft = left.next();
-                final Path r = PathAlgebra.NodeLink(rowLeft, nextRight); //Algebra.merge(rowLeft, rowRight);
+                final Path r = rowLeft.join(nextRight); //Algebra.merge(rowLeft, rowRight);
                 if ( r != null ) {
                     return r;
                 }
@@ -125,7 +125,7 @@ public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
     }
 
     private List<Path> filterLeftRowsByRightNode(Node n) {
-        return leftRows.stream().filter( path -> { return path.last().equals(n); })
+        return leftRows.stream().filter( Path -> { return Path.last().equals(n); })
         .collect(Collectors.toList());
     }
 

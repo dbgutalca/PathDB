@@ -26,8 +26,8 @@ public class PhysicalOpSequentialScan extends UnaryPhysicalOp {
 
     /**
      * This method not only checks if there are more results, but also "saves"
-     * the next path in the slot variable
-     * @return true if there is a new path, or if there is already one stored. False otherwise
+     * the next Path in the slot variable
+     * @return true if there is a new Path, or if there is already one stored. False otherwise
      */
     @Override
     public boolean hasNext() {
@@ -46,9 +46,9 @@ public class PhysicalOpSequentialScan extends UnaryPhysicalOp {
      * Always calls hasNext(). If there's something in the slot after the call,
      * this method returns the slot and restores its value to 0.
      *
-     * It must throw an exception if the child does not have more paths. This
+     * It must throw an exception if the child does not have more Paths. This
      * exception is avoided by manually calling hasNext outside.
-     * @return the next path
+     * @return the next Path
      */
     @Override
     public Path next() {

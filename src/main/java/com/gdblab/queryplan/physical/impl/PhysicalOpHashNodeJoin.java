@@ -67,7 +67,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
 
             // There is a rowRight
             if (partialLeft.hasNext()) {
-                return PathAlgebra.NodeLink(partialLeft.next(), nextRight); // no need to check if null
+                return partialLeft.next().join(nextRight);
             }
             // Nothing more for this rowRight.
             nextRight = null;

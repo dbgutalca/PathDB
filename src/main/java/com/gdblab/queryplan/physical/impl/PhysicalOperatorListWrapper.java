@@ -7,10 +7,10 @@ import com.gdblab.schema.Path;
 
 public class PhysicalOperatorListWrapper extends PhysicalOp {
 
-    protected final Iterator<Path> paths;
+    protected final Iterator<Path> Paths;
 
-    public PhysicalOperatorListWrapper(final Iterator<Path> paths) {
-        this.paths = paths;
+    public PhysicalOperatorListWrapper(final Iterator<Path> Paths) {
+        this.Paths = Paths;
     }
 
     @Override
@@ -20,11 +20,11 @@ public class PhysicalOperatorListWrapper extends PhysicalOp {
 
     @Override
     public boolean hasNext() {
-        return this.paths.hasNext();
+        return this.Paths.hasNext();
     }
 
     @Override
     public Path next() {
-        return this.paths.next();
+        return this.Paths.next();
     }
 }

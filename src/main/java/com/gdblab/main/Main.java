@@ -233,10 +233,9 @@ public class Main {
     }
 
     private static String[] preProcessRPQData(String rpq) {
-        String[] data = rpq.trim()
-                        .replaceAll("(", "")
-                        .replaceAll(")", "")
-                        .split(","); // [X,rpq,Y]
+        String[] data = rpq.trim().split(",");
+        data[0] = data[0].replaceAll("\\(", "");
+        data[2] = data[2].replaceAll("\\)", "");
 
         if (data.length != 3) {
             System.out.println("Invalid Regular Path Query: " + rpq);

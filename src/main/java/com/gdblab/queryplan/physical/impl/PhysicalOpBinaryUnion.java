@@ -9,6 +9,8 @@ import com.gdblab.queryplan.logical.impl.LogicalOpUnion;
 import com.gdblab.queryplan.physical.PhysicalOperator;
 import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.schema.Path;
+import com.gdblab.schema.Path;
+
 import java.util.LinkedList;
 
 public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
