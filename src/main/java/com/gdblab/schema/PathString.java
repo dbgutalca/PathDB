@@ -86,7 +86,7 @@ public class PathString implements PathInterface {
     }
 
     @Override
-    public String getLabelAt(int pos) {
+    public boolean isLabelAt(int pos, String label) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'edgeLabelAt'");
     }

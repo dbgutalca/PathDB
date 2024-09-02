@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
@@ -37,6 +38,16 @@ public class CSRVPMin implements Graph{
     @Override
     public Iterator<Node> getNodeIterator() {
         return nodes.values().iterator();
+    }
+
+    @Override
+    public Edge getEdge(String id) {
+        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
+            final Edge edge = edgeIt.next(); 
+            if (edge.getId().equals(id))
+                return edge;
+        }
+        return null;
     }
 
     @Override
@@ -132,6 +143,20 @@ public class CSRVPMin implements Graph{
             edgesByLabel.add(edge);
             return edge;
         }
+    }
+
+    @Override
+    public Edge getEdge(String id, String label) {
+        List<Edge> edges = this.edges.get(label);
+
+        // Find for id in edges
+        for (Edge edge : edges) {
+            if (edge.getId().equals(id)) {
+                return edge;
+            }
+        }
+
+        return null;
     }
     
 }

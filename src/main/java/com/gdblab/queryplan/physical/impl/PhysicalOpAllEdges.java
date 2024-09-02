@@ -40,7 +40,7 @@ public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
         if (slot != null) return true;
         while (edges.hasNext()){
             Edge edge = edges.next();
-            Path p = new Path(( UUID.randomUUID().toString()), edge);
+            Path p = new Path(edge);
             slot = p;
             return true;
         }

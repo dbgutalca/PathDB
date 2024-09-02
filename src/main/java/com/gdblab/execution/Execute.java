@@ -80,10 +80,7 @@ public final class Execute {
             while (po.hasNext()) {
                 PathInterface p = po.next();
                 System.out.print("Path #" + counter + " - ");
-                for (GraphObject go : ((Path) p).getSequence()) {
-                    System.out.print( go.getLabel() + " ");
-                }
-                System.out.println();
+                System.out.println(p.toString());
                 counter++;
             }
             return;
@@ -94,10 +91,7 @@ public final class Execute {
 
             if (counter <= ms) {
                 System.out.print("Path #" + counter + " - ");
-                for (GraphObject go : ((Path) p).getSequence()) {
-                    System.out.print( go.getLabel() + " ");
-                }
-                System.out.println();
+                System.out.println(p.toString());
             }
             if (counter == (ms + 1)) {
                 System.out.println("...");
@@ -112,9 +106,7 @@ public final class Execute {
             while ( po.hasNext() ) {
                 PathInterface p = po.next();
                 writer.write("Path #" + counter + " - ");
-                for (GraphObject go : ((Path) p).getSequence()) {
-                    writer.write( go.getLabel() + " ");
-                }
+                writer.write(p.toString());
                 writer.write("\n");
                 counter++;
             }

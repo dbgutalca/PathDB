@@ -28,13 +28,10 @@ public class Label  extends Condition{
         this.pos = pos;
     }
 
-   
-    
-
     @Override
     public boolean eval(Path p) {
         if (p.getSequence().size() > pos)
-            return p.getSequence().get(pos).getLabel().equals(label);
+            return p.isLabelAt(pos, label);
         else
             return false;
     }

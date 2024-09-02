@@ -1,7 +1,5 @@
 package com.gdblab.schema;
 
-import java.util.List;
-
 public interface PathInterface {
     
     public Node first();
@@ -16,6 +14,8 @@ public interface PathInterface {
     
     public boolean isTrail();
 
-    public String getLabelAt(int pos);
+    public boolean isLabelAt(int pos, String label);
     public String getIdAt(int pos);
+
+    public String toString();
 }

@@ -4,7 +4,7 @@ import com.gdblab.schema.Path;
 import org.junit.Test;
 
 public class PhysicalOpSequentialScanTest {
-    final Path p1 = new Path("a", "x");
+    final Path p1 = new Path();
 
     @Test
     public void filterTest() {

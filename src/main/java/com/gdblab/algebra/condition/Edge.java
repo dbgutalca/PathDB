@@ -23,7 +23,8 @@ public class Edge  extends Condition{
 
     @Override
     public boolean eval(Path p) {
-        return p.getEdgeAt(this.getPos()).getId().equals(this.getId());
+        return true;
+        // return p.getEdgeAt(this.getPos()).getId().equals(this.getId());
     }
 
     public int getPos() {

@@ -115,6 +115,7 @@ public final class MemoryGraph implements Graph {
         nodes.put(id,node);
     }
     
+    @Override
     public Edge getEdge(String id) {
         return edges.get(id);
     }

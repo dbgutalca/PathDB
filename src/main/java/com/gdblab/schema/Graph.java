@@ -10,6 +10,16 @@ public interface Graph {
     public Node getNode(String id);
 
     /**
+     * Gets a node object in the graph with the given id. null if not present
+     */
+    public Edge getEdge(String id);
+
+     /**
+     * Gets a node object in the graph with the given id. null if not present
+     */
+    public Edge getEdge(String id, String label);
+
+    /**
      * Gets an iterator that iterates through all the nodes in the graph
      */
     public Iterator<Node> getNodeIterator();

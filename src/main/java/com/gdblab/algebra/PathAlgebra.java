@@ -27,119 +27,105 @@ public class PathAlgebra {
     
     public static Path NodeLink (Path pathA, Path pathB){
 
-        if(pathA.isNodeLinkable(pathB)){
-            Path join_path = null; 
- 
-            join_path = new Path("");
-            if(pathA.lenght()== 1 && pathB.lenght()== 1){
-                join_path.insertNode(pathA.first());
-            }
-            else {
-                join_path.setSequence(pathA.getSequence());
-                join_path.appendSequence(pathB.getSequence());
-                
-            }
-        
-            return join_path;
-        }
+        if(pathA.isLinkeable(pathB)){ return pathA.join(pathB); }
         
         return null;
     }
     
-    public static LinkedList<Path> NodeJoin (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
-        LinkedList<Path> join_path = new LinkedList<>();
+    // public static LinkedList<Path> NodeJoin (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
+    //     LinkedList<Path> join_path = new LinkedList<>();
         
-        for (Path path1 : pathsA) {
-            for (Path path2 : pathsB) {
+    //     for (Path path1 : pathsA) {
+    //         for (Path path2 : pathsB) {
 
-                Path p = NodeLink(path1, path2);
-                if(p != null) {
-                    boolean equal = false;
-                    for (Path jp : join_path) {
-                        if(jp.equals(p)){
-                            equal = true;
-                            break;
-                        }
-                    }
-                    if(!equal)
-                        join_path.add(p);
-                }
-            } 
-        }
-        return join_path;
-    }
+    //             Path p = NodeLink(path1, path2);
+    //             if(p != null) {
+    //                 boolean equal = false;
+    //                 for (Path jp : join_path) {
+    //                     if(jp.equals(p)){
+    //                         equal = true;
+    //                         break;
+    //                     }
+    //                 }
+    //                 if(!equal)
+    //                     join_path.add(p);
+    //             }
+    //         } 
+    //     }
+    //     return join_path;
+    // }
     
-    public Path EdgeLink (Path pathA, Path pathB){
-        Path join_path = null;
-        Edge edge = pathA.isEdgeLinkable(pathB, graph);
-        if(edge != null){
-            join_path = new Path(UUID.randomUUID().toString());
-            for (Edge ed : pathA.getEdgeSequence())
-                join_path.insertEdge(ed);
-            join_path.insertEdge(edge);
-            for (Edge ed : pathB.getEdgeSequence())
-                join_path.insertEdge(ed);
-        }
-        return join_path;
-    }
+    // public Path EdgeLink (Path pathA, Path pathB){
+    //     Path join_path = null;
+    //     Edge edge = pathA.isEdgeLinkable(pathB, graph);
+    //     if(edge != null){
+    //         join_path = new Path(UUID.randomUUID().toString());
+    //         for (Edge ed : pathA.getEdgeSequence())
+    //             join_path.insertEdge(ed);
+    //         join_path.insertEdge(edge);
+    //         for (Edge ed : pathB.getEdgeSequence())
+    //             join_path.insertEdge(ed);
+    //     }
+    //     return join_path;
+    // }
     
-    public ArrayList<Path> EdgeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> join_path = new ArrayList<>();
-        for (Path path1 : pathsA) {
-            for (Path path2 : pathsB) {
-                Path p = EdgeLink(path1, path2);
-                if(p != null)
-                    join_path.add(p);
-            } 
-        }
-        return join_path;
-    }
+    // public ArrayList<Path> EdgeJoin (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+    //     ArrayList<Path> join_path = new ArrayList<>();
+    //     for (Path path1 : pathsA) {
+    //         for (Path path2 : pathsB) {
+    //             Path p = EdgeLink(path1, path2);
+    //             if(p != null)
+    //                 join_path.add(p);
+    //         } 
+    //     }
+    //     return join_path;
+    // }
     
-    public static LinkedList<Path> Union (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
-        LinkedList<Path> union_path = new LinkedList<>();
+    // public static LinkedList<Path> Union (LinkedList<Path> pathsA, LinkedList<Path> pathsB){
+    //     LinkedList<Path> union_path = new LinkedList<>();
 
-        union_path.addAll(pathsA);
-        for (Path path2 : pathsB) {
-            boolean equal = false;
-             for (Path path1 : pathsA) {
-                if(path1.equals(path2)){
-                    equal = true;
-                    break;
-                }
-            }
-            if(!equal)
-                union_path.add(path2);
-        }
-        return union_path;
-    }
+    //     union_path.addAll(pathsA);
+    //     for (Path path2 : pathsB) {
+    //         boolean equal = false;
+    //          for (Path path1 : pathsA) {
+    //             if(path1.equals(path2)){
+    //                 equal = true;
+    //                 break;
+    //             }
+    //         }
+    //         if(!equal)
+    //             union_path.add(path2);
+    //     }
+    //     return union_path;
+    // }
     
-    public ArrayList<Path> Intersection (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> intersection_path = new ArrayList<>();
-        for (Path path1 : pathsA) {
-            for (Path path2 : pathsB) {
-                if(path1.equals(path2)){
-                    intersection_path.add(path1);
-                }
-            } 
-        }
-        return intersection_path;
-    }
+    // public ArrayList<Path> Intersection (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+    //     ArrayList<Path> intersection_path = new ArrayList<>();
+    //     for (Path path1 : pathsA) {
+    //         for (Path path2 : pathsB) {
+    //             if(path1.equals(path2)){
+    //                 intersection_path.add(path1);
+    //             }
+    //         } 
+    //     }
+    //     return intersection_path;
+    // }
     
-    public ArrayList<Path> Difference (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
-        ArrayList<Path> difference_path = new ArrayList<>();
-        for (Path path1 : pathsA) {
-            boolean equal = false;
-            for (Path path2 : pathsB) {
-                if(path1.equals(path2)){
-                    equal = true;
-                    break;
-                }
-            } 
-            if (!equal)
-                difference_path.add(path1);
-        }
-        return difference_path;
-    }
+    // public ArrayList<Path> Difference (ArrayList<Path> pathsA, ArrayList<Path> pathsB){
+    //     ArrayList<Path> difference_path = new ArrayList<>();
+    //     for (Path path1 : pathsA) {
+    //         boolean equal = false;
+    //         for (Path path2 : pathsB) {
+    //             if(path1.equals(path2)){
+    //                 equal = true;
+    //                 break;
+    //             }
+    //         } 
+    //         if (!equal)
+    //             difference_path.add(path1);
+    //     }
+    //     return difference_path;
+    // }
     
     // public ArrayList<Path> LeftSubPaths (ArrayList<Path> paths){
     //     ArrayList<Path> left_sub_paths = new ArrayList<>();
