@@ -48,11 +48,11 @@ public final class Execute {
         LogicalOperator lo = visitor.getRoot();
 
         // Adding filter on top of the logical operator
-        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("X") ) {
+        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("") ) {
             lo = filterOnTopLeft(lo);
         }
 
-        if ( !Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
+        if ( !Context.getInstance().getEndingNode().equalsIgnoreCase("") ) {
             lo = filterOnTopRight(lo);
         }
 

@@ -187,15 +187,15 @@ public class Main {
                     "        Edges file: " + context.getEdgesFileName() + " (Loaded in " + edgesUploadTime + ").");
         }
 
-        System.out.println("    Regular Path Query: " + context.getRPQ() + ".");
+        // System.out.println("    Regular Path Query: " + context.getRPQ() + ".");
 
-        if (context.getStartingNode().equals("X")) {
+        if (context.getStartingNode().equals("")) {
             System.out.println("    Starting Node: Any.");
         } else {
             System.out.println("    Starting Node: " + context.getStartingNode() + ".");
         }
 
-        if (context.getEndingNode().equals("Y")) {
+        if (context.getEndingNode().equals("")) {
             System.out.println("    Ending Node: Any.");
         } else {
             System.out.println("    Ending Node: " + context.getEndingNode() + ".");
@@ -233,10 +233,10 @@ public class Main {
     }
 
     private static String[] preProcessRPQData(String rpq) {
-        String[] data = rpq.trim()
-                        .replaceAll("(", "")
-                        .replaceAll(")", "")
-                        .split(","); // [X,rpq,Y]
+        String[] data = rpq.trim().split(",");
+
+        data[0] = data[0].replaceAll("\\(", "").trim();
+        data[2] = data[2].replaceAll("\\)", "").trim();
 
         if (data.length != 3) {
             System.out.println("Invalid Regular Path Query: " + rpq);
