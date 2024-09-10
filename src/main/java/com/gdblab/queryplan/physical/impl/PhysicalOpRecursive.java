@@ -75,7 +75,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             
             while (this.join.hasNext()) {
                 final Path path = this.join.next();
-                if (path != null && path.isTrail()) {
+                if (path != null) {
                     this.loopChild.add(path);
                     return path;
                 }

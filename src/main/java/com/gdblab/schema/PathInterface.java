@@ -12,7 +12,7 @@ public interface PathInterface {
     public void insertEdge(final Edge e);
     public void insertNode(final Node n);
     
-    public boolean isTrail();
+    public boolean isTrail(final Path pathB);
 
     public boolean isLabelAt(int pos, String label);
     public String getIdAt(int pos);

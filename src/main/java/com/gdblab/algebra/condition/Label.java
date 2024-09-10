@@ -30,7 +30,7 @@ public class Label  extends Condition{
 
     @Override
     public boolean eval(Path p) {
-        if (p.getSequence().size() > pos)
+        if (p.lenght() > pos)
             return p.isLabelAt(pos, label);
         else
             return false;

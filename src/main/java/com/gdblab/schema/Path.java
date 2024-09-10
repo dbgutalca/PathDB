@@ -6,9 +6,13 @@
 package com.gdblab.schema;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.gdblab.execution.Context;
+import com.gdblab.queryplan.util.Utils;
 
 /**
  *
@@ -17,13 +21,15 @@ import com.gdblab.execution.Context;
 public class Path extends GraphObject implements PathInterface {
 
     private Node start;
-    private ArrayList<String> sequence; // This is the sequence in string format of [ID_NODE_1, ID_EDGE_1, ID_NODE_2 ...
+    private LinkedList<String> nodeSequence; // this is a sequence of nodes
+    private LinkedHashSet<String> edgeSequence; // this is a sequence of edges
     private Node end;
 
     public Path() {
         super("", "");
         this.start = null;
-        this.sequence = new ArrayList<>();
+        this.nodeSequence = new LinkedList<>();
+        this.edgeSequence = new LinkedHashSet<>();
         this.end = null;
     }
 
@@ -31,7 +37,9 @@ public class Path extends GraphObject implements PathInterface {
     public Path (Node start) {
         super("", "");
         this.start = start;
-        this.sequence = new ArrayList<>();
+        this.nodeSequence = new LinkedList<>();
+        this.nodeSequence.add(start.getId());
+        this.edgeSequence = new LinkedHashSet<>();
         this.end = start;
 
     }
@@ -40,21 +48,30 @@ public class Path extends GraphObject implements PathInterface {
     public Path (Edge e) {
         super("", "");
         this.start = e.getSource();
-        this.sequence = new ArrayList<>();
-        this.sequence.add(e.getSource().getId());
-        this.sequence.add(e.getId());
-        this.sequence.add(e.getTarget().getId());
+        this.nodeSequence = new LinkedList<>();
+        this.edgeSequence = new LinkedHashSet<>();
+         
+        this.nodeSequence.add(e.getSource().getId());
+        this.edgeSequence.add(e.getId());
+        this.nodeSequence.add(e.getTarget().getId());
         this.end = e.getTarget();
     }
 
     // Constructor for Sn
-    public Path (Node start, Path pathA, Path pathB, Node end) {
+    public Path (Path pathA, Path pathB) {
         super("", "");
-        this.start = start;
-        this.sequence = new ArrayList<>();
-        this.sequence.addAll(pathA.getSequence());
-        this.sequence.addAll(pathB.getSequence());
-        this.end = end;
+        this.start = pathA.first();
+        this.nodeSequence = new LinkedList<>();
+        this.edgeSequence = new LinkedHashSet<>();
+
+        this.nodeSequence.addAll(pathA.getNodeSequence());
+        LinkedList<String> nodeSequenceB = pathB.getNodeSequence();
+        for (int i = 1; i < nodeSequenceB.size(); i++) this.nodeSequence.add(nodeSequenceB.get(i));
+
+        this.edgeSequence.addAll(pathA.getEdgeSequence());
+        this.edgeSequence.addAll(pathB.getEdgeSequence()); 
+
+        this.end = pathB.last();
     }
 
     @Override
@@ -69,22 +86,24 @@ public class Path extends GraphObject implements PathInterface {
 
     @Override
     public int lenght() { 
-        return this.sequence.size();
+        return this.nodeSequence.size() + this.edgeSequence.size();
     }
 
     @Override
     public Path join(Path pathB) {
-        if (this.isLinkeable(pathB)) {
-            return new Path(this.start, this, (Path) pathB , end);
+        if (this.isLinkeable(pathB) && this.isTrail(pathB)) {
+            return new Path(this, pathB);
         }
         return null;
     }
 
     @Override
     public void insertEdge(Edge e) {
-        this.sequence.add(e.getSource().getId());
-        this.sequence.add(e.getId());
-        this.sequence.add(e.getTarget().getId());
+        if (this.getEdgeSequence().isEmpty()) this.nodeSequence.add(e.getSource().getId());
+
+        this.edgeSequence.add(e.getId());
+        this.nodeSequence.add(e.getTarget().getId());
+        
         this.end = e.getTarget();
     }
 
@@ -92,6 +111,7 @@ public class Path extends GraphObject implements PathInterface {
     public void insertNode(Node n) {
         // Only usable when extract S0
         this.start = n;
+        this.nodeSequence.addFirst(n.getId());
         this.end = n;
     }
 
@@ -100,42 +120,49 @@ public class Path extends GraphObject implements PathInterface {
         return this.end.equals(that.first());
     }
 
-    public List<String> getSequence() {
-        return this.sequence;
+    public LinkedList<String> getNodeSequence() {
+        return this.nodeSequence;
+    }
+
+    public LinkedHashSet<String> getEdgeSequence() {
+        return this.edgeSequence;
     }
 
     @Override
-    public boolean isTrail() {
-        
-        int n = sequence.size();
-        
-        for (int i = 1; i < n - 1; i += 2) {
-            String edge = sequence.get(i);
-            
-            for (int j = i + 2; j < n; j += 2) {
-                if (edge.equals(sequence.get(j))) {
-                    return false;
-                }
-            }
-        }
-        return true;
+    public boolean isTrail(Path pathB) {
+        return pathB.getEdgeSequence().stream().noneMatch(this.getEdgeSequence()::contains);
     }
 
     @Override
     public boolean isLabelAt(int pos, String label) {
-        return Context.getInstance().getGraph().getEdge(this.sequence.get(pos), label) == null ? false : true;
+        
+        Iterator<String> it = this.edgeSequence.iterator();
+        int index = 0;
+
+        while ( it.hasNext() ){
+            String edgeId = it.next();
+            if (index == Math.ceil(pos / 2)) return Context.getInstance().getGraph().getEdge(edgeId, label) == null ? false : true;
+            index++;
+        }
+
+        return false;
     }
 
     @Override
     public String getIdAt(int pos) {
-        return sequence.get(pos);
+        return getNodeSequence().get(pos);
     }
     
     @Override
     public String toString() {
         String seq = "";
-        for (String s : sequence) {
-            seq += s + " ";
+
+        for (int i = 0; i < this.nodeSequence.size(); i++) {
+            seq += this.nodeSequence.get(i) + " ";
+            try {
+                seq += this.edgeSequence.toArray()[i] + " ";
+            } catch (Exception e) {
+            }
         }
         return seq;
     }

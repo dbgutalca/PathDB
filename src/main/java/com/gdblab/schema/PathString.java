@@ -80,7 +80,7 @@ public class PathString implements PathInterface {
     }
 
     @Override
-    public boolean isTrail() {
+    public boolean isTrail(Path pathB) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'isTrail'");
     }
