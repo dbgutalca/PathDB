@@ -246,4 +246,8 @@ public class Path extends GraphObject {
         return false;
     }
 
+    public boolean isTrail(Path pathB) {
+        return this.getEdgeSequence().stream().noneMatch(pathB.getEdgeSequence()::contains);
+    }
+
 }
