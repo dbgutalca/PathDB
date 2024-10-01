@@ -1,9 +1,9 @@
 package com.gdblab.main;
 
+import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.execution.Context;
 import com.gdblab.execution.DefaultGraph;
 import com.gdblab.execution.Execute;
-import com.gdblab.queryplan.util.Utils;
 import com.gdblab.schema.Edge;
 import com.gdblab.schema.Graph;
 import com.gdblab.schema.Node;

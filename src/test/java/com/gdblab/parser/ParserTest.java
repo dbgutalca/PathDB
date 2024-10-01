@@ -1,6 +1,8 @@
 package com.gdblab.parser;
 
-import com.gdblab.parser.impl.*;
+import com.gdblab.algebra.parser.RPQExpression;
+import com.gdblab.algebra.parser.RPQGrammarListener;
+import com.gdblab.algebra.parser.impl.*;
 import com.gdlab.parser.RPQGrammarLexer;
 import com.gdlab.parser.RPQGrammarParser;
 import org.antlr.v4.runtime.CharStreams;
