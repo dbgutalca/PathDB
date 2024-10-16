@@ -26,7 +26,7 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
 
     public PhysicalOpAllNodes(final LogicalOpAllNodes lop) {
         this.lop = lop;
-        this.nodes = Context.getInstance().getGraph().getNodeIterator();
+        this.nodes = Graph.getGraph().getNodeIterator();
     }
     
     @Override
