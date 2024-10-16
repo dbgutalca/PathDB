@@ -19,10 +19,10 @@ import com.gdblab.graph.schema.Path;
  */
 public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
     
-    private final LogicalOpAllNodes lop;
+    protected final LogicalOpAllNodes lop;
     private final Iterator<Node> nodes;
 
-    private Path slot;
+    protected Path slot;
 
     public PhysicalOpAllNodes(final LogicalOpAllNodes lop) {
         this.lop = lop;

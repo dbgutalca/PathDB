@@ -7,8 +7,7 @@ import com.gdblab.graph.schema.Path;
 
 public class PhysicalOpBFSAllPathsFromNode implements NullaryPhysicalOperator {
 
-
-    private final LogicalOpAllPathsStartingFromNode lop;
+    protected final LogicalOpAllPathsStartingFromNode lop;
 
     public PhysicalOpBFSAllPathsFromNode(final LogicalOpAllPathsStartingFromNode lop) {
         this.lop = lop;

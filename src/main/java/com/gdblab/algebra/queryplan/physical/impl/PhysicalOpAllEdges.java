@@ -19,10 +19,10 @@ import com.gdblab.graph.schema.Path;
  */
 public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
     
-    private final LogicalOpAllEdges lop;
+    protected final LogicalOpAllEdges lop;
     private final Iterator<Edge> edges;
 
-    private Path slot;
+    protected Path slot;
 
     public PhysicalOpAllEdges(LogicalOpAllEdges lop) {
         this.lop = lop;
