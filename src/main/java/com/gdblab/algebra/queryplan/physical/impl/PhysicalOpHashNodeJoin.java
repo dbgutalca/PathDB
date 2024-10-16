@@ -3,8 +3,8 @@ package com.gdblab.algebra.queryplan.physical.impl;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.algebra.queryplan.util.Utils;
-import com.gdblab.schema.Node;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Node;
+import com.gdblab.graph.schema.Path;
 
 import java.util.HashMap;
 import java.util.Iterator;

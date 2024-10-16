@@ -1,6 +1,5 @@
 package com.gdblab.algebra.queryplan.physical.impl;
 
-import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.physical.BinaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 

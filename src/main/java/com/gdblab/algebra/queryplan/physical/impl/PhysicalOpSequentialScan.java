@@ -4,7 +4,7 @@ import com.gdblab.algebra.queryplan.exception.IteratorAlreadyConsumedException;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Path;
 
 /**
  * Sequential Scan resolves a brute-force Selection

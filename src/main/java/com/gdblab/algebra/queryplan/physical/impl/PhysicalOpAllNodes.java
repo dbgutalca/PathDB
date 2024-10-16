@@ -9,9 +9,9 @@ import java.util.Iterator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllNodes;
 import com.gdblab.algebra.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.execution.Context;
-import com.gdblab.schema.Node;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.Graph;
+import com.gdblab.graph.schema.Node;
+import com.gdblab.graph.schema.Path;
 
 /**
  *

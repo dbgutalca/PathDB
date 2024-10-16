@@ -4,13 +4,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.gdblab.algebra.queryplan.logical.impl.LogicalOpNodeJoin;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpRecursive;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.execution.Context;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Path;
 
 public class PhysicalOpRecursive extends UnaryPhysicalOp {
 

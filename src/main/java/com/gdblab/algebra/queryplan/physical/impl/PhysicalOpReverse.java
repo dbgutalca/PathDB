@@ -3,8 +3,8 @@ package com.gdblab.algebra.queryplan.physical.impl;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpReverse;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.schema.Path;
-import java.util.Iterator;
+import com.gdblab.graph.schema.Path;
+
 import java.util.UUID;
 
 public class PhysicalOpReverse extends UnaryPhysicalOp {

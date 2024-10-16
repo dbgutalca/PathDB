@@ -1,14 +1,12 @@
 package com.gdblab.algebra.queryplan.physical.impl;
 
-import java.util.Iterator;
 import java.util.List;
 
-import com.gdblab.algebra.queryplan.logical.impl.LogicalOpNodeJoin;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpUnion;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.algebra.queryplan.util.Utils;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Path;
+
 import java.util.LinkedList;
 
 public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {

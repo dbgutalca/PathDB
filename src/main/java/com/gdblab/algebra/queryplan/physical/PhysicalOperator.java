@@ -1,8 +1,8 @@
 package com.gdblab.algebra.queryplan.physical;
 
-import com.gdblab.schema.Path;
-
 import java.util.Iterator;
+
+import com.gdblab.graph.schema.Path;
 
 /**
  * PhysicalIterators represent both the algorithm to be executed and the result iterator, which

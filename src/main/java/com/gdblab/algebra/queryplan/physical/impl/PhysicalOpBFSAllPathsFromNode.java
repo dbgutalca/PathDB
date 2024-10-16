@@ -3,7 +3,7 @@ package com.gdblab.algebra.queryplan.physical.impl;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllPathsStartingFromNode;
 import com.gdblab.algebra.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Path;
 
 public class PhysicalOpBFSAllPathsFromNode implements NullaryPhysicalOperator {
 

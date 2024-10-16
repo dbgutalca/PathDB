@@ -3,7 +3,7 @@ package com.gdblab.algebra.queryplan.physical.impl;
 import java.util.Iterator;
 
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Path;
 
 public class PhysicalOperatorListWrapper extends PhysicalOp {
 

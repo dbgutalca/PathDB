@@ -4,14 +4,13 @@ import com.gdblab.algebra.queryplan.logical.impl.LogicalOpNodeJoin;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.algebra.queryplan.util.Utils;
-import com.gdblab.schema.Node;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Node;
+import com.gdblab.graph.schema.Path;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class PhysicalOpNestedLoopNodeJoin extends BinaryPhysicalOp{
