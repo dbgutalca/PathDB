@@ -3,9 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.gdblab.schema;
-
-import com.gdblab.schema.impl.MemoryGraph;
+package com.gdblab.graph.schema;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,7 +116,7 @@ public class Path extends GraphObject {
         String edges = "";
         for (int i = 0; i < sequence.size(); i++) {
             if (sequence.get(i) instanceof Edge edge) {
-                edges += edge.getId() + " ";
+                edges += edge.getLabel();
             }
         }
         return edges;
@@ -200,13 +198,6 @@ public class Path extends GraphObject {
         return last().getId().equals(path2.first().getId());
     }
 
-    public Edge isEdgeLinkable(final Path path2, final MemoryGraph graph) {
-        final String node1_id = last().getId();
-        final String node2_id = path2.first().getId();
-
-        return graph.getEdge(node1_id, node2_id);
-    }
-
     public int lenght() {
         return sequence.size();
     }
@@ -244,6 +235,23 @@ public class Path extends GraphObject {
         }
 
         return false;
+    }
+
+    public GraphObject pop() {
+        if (sequence.size() == 1) {
+            return sequence.remove(0);
+        }
+        else if (sequence.size() == 3) {
+            sequence.remove(sequence.size() - 1);
+            GraphObject r = sequence.remove(sequence.size() - 1);
+            sequence.remove(sequence.size() - 1);
+            return r;
+        }
+        else {
+            sequence.remove(sequence.size() - 1);
+            GraphObject r = sequence.remove(sequence.size() - 1);
+            return r;
+        }
     }
 
     public boolean isTrail(Path pathB) {
