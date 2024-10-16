@@ -1,38 +1,38 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.gdblab.schema.impl;
+package com.gdblab.graph.impl;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
-import com.gdblab.schema.Edge;
-import com.gdblab.schema.Graph;
-import com.gdblab.schema.Node;
+import com.gdblab.graph.interfaces.InterfaceGraph;
+import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.Node;
 
-/**
- *
- * @author Roberto
- */
-public class CSRVPMin implements Graph{
-    
+public class CSRVPMin implements InterfaceGraph {
+
+    private static CSRVPMin instance = null;
+
     private final HashMap<String, Node> nodes;
     private final HashMap<String, LinkedList<Edge>> edges;
 
-    public CSRVPMin() {
+    public static InterfaceGraph getInstance() {
+        if (instance == null) {
+            instance = new CSRVPMin();
+        }
+        return instance;
+    }
+
+    private CSRVPMin() {
         this.nodes = new HashMap<>();
         this.edges = new HashMap<>();
     }
 
     @Override
-    public Node getNode(String id) {
+    public Node getNode(final String id) {
         return nodes.get(id);
     }
-    
 
     @Override
     public Iterator<Node> getNodeIterator() {
@@ -82,45 +82,16 @@ public class CSRVPMin implements Graph{
     }
 
     @Override
-    public Iterator<Edge> getEdgesByLabel(final String label) {
-        return edges.get(label).iterator();
-    }
-
-    @Override
-    public Collection<Node> getNeighbours(final String id) {
-        final HashSet<Node> nodesTemp = new HashSet<>();
-        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
-            final Edge edge = edgeIt.next(); 
-            if (edge.getTarget().getId().equals(id))
-                nodesTemp.add(edge.getTarget());
-        }
-        return nodesTemp;
-    }
-    
-
-    @Override
-    public Collection<Node> getNeighbours(final String id, final String label) {
-        final HashSet<Node> nodesTemp = new HashSet<>();
-        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
-            final Edge edge = edgeIt.next(); 
-            if (edge.getSource().getId().equals(id) && edge.getLabel().equals(label))
-                nodesTemp.add(edge.getTarget());
-        }
-        return nodesTemp;    
-    }
-
-    @Override
-    public Node insertNode(final Node node) {
+    public Node insertNode(Node node) {
         if (! nodes.containsKey(node.getId())){
             nodes.put(node.getId(), node);
             return node;
         }
         return null;
-        
     }
 
     @Override
-    public Edge insertEdge(final Edge edge) {
+    public Edge insertEdge(Edge edge) {
         if (!edges.containsKey(edge.getLabel())){
             final LinkedList<Edge> edgesByLabel = new LinkedList<>();
             edges.put(edge.getLabel(), edgesByLabel);
@@ -132,6 +103,52 @@ public class CSRVPMin implements Graph{
             edgesByLabel.add(edge);
             return edge;
         }
+    }
+
+    @Override
+    public Integer getNodesQuantity() {
+        return nodes.size();
+    }
+
+    @Override
+    public Integer getEdgesQuantity() {
+        Integer i = 0;
+
+        for (LinkedList<Edge> list : edges.values()) {
+            i += list.size();
+        }
+
+        return i;
+    }
+
+    @Override
+    public Integer getDifferetEdgesQuantity() {
+        return edges.size();
+    }
+    
+    @Override
+    public HashMap<String, Integer> getEdgesByLabelQuantity() {
+        HashMap<String, Integer> edgesByLabel = new HashMap<>();
+
+        for (Map.Entry<String, LinkedList<Edge>> entry : edges.entrySet()) {
+            String label = entry.getKey();
+            LinkedList<Edge> edgesList = entry.getValue();
+
+            edgesByLabel.put(label, edgesList.size());
+        }
+
+        return edgesByLabel;
+    }
+
+    @Override
+    public ArrayList<Edge> getSampleOfEachlabel() {
+        ArrayList<Edge> sample = new ArrayList<>();
+        
+        for (LinkedList<Edge> list : edges.values()) {
+            sample.add(list.get((int) (Math.random() * (list.size() - 1))));
+        }
+
+        return sample;
     }
     
 }
