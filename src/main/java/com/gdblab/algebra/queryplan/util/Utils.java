@@ -1,9 +1,12 @@
 package com.gdblab.algebra.queryplan.util;
 
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
-import com.gdblab.execution.Context;
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.GraphObject;
+import com.gdblab.graph.schema.Node;
+import com.gdblab.graph.schema.Path;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,6 +15,22 @@ public class Utils {
         List<Path> l = new LinkedList<>();
         while (physicalOp.hasNext()) {
             l.add(physicalOp.next());
+        }
+        return l;
+    }
+    
+    public static List<Edge> edgesIterToList( Iterator<Edge> edges) {
+        List<Edge> l = new LinkedList<>();
+        while (edges.hasNext()) {
+            l.add(edges.next());
+        }
+        return l;
+    }
+
+    public static List<Node> nodesIterToList( Iterator<Node> nodes) {
+        List<Node> l = new LinkedList<>();
+        while (nodes.hasNext()) {
+            l.add(nodes.next());
         }
         return l;
     }
@@ -39,4 +58,40 @@ public class Utils {
         return null;
     }
     
+    public static int printAndCountPaths(PhysicalOperator po){
+        int counter = 1;
+
+        Integer ms = 10;
+        if (ms <= 0) {
+            while (po.hasNext()) {
+                Path p = po.next();
+                System.out.print("Path #" + counter + " - ");
+                for (GraphObject go : p.getSequence()) {
+                    System.out.print( go.getLabel() + " ");
+                }
+                System.out.println();
+                counter++;
+            }
+        }
+
+        else {
+            while ( po.hasNext() ) {
+                Path p = po.next();
+    
+                if (counter <= ms) {
+                    System.out.print("Path #" + counter + " - ");
+                    for (GraphObject go : p.getSequence()) {
+                        System.out.print( go.getLabel() + " ");
+                    }
+                    System.out.println();
+                }
+                if (counter == (ms + 1)) {
+                    System.out.println("...");
+                }
+                counter++;
+            }
+        }
+        
+        return counter;
+    }
 }
