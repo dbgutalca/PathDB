@@ -1,249 +1,373 @@
 package com.gdblab.main;
 
-import com.gdblab.algebra.queryplan.util.Utils;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
+
+import org.jline.reader.*;
+import org.jline.terminal.*;
+
 import com.gdblab.execution.Context;
-import com.gdblab.execution.DefaultGraph;
 import com.gdblab.execution.Execute;
-import com.gdblab.schema.Edge;
-import com.gdblab.schema.Graph;
-import com.gdblab.schema.Node;
-import com.gdblab.schema.impl.CSRVPMin;
+import com.gdblab.graph.DefaultGraph;
+import com.gdblab.graph.Graph;
+import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.Node;
 
 public class Main {
 
-    private static Context context = Context.getInstance();
-    private static Boolean isNodeFile = false;
-    private static Boolean isEdgeFile = false;
-    private static Boolean defaultGraph = true;
-    private static String nodesUploadTime = "";
-    private static String edgesUploadTime = "";
-    private static String[] data;
+    private static String prefix = "/";
 
-    public static void main(String[] args) {
+    public static void init() {
+        System.out.println();
+        String[] logo = {
+        "       ╔═════════════════════════════════════════════════════╗",
+        "       ║    _____            _     _       _____    ____     ║",
+        "       ║   |  __ \\          | |   | |     |  __ \\  |  _ \\    ║",
+        "       ║   | |__) |   __ _  | |_  | |__   | |  | | | |_) |   ║",
+        "       ║   |  ___/   / _` | | __| | '_ \\  | |  | | |  _ <    ║",
+        "       ║   | |      | (_| | | |_  | | | | | |__| | | |_) |   ║",
+        "       ║   |_|       \\__,_|  \\__| |_| |_| |_____/  |____/    ║",
+        "       ║                                                v1.0 ║",
+        "       ╚═════════════════════════════════════════════════════╝"
+        };
 
-        for (String string : args) {
-            String[] arg = string.split("=");
-
-            switch (arg[0]) {
-                case "-h":
-                    printUsage();
-                    System.exit(0);
-                    break;
-                case "--help":
-                    printUsage();
-                    System.exit(0);
-                    break;
-
-                case "-gs":
-                    context.setDataType(arg[1]);
-                    context.setGraph(getGraphStructure(arg[1]));
-                    break;
-                case "--graph_structure":
-                    context.setDataType(arg[1]);
-                    context.setGraph(getGraphStructure(arg[1]));
-                    break;
-
-                case "-nf":
-                    long startnf = System.nanoTime();
-                    context.uploadNodes(arg[1]);
-                    long endnf = System.nanoTime();
-                    nodesUploadTime = Utils.getTime(startnf, endnf) + " seconds";
-                    isNodeFile = true;
-                    break;
-                case "--nodes_file":
-                    long startnfc = System.nanoTime();
-                    context.uploadNodes(arg[1]);
-                    long endnfc = System.nanoTime();
-                    nodesUploadTime = Utils.getTime(startnfc, endnfc) + " seconds";
-                    isNodeFile = true;
-                    break;
-
-                case "-ef":
-                    if (!isNodeFile) {
-                        System.out.println("Need to set the nodes file first, use -nf=X or --node_file=X flag");
-                        System.exit(1);
-                    }
-                    long startef = System.nanoTime();
-                    context.uploadEdges(arg[1]);
-                    long endef = System.nanoTime();
-                    edgesUploadTime = Utils.getTime(startef, endef) + " seconds";
-                    isEdgeFile = true;
-                    defaultGraph = false;
-                    break;
-                case "--edges_file":
-                    if (!isNodeFile) {
-                        System.out.println("Need to set the nodes file first, use -nf=X or --node_file=X flag");
-                        System.exit(1);
-                    }
-                    long startefc = System.nanoTime();
-                    context.uploadEdges(arg[1]);
-                    long endefc = System.nanoTime();
-                    edgesUploadTime = Utils.getTime(startefc, endefc) + " seconds";
-                    isEdgeFile = true;
-                    defaultGraph = false;
-                    break;
-
-                case "-fp":
-                    context.setFixPoint(Integer.valueOf(arg[1]));
-                    break;
-                case "--fix_point":
-                    context.setFixPoint(Integer.valueOf(arg[1]));
-                    break;
-
-                case "-of":
-                    context.setOutputType("file");
-                    context.setOutputFileName(arg[1]);
-                    break;
-                case "--output_file":
-                    context.setOutputType("file");
-                    context.setOutputFileName(arg[1]);
-                    break;
-
-                case "-ms":
-                    if (arg[1].equalsIgnoreCase("all")) {
-                        System.out.println("Showing all paths");
-                        context.setMaxShowedPaths(-1);
-                    } else {
-                        context.setMaxShowedPaths(Integer.valueOf(arg[1]));
-                    }
-                    break;
-                case "--max_showed":
-                    if (arg[1].equalsIgnoreCase("all")) {
-                        context.setMaxShowedPaths(-1);
-                    } else {
-                        context.setMaxShowedPaths(Integer.valueOf(arg[1]));
-                    }
-                    break;
-
-                case "-rpq":
-                    data = preProcessRPQData(arg[1]);
-                    context.setStartingNode(data[0]);
-                    context.setRPQ(data[1]);
-                    context.setEndingNode(data[2]);
-                    break;
-                case "--regular_path_query":
-                    data = preProcessRPQData(arg[1]);
-                    context.setStartingNode(data[0]);
-                    context.setRPQ(data[1]);
-                    context.setEndingNode(data[2]);
-                    break;
-
-                default:
-                    System.out.println("Invalid argument: " + arg[0]);
-                    printUsage();
-                    System.exit(1);
-                    break;
-            }
+        for (String u : logo) {
+            System.out.println(u);
         }
-
-        if (context.getRPQ().equals("")) {
-            System.out.println("Regular Path Query is obligatory, use -rpq=X or --regular_path_query=X flag");
-            System.exit(1);
-        }
-
-        if (!isNodeFile && !isEdgeFile) {
-            for (Node node : DefaultGraph.loadDefaultNodes()) {
-                context.getGraph().insertNode(node);
-            }
-            for (Edge edge : DefaultGraph.loadDefaultEdges()) {
-                context.getGraph().insertEdge(edge);
-            }
-        }
-
-        printConfiguration();
-        Execute.EvalRPQ(context.getRPQ());
+        System.out.println("\n");
     }
 
-    private static void printUsage() {
-        System.out.println("Usage: java -jar PathDB.jar [options]");
-        // System.out.println(" -dt, --data_type: Structure of the graph, default is
-        // CSRVPMin");
-        System.out.println(
-                "  -nf, --nodes_file: File path of the nodes, if -nf and -ef are not set, the default graph will be used.");
-        System.out.println(
-                "  -ef, --edges_file: File path of the edges, if -nf and -ef are not set, the default graph will be used.");
-        System.out.println("  -rpq, --regular_path_query: The Regular Path Query to be executed (Obligatory) with format '(X,rpq,Y)'.");
-        System.out.println("  -fp, --fixed_point: Fixed point of the recursion.");
-        System.out.println(
-                "  -of, --output_file: Output file name [Make a copy of the file for each RPQ, the file will be overwritten].");
-        System.out.println("  -ms, --max_showed: Max showed paths on console, default is 10, all to show all paths.");
-        System.out.println("  -h, --help: Show usage.");
-        System.out.println("  \\q: Exit the program\n");
-        System.out
-                .println("Example: java -jar PathDB.jar -nf=nodes.txt -ef=edges.txt -rpq=A.B* -fp=3 -of=output.txt\n");
-    }
+    public static void usageNoArgs() {
+        String[] usage = {
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "",
+            "No graph loaded. Using default graph.",
+            "If you want to use a custom graph, run the program with the following arguments: ",
+            "java -jar PathDB.jar -nf=nodes_file.txt -ef=edges_file.txt",
+            "",
+            "For help, type /h."
+        };
 
-    private static void printConfiguration() {
-        System.out.println("Configuration:");
-        System.out.println("    Graph Structure: " + context.getDataType() + ".");
-
-        if (defaultGraph) {
-            System.out.println("    Graph: Default.");
-        } else {
-            System.out.println("    Graph:");
-            System.out.println(
-                    "        Nodes file: " + context.getNodesFileName() + " (Loaded in " + nodesUploadTime + ").");
-            System.out.println(
-                    "        Edges file: " + context.getEdgesFileName() + " (Loaded in " + edgesUploadTime + ").");
-        }
-
-        // System.out.println("    Regular Path Query: " + context.getRPQ() + ".");
-
-        if (context.getStartingNode().equals("")) {
-            System.out.println("    Starting Node: Any.");
-        } else {
-            System.out.println("    Starting Node: " + context.getStartingNode() + ".");
-        }
-
-        if (context.getEndingNode().equals("")) {
-            System.out.println("    Ending Node: Any.");
-        } else {
-            System.out.println("    Ending Node: " + context.getEndingNode() + ".");
-        }
-
-        System.out.println("    Fix Point: " + context.getFixPoint() + ".");
-
-        if (context.getOutputType().equals("console")) {
-            System.out.println("    Output Type: Console.");
-            System.out.println("    Max Showed Paths: " + context.getMaxShowedPaths() + ".");
-        } else {
-            System.out.println("    Output Type: File.");
-            System.out.println("    Output File Name: " + context.getOutputFileName() + ".");
+        for (String u : usage) {
+            System.out.println(u);
         }
         System.out.println();
     }
 
-    private static Graph getGraphStructure(String data_type) {
-        switch (data_type) {
-            case "csrvpmin":
-                return new CSRVPMin();
+    public static void usageArgs(String nf, String ef) {
+        String[] usage = {
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "",
+            "Graph loaded successfully. Using " + nf + " and " + ef + " files.",
+            "If you want to use a custom graph, run the program with the following arguments: ",
+            "java -jar PathDB.jar -nf=nodes_file.txt -ef=edges_file.txt",
+            "",
+            "For help, type /h."
+        };
 
-            case "csr":
-                return null;
+        for (String u : usage) {
+            System.out.println(u);
+        }
+        System.out.println();
+    }
 
-            case "csrvp":
-                return null;
+    public static void help() {
+        String[] help = {
+            "List of available commands:",
+            "   /h              Show this help.",
+            "   /m <1-5>        Select evaluation method.",
+            "                       1 - Algebra (Default).",
+            "                       2 - Regex + DFS.",
+            "                       3 - Regex + BFS.",
+            "                       4 - Automaton + DFS.",
+            "                       5 - Automaton + BFS.",
+            "   /f #            Set the fix point of recursion loops (Default is 3).",
+            "   (S, RPQ, E);    Query to evaluate.",
+            "                       S = Start Node.",
+            "                       RPQ = Regular Path Query.",
+            "                       E = End Node.",
+            "                       Example: (N1,(A?.B+)*,N2);",
+            "   /i              Show the information of the graph.",
+            "   /s              Show a sample of each label in the graph.",
+            "   /q              Quit the program."
+        };
+        for (String u : help) {
+            System.out.println(u);
+        }
+        System.out.println();
+    }
 
-            case "memorygraph":
-                return null;
+    public static void showMethods() {
+        String[] methods = {
+            "List of available methods:",
+            "   1 - Algebra",
+            "   2 - Regex + DFS",
+            "   3 - Regex + BFS",
+            "   4 - Automaton + DFS",
+            "   5 - Automaton + BFS"
+        };
+        for (String u : methods) {
+            System.out.println(u);
+        }
+        System.out.println();
+    }
+    
+    public static void showSelectedMethod(Integer m) {
+        switch (m) {
+            case 1:
+                System.out.println("Selected method: Algebra\n");
+                break;
 
-            default:
-                return null;
+            case 2:
+                System.out.println("Selected method: Regex + DFS\n");
+                break;
+
+            case 3:
+                System.out.println("Selected method: Regex + BFS\n");
+                break;
+
+            case 4:
+                System.out.println("Selected method: Automaton + DFS\n");
+                break;
+
+            case 5:
+                System.out.println("Selected method: Automaton + BFS\n");
+                break;
         }
     }
 
-    private static String[] preProcessRPQData(String rpq) {
-        String[] data = rpq.trim().split(",");
-
-        data[0] = data[0].replaceAll("\\(", "").trim();
-        data[2] = data[2].replaceAll("\\)", "").trim();
-
-        if (data.length != 3) {
-            System.out.println("Invalid Regular Path Query: " + rpq);
-            printUsage();
-            System.exit(1);
+    private static void loadCustomGraphFiles(String nodesFile, String edgesFile) {
+        try (BufferedReader br = new BufferedReader(new FileReader(nodesFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                Node node = new Node(data[0], data[1]);
+                Graph.getGraph().insertNode(node);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(edgesFile))) {
+            int i = 1;
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] data = line.split(",");
+                Edge edge = new Edge(
+                    "E" + i,
+                    data[1],
+                    Graph.getGraph().getNode(data[0]),
+                    Graph.getGraph().getNode(data[2])
+                );
+                Graph.getGraph().insertEdge(edge);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
         
-        return data;
+        try {
+            Terminal terminal = TerminalBuilder.terminal();
+            LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
+
+            clearConsole();
+            if (args.length == 0) {
+                DefaultGraph.loadGraph();
+                usageNoArgs();
+            }
+            else {
+                if (args.length != 2) {
+                    System.out.println("Invalid arguments. Use -nf=nodes_file.txt -ef=edges_file.txt");
+                    System.exit(1);
+                }
+                else {
+                    if (args[0].startsWith("-nf=") && args[1].startsWith("-ef=")) {
+                        loadCustomGraphFiles(args[0], args[1]);
+                        usageArgs(args[0].split("=")[1], args[1].split("=")[1]);
+                    }
+                    else {
+                        System.out.println("Invalid arguments. Use -nf=nodes_file.txt -ef=edges_file.txt");
+                        System.exit(1);
+                    }
+                }
+            }
+            
+            String prompt = "PathDB> ";
+
+            while (true) {
+                String line = reader.readLine(prompt);
+
+                if (line == null || line.equalsIgnoreCase(prefix + "q") ) {
+                    System.out.println("Terminated execution.");
+                    break;
+                }
+
+                reader.getHistory().add(line);
+
+                if (line.startsWith(prefix + "h")) {
+                    // clearConsole();
+                    help();
+                    System.out.println();
+                    continue;
+                }
+
+                if (line.startsWith(prefix + "m")) {
+                    String[] parts = line.split(" ");
+
+                    if (parts.length != 2) {
+                        // clearConsole();
+                        System.out.println("Invalid command. Use /m # to select a method.\n");
+                        continue;
+                    }
+
+                    try {
+                        Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException e) {
+                        // clearConsole();
+                        System.out.println("Invalid command. # must be a positive number greater than 0.\n");
+                        continue;
+                    }
+                    
+                    if (Integer.parseInt(parts[1]) < 1 || Integer.parseInt(parts[1]) > 5) {
+                        // clearConsole();
+                        System.out.println("Invalid command. # must be a number between 1 and 5.\n");
+                        continue;
+                    }
+                    
+                    Context.getInstance().setMethod(Integer.parseInt(parts[1]));
+                    showSelectedMethod(Integer.parseInt(parts[1]));
+                    continue;
+                }
+
+                if (line.startsWith(prefix + "f")) {
+                    String[] parts = line.split(" ");
+
+                    if (parts.length != 2) {
+                        // clearConsole();
+                        System.out.println("Invalid command. Use /f # to set a fix point.\n");
+                        continue;
+                    }
+
+                    try {
+                        Integer.parseInt(parts[1]);
+                    } catch (NumberFormatException e) {
+                        // clearConsole();
+                        System.out.println("Invalid command. # must be a positive number greater than 0.\n");
+                        continue;
+                    }
+
+                    Context.getInstance().setFixPoint(Integer.parseInt(parts[1]));
+                    System.out.println("Fix point set to: " + parts[1] + " iteration(s).\n");
+                    continue;
+                }
+
+                if (line.startsWith(prefix + "i")) {
+                    // clearConsole();
+                    System.out.println("Graph Information:");
+                    System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
+                    System.out.println("Total edges: " + Graph.getGraph().getEdgesQuantity());
+                    System.out.println("Total label: " + Graph.getGraph().getDifferetEdgesQuantity());
+                    System.out.println("Edges per label: " + Graph.getGraph().getEdgesByLabelQuantity().toString());
+                    System.out.println("\n");
+                    continue;
+                }
+                
+                if (line.startsWith(prefix + "s")) {
+                    System.out.println("Samples: ");
+                    ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
+                    for (Edge e : edges) {
+                       System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
+                    }
+                    System.out.println("\n");
+                    continue;
+                }
+
+                if (line.endsWith(";")) {
+
+                    String[] parts = line.substring(0, line.length() - 1).split(",");
+
+                    String sn = parts[0].substring(1);
+                    String rpq = parts[1];
+                    String en = parts[2].substring(0, parts[2].length() - 1);
+
+                    if (rpq.isEmpty()) {
+                        System.out.println("Invalid command. Query cannot be empty.\n");
+                        continue;
+                    }
+
+                    if (!sn.isEmpty()) {
+                        Context.getInstance().setStartNode(sn);
+                    }
+                    else {
+                        Context.getInstance().setStartNode("");
+                    }
+
+                    if (!en.isEmpty()) {
+                        Context.getInstance().setEndNode(en);
+                    }
+                    else {
+                        Context.getInstance().setEndNode("");
+                    }
+
+                    // Switch del method
+                    switch (Context.getInstance().getMethod()) {
+                        case 1:
+                            Execute.EvalRPQWithAlgebra(rpq);
+                            break;
+                        case 2:
+                            System.out.println("Regex + DFS");
+                            Execute.EvalRPQWithRegexDFS(rpq);
+                            break;
+                        case 3:
+                            System.out.println("Regex + BFS");
+                            Execute.EvalRPQWithRegexBFS(rpq);
+                            break;
+                        case 4:
+                            System.out.println("Automaton + DFS");
+                            Execute.EvalRPQWithAutomatonDFS(rpq);
+                            break;
+                        case 5:
+                            System.out.println("Automaton + BFS");
+                            Execute.EvalRPQWithAutomatonBFS(rpq);
+                            break;
+                    
+                        default:
+                            break;
+                    }
+                    
+                    System.out.println();
+                    continue;
+
+                }
+
+                System.out.println("Invalid command. For help, type /h.\n\n");
+
+            }
+
+        } catch (Exception e) {
+            System.out.println("Terminated execution.");
+        }
+            
     }
+
+    
+    private static void clearConsole() {
+        try {
+            String os = System.getProperty("os.name");
+    
+            if (os.contains("Windows")) {
+                // Ejecutar comando cls en Windows
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                // Secuencia de escape ANSI para limpiar la consola en Linux/Unix/MacOS
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+            init();
+        } catch (Exception e) {}
+    }
+    
 }

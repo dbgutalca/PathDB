@@ -1,15 +1,10 @@
 package com.gdblab.execution;
 
-import java.io.File;
-import java.io.FileWriter;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
-import com.gdblab.algebra.condition.And;
 import com.gdblab.algebra.condition.First;
-import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.condition.Last;
 import com.gdblab.algebra.parser.RPQExpression;
 import com.gdblab.algebra.parser.RPQGrammarListener;
@@ -19,20 +14,20 @@ import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.algebra.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.util.Utils;
-import com.gdblab.schema.GraphObject;
-import com.gdblab.schema.Path;
+import com.gdblab.algorithm.versions.v1.BFSRegex;
+import com.gdblab.algorithm.versions.v1.DFSRegex;
+import com.gdblab.algorithm.versions.v2.BFSAutomaton;
+import com.gdblab.algorithm.versions.v2.DFSAutomaton;
 import com.gdlab.parser.RPQGrammarLexer;
 import com.gdlab.parser.RPQGrammarParser;
 
 public final class Execute {
 
-    private static long counter;
-    
-    public static void EvalRPQ(String rpq){
+    public static void EvalRPQWithAlgebra(String rpq){
 
         long start = System.nanoTime();
 
-        counter = 1;
+        int counter = 1;
 
         RPQGrammarLexer lexer = new RPQGrammarLexer(CharStreams.fromString(rpq));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -48,11 +43,11 @@ public final class Execute {
         LogicalOperator lo = visitor.getRoot();
 
         // Adding filter on top of the logical operator
-        if ( !Context.getInstance().getStartingNode().equalsIgnoreCase("") ) {
+        if ( !Context.getInstance().getStartNode().equalsIgnoreCase("") ) {
             lo = filterOnTopLeft(lo);
         }
 
-        if ( !Context.getInstance().getEndingNode().equalsIgnoreCase("") ) {
+        if ( !Context.getInstance().getEndNode().equalsIgnoreCase("") ) {
             lo = filterOnTopRight(lo);
         }
 
@@ -60,16 +55,7 @@ public final class Execute {
         lo.acceptVisitor(visitor2);
         PhysicalOperator po = visitor2.getPhysicalPlan().getRootOperator();
 
-        switch (Context.getInstance().getOutputType()) {
-            case "console":
-                printPath(po);
-                break;
-            case "file":
-                writePath(po);
-                break;
-            default:
-                break;
-        }
+        counter = Utils.printAndCountPaths(po);
 
         long end = System.nanoTime();
         System.out.println("\nTotal paths: " + (counter - 1) + " paths");
@@ -77,60 +63,76 @@ public final class Execute {
         System.out.println("");
     }
 
-    private static void printPath(PhysicalOperator po){
-        Integer ms = Context.getInstance().getMaxShowedPaths();
-        if (ms <= 0) {
-            while (po.hasNext()) {
-                Path p = po.next();
-                System.out.print("Path #" + counter + " - ");
-                for (GraphObject go : p.getSequence()) {
-                    System.out.print( go.getLabel() + " ");
-                }
-                System.out.println();
-                counter++;
-            }
-            return;
-        }
+    public static void EvalRPQWithRegexDFS(String rpq) {
+        long start = System.nanoTime();
 
-        while ( po.hasNext() ) {
-            Path p = po.next();
+        DFSRegex dfsRegex = new DFSRegex(rpq);
+        dfsRegex.Trail();
 
-            if (counter <= ms) {
-                System.out.print("Path #" + counter + " - ");
-                for (GraphObject go : p.getSequence()) {
-                    System.out.print( go.getLabel() + " ");
-                }
-                System.out.println();
-            }
-            if (counter == (ms + 1)) {
-                System.out.println("...");
-            }
-            counter++;
-        }
+        long end = System.nanoTime();
+        System.out.println("\nTotal paths: " + dfsRegex.getTotalPaths() + " paths");
+        System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
+        System.out.println("");
     }
 
-    private static void writePath(PhysicalOperator po){
-        File file = new File(Context.getInstance().getOutputFileName());
-        try (FileWriter writer = new FileWriter(file)) {
-            while ( po.hasNext() ) {
-                Path p = po.next();
-                writer.write("Path #" + counter + " - ");
-                for (GraphObject go : p.getSequence()) {
-                    writer.write( go.getLabel() + " ");
-                }
-                writer.write("\n");
-                counter++;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public static void EvalRPQWithRegexBFS(String rpq) {
+        long start = System.nanoTime();
+
+        BFSRegex bfsRegex = new BFSRegex(rpq);
+        bfsRegex.Trail();
+
+        long end = System.nanoTime();
+        System.out.println("\nTotal paths: " + bfsRegex.getTotalPaths() + " paths");
+        System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
+        System.out.println("");
     }
+
+    public static void EvalRPQWithAutomatonDFS(String rpq) {
+        long start = System.nanoTime();
+
+        DFSAutomaton dfsAutomaton = new DFSAutomaton(rpq);
+        dfsAutomaton.Trail();
+
+        long end = System.nanoTime();
+        System.out.println("\nTotal paths: " + dfsAutomaton.getTotalPaths() + " paths");
+        System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
+        System.out.println("");
+    }
+
+    public static void EvalRPQWithAutomatonBFS(String rpq) {
+        long start = System.nanoTime();
+
+        BFSAutomaton bfsAutomaton = new BFSAutomaton(rpq);
+        bfsAutomaton.Trail();
+        
+        long end = System.nanoTime();
+        System.out.println("\nTotal paths: " + bfsAutomaton.getTotalPaths() + " paths");
+        System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
+        System.out.println("");
+    }
+
+    // private static void writePath(PhysicalOperator po){
+    //     File file = new File(Context.getInstance().getOutputFileName());
+    //     try (FileWriter writer = new FileWriter(file)) {
+    //         while ( po.hasNext() ) {
+    //             Path p = po.next();
+    //             writer.write("Path #" + counter + " - ");
+    //             for (GraphObject go : p.getSequence()) {
+    //                 writer.write( go.getLabel() + " ");
+    //             }
+    //             writer.write("\n");
+    //             counter++;
+    //         }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 
     private static LogicalOperator filterOnTopLeft(LogicalOperator lo) {
-        return new LogicalOpSelection(lo, new First(Context.getInstance().getStartingNode()));
+        return new LogicalOpSelection(lo, new First(Context.getInstance().getStartNode()));
     }
 
     private static LogicalOperator filterOnTopRight(LogicalOperator lo) {
-        return new LogicalOpSelection(lo, new Last(Context.getInstance().getEndingNode()));
+        return new LogicalOpSelection(lo, new Last(Context.getInstance().getEndNode()));
     }
 }
