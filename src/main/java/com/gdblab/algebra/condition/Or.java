@@ -4,7 +4,7 @@
  */
 package com.gdblab.algebra.condition;
 
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Path;
 
 /**
  *
