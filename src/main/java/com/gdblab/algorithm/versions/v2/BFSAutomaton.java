@@ -1,5 +1,9 @@
 package com.gdblab.algorithm.versions.v2;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,6 +37,10 @@ public class BFSAutomaton implements Algorithm {
 
     private int counter = 1;
 
+    private boolean isExperimental;
+
+    private String outputFilename;
+
     public BFSAutomaton(String regex) {
         this.matcher = new RegexMatcher(regex);
 
@@ -43,6 +51,9 @@ public class BFSAutomaton implements Algorithm {
 
         this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
+
+        this.isExperimental = Context.getInstance().isExperimental();
+        this.outputFilename = Context.getInstance().getResultFilename();
     }
 
     @Override
@@ -137,18 +148,28 @@ public class BFSAutomaton implements Algorithm {
             Path currentPath = current.getPath();
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
 
-            if (this.matcher.match(currentPath.getStringEdgeSequence()) == "Accepted") {
+            if (this.matcher.match(currentPath.getStringEdgeSequenceAscii()) == "Accepted") {
                 if (this.ne.equals("")) {
-                    printPath(currentPath);
+                    if (isExperimental) {
+                        this.writePath(currentPath);
+                    }
+                    else {
+                        this.printPath(currentPath);
+                    }
                 }
                 else {
                     if (currentPath.last().getId().equals(this.ne)) {
-                        printPath(currentPath);
+                        if (isExperimental) {
+                            this.writePath(currentPath);
+                        }
+                        else {
+                            this.printPath(currentPath);
+                        }
                     }
                 }
             }
 
-            else if (this.matcher.match(currentPath.getStringEdgeSequence()) == "Rejected") {
+            else if (this.matcher.match(currentPath.getStringEdgeSequenceAscii()) == "Rejected") {
                 continue;
             }
 
@@ -251,6 +272,26 @@ public class BFSAutomaton implements Algorithm {
         }
 
         counter++;
+    }
+
+    @Override
+    public void writePath(Path p) {
+        Writer writer = null;
+
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "utf-8"));
+
+            writer.write("Path #" + counter + " - ");
+            for (GraphObject go : p.getSequence()) {
+                writer.write(go.getLabel() + " ");
+            }
+            writer.write("\n");
+
+        } catch (Exception e) {
+        } finally {
+            try { writer.close(); } catch (Exception e) {}
+            counter++;
+        }
     }
 
     @Override

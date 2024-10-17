@@ -1,5 +1,9 @@
 package com.gdblab.algorithm.versions.v2;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,6 +35,10 @@ public class DFSAutomaton implements Algorithm {
 
     private int counter = 1;
 
+    private boolean isExperimental;
+
+    private String outputFilename;
+
     public DFSAutomaton(String regex) {
         this.matcher = new RegexMatcher(regex);
         this.fixPoint = 3;
@@ -40,6 +48,9 @@ public class DFSAutomaton implements Algorithm {
 
         this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
+
+        this.isExperimental = Context.getInstance().isExperimental();
+        this.outputFilename = Context.getInstance().getResultFilename();
     }
 
     @Override
@@ -117,21 +128,31 @@ public class DFSAutomaton implements Algorithm {
                 iterPath.insertEdge(edge);
                 visitedEdges.add(edge.getId());
 
-                if ( this.matcher.match(iterPath.getStringEdgeSequence()) == "Accepted" ) {
+                if ( this.matcher.match(iterPath.getStringEdgeSequenceAscii()) == "Accepted" ) {
                     Path newPath = new Path("");
                     newPath.setSequence(iterPath.getSequence());
                     if (this.ne.equals("")) {
-                        this.printPath(newPath);
+                        if (isExperimental) {
+                            this.writePath(newPath);
+                        }
+                        else {
+                            this.printPath(newPath);
+                        }
                     }
                     else {
                         if (newPath.last().getId().equals(ne)) {
-                            this.printPath(newPath);
+                            if (isExperimental) {
+                                this.writePath(newPath);
+                            }
+                            else {
+                                this.printPath(newPath);
+                            }
                         }
                     }
                     TrailUtils(edge.getTarget(), visitedEdges, iterPath);
                 }
                 
-                else if ( this.matcher.match(iterPath.getStringEdgeSequence()) == "Substring" ) {
+                else if ( this.matcher.match(iterPath.getStringEdgeSequenceAscii()) == "Substring" ) {
                     TrailUtils(edge.getTarget(), visitedEdges, iterPath);
                 }
 
@@ -213,6 +234,27 @@ public class DFSAutomaton implements Algorithm {
 
         counter++;
     }
+
+     @Override
+    public void writePath(Path p) {
+        Writer writer = null;
+
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "utf-8"));
+
+            writer.write("Path #" + counter + " - ");
+            for (GraphObject go : p.getSequence()) {
+                writer.write(go.getLabel() + " ");
+            }
+            writer.write("\n");
+
+        } catch (Exception e) {
+        } finally {
+            try { writer.close(); } catch (Exception e) {}
+            counter++;
+        }
+    }
+
     
     @Override
     public int getTotalPaths() {

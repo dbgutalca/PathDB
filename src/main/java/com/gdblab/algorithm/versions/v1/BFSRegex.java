@@ -1,5 +1,9 @@
 package com.gdblab.algorithm.versions.v1;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -31,6 +35,10 @@ public class BFSRegex implements Algorithm {
 
     private int counter = 1;
 
+    private boolean isExperimental;
+
+    private String outputFilename;
+
     public BFSRegex(String regex) {
         this.pattern = Pattern.compile(regex);
         this.ns = Context.getInstance().getStartNode();
@@ -38,6 +46,9 @@ public class BFSRegex implements Algorithm {
 
         this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
+
+        this.isExperimental = Context.getInstance().isExperimental();
+        this.outputFilename = Context.getInstance().getResultFilename();
     }
 
 
@@ -132,13 +143,23 @@ public class BFSRegex implements Algorithm {
             Path currentPath = current.getPath();
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
 
-            if (pattern.matcher(currentPath.getStringEdgeSequence()).matches()) {
+            if (pattern.matcher(currentPath.getStringEdgeSequenceAscii()).matches()) {
                 if (this.ne.equals("")) {
-                    printPath(currentPath);
+                    if (isExperimental) {
+                        this.writePath(currentPath);
+                    }
+                    else {
+                        printPath(currentPath);
+                    }
                 }
                 else {
                     if (currentPath.last().getId().equals(this.ne)) {
-                        printPath(currentPath);
+                        if (isExperimental) {
+                            this.writePath(currentPath);
+                        }
+                        else {
+                            printPath(currentPath);
+                        }
                     }
                 }
             }
@@ -244,6 +265,26 @@ public class BFSRegex implements Algorithm {
         }
 
         counter++;
+    }
+
+    @Override
+    public void writePath(Path p) {
+        Writer writer = null;
+
+        try {
+            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "utf-8"));
+
+            writer.write("Path #" + counter + " - ");
+            for (GraphObject go : p.getSequence()) {
+                writer.write(go.getLabel() + " ");
+            }
+            writer.write("\n");
+
+        } catch (Exception e) {
+        } finally {
+            try { writer.close(); } catch (Exception e) {}
+            counter++;
+        }
     }
 
     @Override
