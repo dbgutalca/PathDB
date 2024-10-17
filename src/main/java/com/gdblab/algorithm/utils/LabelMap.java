@@ -52,6 +52,14 @@ public final class LabelMap {
         return null;
     }
 
+    public static boolean containsKey(String key){
+        return labelMap.containsKey(key);
+    }
+
+    public static boolean containsValue(String value){
+        return labelMap.containsValue(value);
+    }
+
     private static void increaseAscii(){
         initAscii++;
     }
