@@ -7,9 +7,13 @@ package com.gdblab.graph.schema;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
+import com.gdblab.algorithm.utils.LabelMap;
+import com.gdblab.execution.Context;
 
 /**
  *
@@ -120,6 +124,16 @@ public class Path extends GraphObject {
             }
         }
         return edges;
+    }
+
+    public String getStringEdgeSequenceAscii() {;
+        String seq = "";
+        for (int i = 0; i < sequence.size(); i++) {
+            if (sequence.get(i) instanceof Edge edge) {
+                seq += LabelMap.getByLabel(edge.getLabel());
+            }
+        }
+        return seq;
     }
     
     public String getStringSequence() {
