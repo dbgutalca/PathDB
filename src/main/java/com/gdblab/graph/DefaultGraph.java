@@ -5,23 +5,9 @@ import com.gdblab.graph.schema.*;
 
 public final class DefaultGraph {
 
-    private static InterfaceGraph graph;
-
-    public static void loadGraph() {
-        graph = Graph.getGraph();
-
-        Node[] nodes = getDefaultNodes();
-        for (Node n : nodes) {
-            graph.insertNode(n);
-        }
-
-        Edge[] edges = getDefaultEdges();
-        for (Edge e : edges) {
-            graph.insertEdge(e);
-        }
-    }
+    private static InterfaceGraph graph = Graph.getGraph();
     
-    private static Node[] getDefaultNodes(){
+    public static Node[] getDefaultNodes(){
         Node[] nodes = new Node[3];
         nodes[0] = new Node("N1", "N1");
         nodes[1] = new Node("N2", "N2");
@@ -29,7 +15,7 @@ public final class DefaultGraph {
         return nodes;
     }
 
-    private static Edge[] getDefaultEdges() {
+    public static Edge[] getDefaultEdges() {
         Edge[] edges = new Edge[5];
         edges[0] = new Edge("E1", "A", graph.getNode("N1"), graph.getNode("N2"));
         edges[1] = new Edge("E2", "B", graph.getNode("N2"), graph.getNode("N2"));
