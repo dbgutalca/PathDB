@@ -176,4 +176,8 @@ public final class Context {
     public String getEndingNode() {
         return endingNode;
     }
+
+    public boolean optimize() {
+        return false; // TODO: dejar como parámetro
+    }
 }

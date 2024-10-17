@@ -9,7 +9,6 @@ import com.gdblab.queryplan.physical.impl.PhysicalOpAllNodes;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.queryplan.physical.impl.PhysicalOpHashNodeJoin;
-import com.gdblab.queryplan.physical.impl.PhysicalOpNestedLoopNodeJoin;
 import com.gdblab.queryplan.physical.impl.PhysicalOpRecursive;
 import com.gdblab.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.queryplan.physical.impl.PhysicalOpSequentialScan;
@@ -82,7 +81,6 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     @Override
     public void visit(final LogicalOpRecursive logicalOpRecursive) {
         logicalOpRecursive.getChild().acceptVisitor(this);
-        //TODO Link with Physical operator
         stack.push(new PhysicalOpRecursive(stack.pop(), logicalOpRecursive));
     }
 

@@ -33,5 +33,17 @@ public class First  extends Condition{
     public void setId(String id) {
         this.id = id;
     }
-    
+
+    @Override
+    public String toString() {
+        return "First: "+id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof First)
+            return id.equals(((First) o).id);
+        return false;
+    }
+
 }

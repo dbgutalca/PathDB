@@ -20,7 +20,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
     protected final List<Path> originalChild;
     private final List<Path> loopChild;
 
-    private PhysicalOpHashNodeJoin join;
+    private BinaryPhysicalOp join;
 
     private final Iterator<Path> childIterator;
 
@@ -29,17 +29,23 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
     public PhysicalOpRecursive(final PhysicalOperator child, final LogicalOpRecursive lop) {
         super(child);
         this.lop = lop;
-        
+
         originalChild = Utils.iterToList(child);
-        
+
         childIterator = originalChild.iterator();
-        
+
         this.loopChild = new LinkedList<>();
 
-        this.join = new PhysicalOpHashNodeJoin(
-            new PhysicalOperatorListWrapper(originalChild.iterator()),
-            new PhysicalOperatorListWrapper(originalChild.iterator()));
+        if (lop.hasLastFilter()) {
+            this.join = new PhysicalOpHashNodeJoinRight(
+                    new PhysicalOperatorListWrapper(originalChild.iterator()),
+                    new PhysicalOperatorListWrapper(originalChild.iterator())) ;
+        } else {
+            this.join = new PhysicalOpHashNodeJoin(
+                    new PhysicalOperatorListWrapper(originalChild.iterator()),
+                    new PhysicalOperatorListWrapper(originalChild.iterator()));
 
+        }
     }
 
     @Override
@@ -64,7 +70,7 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
     }
 
     protected Path getNextPath() {
-        while (this.childIterator.hasNext()) {
+        if (this.childIterator.hasNext()) {
             return this.childIterator.next();
         }
 
@@ -82,9 +88,16 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             }
             
             this.counterFixPoint++;
-            this.join = new PhysicalOpHashNodeJoin(
-                new PhysicalOperatorListWrapper(this.loopChild.iterator()), 
-                new PhysicalOperatorListWrapper(this.originalChild.iterator()));
+            if (lop.hasLastFilter()) {
+                this.join = new PhysicalOpHashNodeJoinRight(
+                        new PhysicalOperatorListWrapper(this.loopChild.iterator()),
+                        new PhysicalOperatorListWrapper(this.originalChild.iterator()));
+            }
+            else {
+                this.join = new PhysicalOpHashNodeJoin(
+                        new PhysicalOperatorListWrapper(this.loopChild.iterator()),
+                        new PhysicalOperatorListWrapper(this.originalChild.iterator()));
+            }
             this.loopChild.clear();
         }
     }
