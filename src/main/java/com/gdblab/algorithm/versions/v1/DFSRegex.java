@@ -117,12 +117,13 @@ public class DFSRegex implements Algorithm {
     }
 
     private void TrailUtils(Node node, Set<String> visitedEdges, Path iterPath) {
-        Iterator<Edge> edgeIt = edges.iterator();
 
-        while (edgeIt.hasNext()) {
-            Edge edge = edgeIt.next();
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-            if (edge.getSource().getId().equals(node.getId()) && !visitedEdges.contains(edge.getId())) {
+        while (neighbours.hasNext()) {
+            Edge edge = neighbours.next();
+
+            if (!visitedEdges.contains(edge.getId())) {
                 iterPath.insertEdge(edge);
                 visitedEdges.add(edge.getId());
 

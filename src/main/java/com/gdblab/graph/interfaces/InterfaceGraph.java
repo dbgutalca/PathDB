@@ -2,6 +2,7 @@ package com.gdblab.graph.interfaces;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import com.gdblab.graph.schema.*;
@@ -17,6 +18,8 @@ public interface InterfaceGraph {
     public Node insertNode(final Node node);
 
     public Edge insertEdge(final Edge edge);
+
+    public HashSet<Edge> getNeighbours(final String nodeID);
 
     // Statistics methods
 

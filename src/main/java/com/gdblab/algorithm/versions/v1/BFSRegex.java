@@ -125,10 +125,12 @@ public class BFSRegex implements Algorithm {
     private void TrailUtils(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
+
         Iterator<Edge> edgeIt = edges.iterator();
 
-        while (edgeIt.hasNext()) {
-            Edge e = edgeIt.next();
+        while (neighbours.hasNext()) {
+            Edge e = neighbours.next();
 
             if (e.getSource().getId().equals(node.getId())) {
                 Path p = new Path("", e);

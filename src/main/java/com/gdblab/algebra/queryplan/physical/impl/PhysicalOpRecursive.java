@@ -37,7 +37,8 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
 
         this.join = new PhysicalOpHashNodeJoin(
             new PhysicalOperatorListWrapper(originalChild.iterator()),
-            new PhysicalOperatorListWrapper(originalChild.iterator()));
+            new PhysicalOperatorListWrapper(originalChild.iterator()),
+            true);
 
     }
 
@@ -83,7 +84,8 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             this.counterFixPoint++;
             this.join = new PhysicalOpHashNodeJoin(
                 new PhysicalOperatorListWrapper(this.loopChild.iterator()), 
-                new PhysicalOperatorListWrapper(this.originalChild.iterator()));
+                new PhysicalOperatorListWrapper(this.originalChild.iterator()),
+                true);
             this.loopChild.clear();
         }
     }

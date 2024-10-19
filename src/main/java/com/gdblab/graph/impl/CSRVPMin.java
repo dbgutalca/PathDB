@@ -2,6 +2,7 @@ package com.gdblab.graph.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -149,6 +150,17 @@ public class CSRVPMin implements InterfaceGraph {
         }
 
         return sample;
+    }
+
+    @Override
+    public HashSet<Edge> getNeighbours(final String id) {
+        final HashSet<Edge> nodesTemp = new HashSet<>();
+        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
+            final Edge edge = edgeIt.next(); 
+            if (edge.getSource().getId().equals(id))
+                nodesTemp.add(edge);
+        }
+        return nodesTemp;
     }
     
 }

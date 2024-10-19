@@ -18,9 +18,27 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
     private Path nextRight = null;
     private Iterator<Path> partialLeft = null;
     private List <Path> left = null;
+    private boolean isRecursiveLoop = true;
 
     public PhysicalOpHashNodeJoin(final PhysicalOperator leftChild, final PhysicalOperator rightChild) {
         super(leftChild, rightChild);
+        // This implementation hashes the left input and probes the right
+        // a smarter implementation would hash the smaller input, but we don't have an optimizer yet
+        while (leftChild.hasNext()) {
+            final Path current = leftChild.next();
+            final Node key = current.last();
+            if (!hashTable.containsKey(key)) {
+                hashTable.put(key, new LinkedList<>());
+            }
+            hashTable.get(key).add(current);
+        }
+    }
+
+    public PhysicalOpHashNodeJoin(final PhysicalOperator leftChild, final PhysicalOperator rightChild, boolean isRecursiveLoop) {
+        super(leftChild, rightChild);
+
+        this.isRecursiveLoop = isRecursiveLoop;
+
         // This implementation hashes the left input and probes the right
         // a smarter implementation would hash the smaller input, but we don't have an optimizer yet
         while (leftChild.hasNext()) {
@@ -68,12 +86,25 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
             // There is a rowRight
             if (partialLeft.hasNext()) {
                 Path pl = partialLeft.next();
-                if (pl.isTrail(nextRight)) {
-                    return Utils.NodeLink(pl, nextRight);
+
+
+
+                if (isRecursiveLoop) {
+                    if (pl.isTrail(nextRight)) {
+                        return Utils.NodeLink(pl, nextRight);
+                    }
+                    else {
+                        return null;
+                    }
                 }
                 else {
-                    return null;
+                    return Utils.NodeLink(pl, nextRight);
                 }
+
+
+
+
+                
             }
             // Nothing more for this rowRight.
             nextRight = null;
