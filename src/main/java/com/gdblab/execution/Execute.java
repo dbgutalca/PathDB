@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 
+import com.gdblab.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -64,8 +65,20 @@ public final class Execute {
             lo = filterOnTopLeft(lo);
         }
 
-        if ( !Context.getInstance().getEndNode().equalsIgnoreCase("") ) {
+        if (Context.getInstance().optimize()) {
+            PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+            lo.acceptVisitor(v);
+            lo = v.getRoot();
+        }
+
+        if ( !Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
             lo = filterOnTopRight(lo);
+        }
+
+        if (Context.getInstance().optimize()) {
+            PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+            lo.acceptVisitor(v);
+            lo = v.getRoot();
         }
 
         LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();

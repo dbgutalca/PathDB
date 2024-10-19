@@ -31,5 +31,18 @@ public class Last  extends Condition{
     public void setId(String id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "Last: "+id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Last) {
+            return id.equals(((Last) o).id);
+        }
+        return false;
+    }
     
 }

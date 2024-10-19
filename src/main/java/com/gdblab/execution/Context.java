@@ -124,4 +124,8 @@ public final class Context {
     public String getResultFilename() {
         return resultFilename;
     }
+
+    public boolean optimize() {
+        return false; // TODO: dejar como parámetro
+    }
 }
