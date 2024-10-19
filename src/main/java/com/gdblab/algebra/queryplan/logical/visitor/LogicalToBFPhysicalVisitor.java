@@ -1,18 +1,5 @@
 package com.gdblab.algebra.queryplan.logical.visitor;
 
-import com.gdblab.queryplan.logical.LogicalPlanVisitor;
-import com.gdblab.queryplan.logical.impl.*;
-import com.gdblab.queryplan.physical.PhysicalOperator;
-import com.gdblab.queryplan.physical.PhysicalPlan;
-import com.gdblab.queryplan.physical.impl.PhysicalOpAllEdges;
-import com.gdblab.queryplan.physical.impl.PhysicalOpAllNodes;
-import com.gdblab.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
-import com.gdblab.queryplan.physical.impl.PhysicalOpBinaryUnion;
-import com.gdblab.queryplan.physical.impl.PhysicalOpHashNodeJoin;
-import com.gdblab.queryplan.physical.impl.PhysicalOpRecursive;
-import com.gdblab.queryplan.physical.impl.PhysicalOpReverse;
-import com.gdblab.queryplan.physical.impl.PhysicalOpSequentialScan;
-
 import java.util.Stack;
 
 import com.gdblab.algebra.queryplan.logical.LogicalPlanVisitor;
@@ -24,7 +11,6 @@ import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpAllNodes;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpHashNodeJoin;
-import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpNestedLoopNodeJoin;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpRecursive;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSequentialScan;

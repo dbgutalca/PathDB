@@ -1,9 +1,7 @@
 package com.gdblab.algebra.queryplan.logical.impl;
 
-import com.gdblab.algebra.condition.First;
-import com.gdblab.algebra.condition.Last;
-import com.gdblab.queryplan.logical.LogicalOperator;
-import com.gdblab.queryplan.logical.LogicalPlanVisitor;
+import com.gdblab.algebra.queryplan.logical.LogicalOperator;
+import com.gdblab.algebra.queryplan.logical.LogicalPlanVisitor;
 
 public class LogicalOpRecursive extends UnaryLogicalOp{
     private boolean lastFilter = false;

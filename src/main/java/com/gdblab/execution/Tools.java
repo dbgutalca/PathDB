@@ -148,6 +148,7 @@ public final class Tools {
             "                       Example: (N1,(A?.B+)*,N2);",
             "   /i              Show the information of the graph.",
             "   /s              Show a sample of each label in the graph.",
+            "   /o              Set optimized option (Default is false).",
             "   /q              Quit the program."
         };
         for (String u : help) {

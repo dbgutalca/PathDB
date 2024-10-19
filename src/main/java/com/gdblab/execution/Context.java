@@ -14,6 +14,7 @@ public final class Context {
     private Integer totalPaths;
     private boolean isExperimental;
     private String resultFilename;
+    private boolean optimize;
 
     private Context() {
         method = 1;
@@ -27,6 +28,7 @@ public final class Context {
         totalPaths = 0;
         isExperimental = false;
         resultFilename = "";
+        optimize = false;
     }
 
     public static Context getInstance() {
@@ -125,7 +127,11 @@ public final class Context {
         return resultFilename;
     }
 
-    public boolean optimize() {
-        return false; // TODO: dejar como parámetro
+    public void setOptimize(boolean optimize) {
+        this.optimize = optimize;
+    }
+
+    public boolean isOptimize() {
+        return optimize;
     }
 }

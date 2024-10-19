@@ -6,7 +6,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 
-import com.gdblab.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -23,6 +22,7 @@ import com.gdblab.algebra.parser.impl.RPQtoAlgebraVisitor;
 import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.algebra.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
+import com.gdblab.algebra.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.algorithm.translator.RPQtoER;
@@ -65,17 +65,17 @@ public final class Execute {
             lo = filterOnTopLeft(lo);
         }
 
-        if (Context.getInstance().optimize()) {
+        if (Context.getInstance().isOptimize()) {
             PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
             lo.acceptVisitor(v);
             lo = v.getRoot();
         }
 
-        if ( !Context.getInstance().getEndingNode().equalsIgnoreCase("Y") ) {
+        if ( !Context.getInstance().getEndNode().equalsIgnoreCase("") ) {
             lo = filterOnTopRight(lo);
         }
 
-        if (Context.getInstance().optimize()) {
+        if (Context.getInstance().isOptimize()) {
             PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
             lo.acceptVisitor(v);
             lo = v.getRoot();
@@ -279,7 +279,7 @@ public final class Execute {
 
                 reader.getHistory().add(line);
 
-                if (line.startsWith(prefix + "h ")) {
+                if (line.equalsIgnoreCase(prefix + "h")) {
                     // clearConsole();
                     Tools.showHelp();
                     System.out.println();
@@ -414,6 +414,29 @@ public final class Execute {
 
                 }
 
+                if (line.startsWith(prefix + "o")) {
+                    String[] parts = line.split(" ");
+
+                    if (parts.length != 2) {
+                        // clearConsole();
+                        System.out.println("Invalid command. Use /o true or /o false to set optimization.\n");
+                        continue;
+                    }
+
+                    if (parts[1].equalsIgnoreCase("true")) {
+                        Context.getInstance().setOptimize(true);
+                        System.out.println("Optimization set to: true.\n");
+                    }
+                    else if (parts[1].equalsIgnoreCase("false")) {
+                        Context.getInstance().setOptimize(false);
+                        System.out.println("Optimization set to: false.\n");
+                    }
+                    else {
+                        // clearConsole();
+                        System.out.println("Invalid command. Use /o true or /o false to set optimization.\n");
+                    }
+                    continue;
+                }
                 System.out.println("Invalid command. For help, type /h.\n\n");
             }
 
@@ -429,12 +452,13 @@ public final class Execute {
         String edges_file = args[1];
         String rpqs_file = args[2];
 
-        int lineNumber;     // 1st data in line
-        int method;         // 2nd data in line
-        int fixpoint;       // 3rd data in line
-        String sn;          // 4th data in line
-        String rpq;         // 5th data in line
-        String en;          // 6th data in line
+        int lineNumber;         // 1st data in line
+        int method;             // 2nd data in line
+        int fixpoint;           // 3rd data in line
+        boolean isOptimized;    // 4th data in line
+        String sn;              // 5th data in line
+        String rpq;             // 6th data in line
+        String en;              // 7th data in line
 
         Tools.loadCustomGraphFiles(nodes_file, edges_file);
 
@@ -468,9 +492,14 @@ public final class Execute {
                 continue;
             }
 
-            sn = data[3];
-            rpq = data[4].trim();
-            en = data[5].replaceAll(";", "");
+            if (data[3].equalsIgnoreCase("true")) isOptimized = true;
+            else isOptimized = false;
+
+            Context.getInstance().setOptimize(isOptimized);
+
+            sn = data[4];
+            rpq = data[5].trim();
+            en = data[6].replaceAll(";", "");
 
             
             if (!rpq.isEmpty()) Context.getInstance().setRPQ(rpq);

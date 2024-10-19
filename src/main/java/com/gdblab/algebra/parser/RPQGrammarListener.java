@@ -4,7 +4,6 @@ import com.gdblab.algebra.parser.impl.*;
 import com.gdlab.parser.RPQGrammarBaseListener;
 import com.gdlab.parser.RPQGrammarParser;
 
-import java.text.ParseException;
 import java.util.Stack;
 
 public class RPQGrammarListener extends RPQGrammarBaseListener {

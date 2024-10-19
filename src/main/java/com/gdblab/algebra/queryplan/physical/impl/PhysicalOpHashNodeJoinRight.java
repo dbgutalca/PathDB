@@ -1,15 +1,15 @@
-package com.gdblab.queryplan.physical.impl;
-
-import com.gdblab.algebra.PathAlgebra;
-import com.gdblab.queryplan.physical.PhysicalOperator;
-import com.gdblab.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.schema.Node;
-import com.gdblab.schema.Path;
+package com.gdblab.algebra.queryplan.physical.impl;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
+import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
+import com.gdblab.algebra.queryplan.util.Utils;
+import com.gdblab.graph.schema.Node;
+import com.gdblab.graph.schema.Path;
 
 /**
  * Same as PhysicalOpHashNodeJoin, but does the join from right to left.
@@ -69,7 +69,7 @@ public class PhysicalOpHashNodeJoinRight extends BinaryPhysicalOp {
                 partialRight = right.iterator();
             }
             if (partialRight.hasNext()) {
-                return PathAlgebra.NodeLink(nextLeft, partialRight.next()); // no need to check if null
+                return Utils.NodeLink(nextLeft, partialRight.next()); // no need to check if null
             }
             nextLeft = null;
         }

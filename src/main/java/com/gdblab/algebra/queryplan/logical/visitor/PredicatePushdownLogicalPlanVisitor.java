@@ -1,12 +1,25 @@
-package com.gdblab.queryplan.logical.visitor;
+package com.gdblab.algebra.queryplan.logical.visitor;
+
+import java.util.Stack;
 
 import com.gdblab.algebra.condition.First;
 import com.gdblab.algebra.condition.Last;
-import com.gdblab.queryplan.logical.LogicalOperator;
-import com.gdblab.queryplan.logical.LogicalPlanVisitor;
-import com.gdblab.queryplan.logical.impl.*;
-
-import java.util.Stack;
+import com.gdblab.algebra.queryplan.logical.LogicalOperator;
+import com.gdblab.algebra.queryplan.logical.LogicalPlanVisitor;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllEdges;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllNodes;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllPathsStartingFromNode;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpDifference;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpEdgeJoin;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpEdgeProduct;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpIntersection;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpNodeJoin;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpNodeProduct;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpProjection;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpRecursive;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpReverse;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpUnion;
 
 public class PredicatePushdownLogicalPlanVisitor implements LogicalPlanVisitor {
 
@@ -105,8 +118,7 @@ public class PredicatePushdownLogicalPlanVisitor implements LogicalPlanVisitor {
         if(otherSelection != null){
             stack.push(new LogicalOpSelection(logicalOpRecursive, otherSelection.getCondition()));
         } else {
-            stack.push(new LogicalOpRecursive(stack.pop(), logicalOpRecursive.hasLastFilter(),
-                    logicalOpRecursive.hasFirstFilter()));
+            stack.push(new LogicalOpRecursive(stack.pop(), logicalOpRecursive.hasLastFilter(), logicalOpRecursive.hasFirstFilter()));
         }
     }
 

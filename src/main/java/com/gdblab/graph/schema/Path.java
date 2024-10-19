@@ -7,13 +7,11 @@ package com.gdblab.graph.schema;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 import com.gdblab.algorithm.utils.LabelMap;
-import com.gdblab.execution.Context;
 
 /**
  *

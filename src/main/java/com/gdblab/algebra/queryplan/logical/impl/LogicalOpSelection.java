@@ -3,7 +3,6 @@ package com.gdblab.algebra.queryplan.logical.impl;
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.logical.LogicalPlanVisitor;
-import com.gdblab.algebra.queryplan.logical.UnaryLogicalOperator;
 
 import java.util.Objects;
 
