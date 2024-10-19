@@ -1,9 +1,11 @@
 package com.gdblab.parser;
 
 import com.gdblab.algebra.condition.Label;
-import com.gdblab.parser.impl.*;
-import com.gdblab.queryplan.logical.LogicalOperator;
-import com.gdblab.queryplan.logical.impl.*;
+import com.gdblab.algebra.parser.RPQExpression;
+import com.gdblab.algebra.parser.impl.*;
+import com.gdblab.algebra.queryplan.logical.LogicalOperator;
+import com.gdblab.algebra.queryplan.logical.impl.*;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
