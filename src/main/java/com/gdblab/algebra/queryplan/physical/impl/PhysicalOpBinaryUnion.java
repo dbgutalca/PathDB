@@ -41,10 +41,16 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
         slot = null;
         return r;
     }
-
+    
     protected Path moveToNextPathOrNull() {
-        while (this.leftChild.hasNext()) return this.leftChild.next();
-        while (this.rightChild.hasNext()) return this.rightChild.next();
+        while (this.leftChild.hasNext()) {
+            final Path p = this.leftChild.next();
+            return p;
+        }
+        while (this.rightChild.hasNext()) {
+            final Path p = this.rightChild.next();
+            return p;
+        }
 
         return null;
     }

@@ -3,9 +3,14 @@ package com.gdblab.visitor;
 import com.gdblab.algebra.condition.First;
 import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.condition.Last;
-import com.gdblab.queryplan.logical.LogicalOperator;
-import com.gdblab.queryplan.logical.impl.*;
-import com.gdblab.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
+import com.gdblab.algebra.queryplan.logical.LogicalOperator;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllEdges;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllNodes;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpNodeJoin;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpRecursive;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpUnion;
+import com.gdblab.algebra.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

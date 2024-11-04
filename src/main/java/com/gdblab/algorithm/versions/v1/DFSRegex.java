@@ -37,7 +37,19 @@ public class DFSRegex implements Algorithm {
 
     private boolean isExperimental;
 
-    private String outputFilename;
+    private Writer writer;
+
+    public DFSRegex(String regex, Writer writer) {
+        this.pattern = Pattern.compile(regex);
+        this.ns = Context.getInstance().getStartNode();
+        this.ne = Context.getInstance().getEndNode();
+        
+        this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
+        this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
+
+        this.isExperimental = Context.getInstance().isExperimental();
+        this.writer = writer;
+    }
 
     public DFSRegex(String regex) {
         this.pattern = Pattern.compile(regex);
@@ -48,7 +60,7 @@ public class DFSRegex implements Algorithm {
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
 
         this.isExperimental = Context.getInstance().isExperimental();
-        this.outputFilename = Context.getInstance().getResultFilename();
+        this.writer = null;
     }
 
     @Override
@@ -95,6 +107,7 @@ public class DFSRegex implements Algorithm {
 
     @Override
     public void Trail() {
+
 
         if (ns.equals("")) {
             Iterator<Node> nodes = this.nodes.iterator();
@@ -207,10 +220,25 @@ public class DFSRegex implements Algorithm {
             while (it.hasNext()) {
                 Node node = it.next();
 
+                if (!Context.getInstance().getStartNode().equals("") &&
+                    !Context.getInstance().getStartNode().equals(node.getId())) {
+                    continue;
+                }
+
+                if (!Context.getInstance().getEndNode().equals("") &&
+                    !Context.getInstance().getEndNode().equals(node.getId())) {
+                    continue;
+                }
+
                 Path path = new Path("");
                 path.insertNode(node);
                 
-                printPath(path);
+                if (isExperimental) {
+                    this.writePath(path);
+                }
+                else {
+                    this.printPath(path);
+                }
             }
         }
     } 
@@ -221,7 +249,12 @@ public class DFSRegex implements Algorithm {
         if (this.counter <= 10) {
             System.out.print("Path #" + counter + " - ");
             for (GraphObject go : p.getSequence()) {
-                System.out.print( go.getLabel() + " ");
+                if (go instanceof Edge) {
+                    System.out.print(go.getId() + "(" + go.getLabel() + ") ");
+                }
+                else {
+                    System.out.print(go.getId() + " ");
+                }
             }
             System.out.println();
         }
@@ -235,20 +268,21 @@ public class DFSRegex implements Algorithm {
 
     @Override
     public void writePath(Path p) {
-        Writer writer = null;
-
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFilename), "utf-8"));
-
-            writer.write("Path #" + counter + " - ");
+            this.writer.write("Path #" + counter + " - ");
             for (GraphObject go : p.getSequence()) {
-                writer.write(go.getLabel() + " ");
+                if (go instanceof Edge) {
+                    this.writer.write(go.getId() + "(" + go.getLabel() + ") ");
+
+                }
+                else {
+                    this.writer.write(go.getLabel() + " ");
+                }
             }
-            writer.write("\n");
+            this.writer.write("\n");
 
         } catch (Exception e) {
         } finally {
-            try { writer.close(); } catch (Exception e) {}
             counter++;
         }
     }

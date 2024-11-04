@@ -63,22 +63,22 @@ public final class Execute {
         // Adding filter on top of the logical operator
         if ( !Context.getInstance().getStartNode().equalsIgnoreCase("") ) {
             lo = filterOnTopLeft(lo);
-        }
 
-        if (Context.getInstance().isOptimize()) {
-            PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-            lo.acceptVisitor(v);
-            lo = v.getRoot();
+            if (Context.getInstance().isOptimize()) {
+                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+                lo.acceptVisitor(v);
+                lo = v.getRoot();
+            }
         }
 
         if ( !Context.getInstance().getEndNode().equalsIgnoreCase("") ) {
             lo = filterOnTopRight(lo);
-        }
 
-        if (Context.getInstance().isOptimize()) {
-            PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-            lo.acceptVisitor(v);
-            lo = v.getRoot();
+            if (Context.getInstance().isOptimize()) {
+                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+                lo.acceptVisitor(v);
+                lo = v.getRoot();
+            }
         }
 
         LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
@@ -106,7 +106,6 @@ public final class Execute {
 
         String er = RPQtoER.Translate(Context.getInstance().getRPQ());
 
-        DFSRegex dfsRegex = new DFSRegex(er);
         if (Context.getInstance().isExperimental()) {
             String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
             Context.getInstance().setResultFilename(filename);
@@ -116,16 +115,21 @@ public final class Execute {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Context.getInstance().getResultFilename()), "utf-8"));
                 Utils.writeConfig(writer);
+
+                DFSRegex dfsRegex = new DFSRegex(er, writer);
+                dfsRegex.Trail();
+                Context.getInstance().setTotalPaths(dfsRegex.getTotalPaths());
+
+                writer.close();
+
+                long end = System.nanoTime();
+                Context.getInstance().setTime(Utils.getTime(start, end));
+                Utils.writeTotalAndTime();
             } catch (Exception e) {
-            } finally { try { writer.close(); } catch (Exception e) {} }
-
-            dfsRegex.Trail();
-
-            long end = System.nanoTime();
-            Context.getInstance().setTime(Utils.getTime(start, end));
-            Utils.writeTotalAndTime();
+            }
         }
         else {
+            DFSRegex dfsRegex = new DFSRegex(er);
             dfsRegex.Trail();
             long end = System.nanoTime();
             System.out.println("\nTotal paths: " + dfsRegex.getTotalPaths() + " paths");
@@ -139,8 +143,6 @@ public final class Execute {
 
         String er = RPQtoER.Translate(Context.getInstance().getRPQ());
 
-        BFSRegex bfsRegex = new BFSRegex(er);
-
         if (Context.getInstance().isExperimental()) {
             String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
             Context.getInstance().setResultFilename(filename);
@@ -150,18 +152,22 @@ public final class Execute {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Context.getInstance().getResultFilename()), "utf-8"));
                 Utils.writeConfig(writer);
-            } catch (Exception e) {
-            } finally {
-                try { writer.close(); } catch (Exception e) {}
-            }
 
-            bfsRegex.Trail();
+                BFSRegex bfsRegex = new BFSRegex(er, writer);
+                bfsRegex.Trail();
+                Context.getInstance().setTotalPaths(bfsRegex.getTotalPaths());
 
-            long end = System.nanoTime();
-            Context.getInstance().setTime(Utils.getTime(start, end));
-            Utils.writeTotalAndTime();
+                writer.close();
+
+                long end = System.nanoTime();
+                Context.getInstance().setTime(Utils.getTime(start, end));
+                Utils.writeTotalAndTime();
+            } catch (Exception e) {}
+
+            
         }
         else {
+            BFSRegex bfsRegex = new BFSRegex(er);
             bfsRegex.Trail();
             long end = System.nanoTime();
             System.out.println("\nTotal paths: " + bfsRegex.getTotalPaths() + " paths");
@@ -175,8 +181,6 @@ public final class Execute {
 
         String er = RPQtoER.Translate(Context.getInstance().getRPQ());
 
-        DFSAutomaton dfsAutomaton = new DFSAutomaton(er);
-
         if (Context.getInstance().isExperimental()) {
             String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
             Context.getInstance().setResultFilename(filename);
@@ -186,18 +190,20 @@ public final class Execute {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Context.getInstance().getResultFilename()), "utf-8"));
                 Utils.writeConfig(writer);
-            } catch (Exception e) {
-            } finally {
-                try { writer.close(); } catch (Exception e) {}
-            }
 
-            dfsAutomaton.Trail();
+                DFSAutomaton dfsAutomaton = new DFSAutomaton(er, writer);
+                dfsAutomaton.Trail();
+                Context.getInstance().setTotalPaths(dfsAutomaton.getTotalPaths());
 
-            long end = System.nanoTime();
-            Context.getInstance().setTime(Utils.getTime(start, end));
-            Utils.writeTotalAndTime();
+                writer.close();
+
+                long end = System.nanoTime();
+                Context.getInstance().setTime(Utils.getTime(start, end));
+                Utils.writeTotalAndTime();
+            } catch (Exception e) {}
 
         } else {
+            DFSAutomaton dfsAutomaton = new DFSAutomaton(er);
             dfsAutomaton.Trail();
             long end = System.nanoTime();
             System.out.println("\nTotal paths: " + dfsAutomaton.getTotalPaths() + " paths");
@@ -211,8 +217,6 @@ public final class Execute {
 
         String er = RPQtoER.Translate(Context.getInstance().getRPQ());
 
-        BFSAutomaton bfsAutomaton = new BFSAutomaton(er);
-
         if (Context.getInstance().isExperimental()) {
             String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
             Context.getInstance().setResultFilename(filename);
@@ -222,18 +226,22 @@ public final class Execute {
             try {
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Context.getInstance().getResultFilename()), "utf-8"));
                 Utils.writeConfig(writer);
-            } catch (Exception e) {
-            } finally {
-                try { writer.close(); } catch (Exception e) {}
-            }
 
-            bfsAutomaton.Trail();
+                BFSAutomaton bfsAutomaton = new BFSAutomaton(er);
+                bfsAutomaton.Trail();
+                Context.getInstance().setTotalPaths(bfsAutomaton.getTotalPaths());
 
-            long end = System.nanoTime();
-            Context.getInstance().setTime(Utils.getTime(start, end));
-            Utils.writeTotalAndTime();
+                writer.close();
+
+                long end = System.nanoTime();
+                Context.getInstance().setTime(Utils.getTime(start, end));
+                Utils.writeTotalAndTime();
+            } catch (Exception e) {}
+
+           
 
         } else {
+            BFSAutomaton bfsAutomaton = new BFSAutomaton(er);
             bfsAutomaton.Trail();
             long end = System.nanoTime();
             System.out.println("\nTotal paths: " + bfsAutomaton.getTotalPaths() + " paths");

@@ -11,11 +11,13 @@ import com.gdblab.graph.schema.Path;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +55,12 @@ public class Utils {
     }
 
     public static Path NodeLink (Path pathA, Path pathB) {
-        if (pathA.isNodeLinkable(pathB)) {
+        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        // System.out.println("PathA: " + pathA.getStringSequence());
+        // System.out.println("PathB: " + pathB.getStringSequence());
+        // System.out.println(pathA.isTrail(pathB));
+        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        if (pathA.isNodeLinkable(pathB) && pathA.isTrail(pathB)) {
             Path join_path = new Path("");
 
             if (pathA.getNodesAmount() == 1 && pathB.getNodesAmount() == 1) {
@@ -93,7 +100,13 @@ public class Utils {
                 if (counter <= ms) {
                     System.out.print("Path #" + counter + " - ");
                     for (GraphObject go : p.getSequence()) {
-                        System.out.print( go.getLabel() + " ");
+                        if (go instanceof Edge) {
+                            System.out.print( go.getId() + "(" + go.getLabel() + ")" + " ");
+                        }
+                        else {
+                            System.out.print( go.getId() + " ");
+                        }
+                        
                     }
                     System.out.println();
                 }
@@ -122,7 +135,12 @@ public class Utils {
                 Path p = po.next();
                 writer.write("Path #" + counter + " - ");
                 for (GraphObject go : p.getSequence()) {
-                    writer.write( go.getLabel() + " ");
+                    if (go instanceof Edge) {
+                        writer.write(go.getId() + "(" + go.getLabel() + ") ");
+                    }
+                    else {
+                        writer.write(go.getLabel() + " ");
+                    }
                 }
                 writer.write("\n");
                 counter++;
@@ -130,7 +148,9 @@ public class Utils {
 
         } catch (Exception e) {
         } finally {
-            try {writer.close();} catch (Exception ex) {}
+            try {writer.close();} catch (Exception ex) {
+                ex.printStackTrace();
+            }
             Context.getInstance().setTotalPaths(counter - 1);
         }
     }
@@ -143,6 +163,7 @@ public class Utils {
             writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
             writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
             writer.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
+            if (Context.getInstance().getMethod() == 1) writer.write("Optimized: " + Context.getInstance().isOptimize() + "\n");
             writer.write("Total: <$TOTAL_PATHS$>\n");
             writer.write("Time: <$TOTAL_TIME$> s\n");
             writer.write("=====================================\n");
@@ -150,30 +171,45 @@ public class Utils {
     }
 
     public static void writeTotalAndTime() {
+
+        writeOnSummary();
+
         int total = Context.getInstance().getTotalPaths();
         String time = Context.getInstance().getTime();
         String filename = Context.getInstance().getResultFilename();
         String tempFilename = "temp_" + filename;
 
-        try (
-            BufferedReader reader = Files.newBufferedReader(Paths.get(filename));
-            BufferedWriter writer = Files.newBufferedWriter(Paths.get(tempFilename));
-        ) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename));
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get(tempFilename), StandardOpenOption.CREATE)) {
             String line;
-
             while ((line = reader.readLine()) != null) {
-                if (line.contains("<$TOTAL_PATHS$>")) {
-                    line = line.replace( "<$TOTAL_PATHS$>", String.valueOf(total) );
-                }
-                if (line.contains("<$TOTAL_TIME$>")) {
-                    line = line.replace( "<$TOTAL_TIME$>", time );
-                }
-                writer.write(line + "\n");
+                line = line.replace("<$TOTAL_PATHS$>", String.valueOf(total));
+                line = line.replace("<$TOTAL_TIME$>", time);
+                writer.write(line);
+                writer.newLine();
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.err.println("Error al procesar el archivo: " + e.getMessage());
+            return;
+        }
 
         try {
-            Files.move(Paths.get(tempFilename), Paths.get(filename), StandardCopyOption.REPLACE_EXISTING);
+            Files.move(Paths.get(tempFilename), Paths.get(filename), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (Exception e) {
+            System.err.println("Error al sobrescribir el archivo original: " + e.getMessage());
+        }
+    }
+
+    public static void writeOnSummary() {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("summary.txt", true), "utf-8"))) {
+            writer.write("Method: " + Tools.getSelectedMethod(Context.getInstance().getMethod()) + "\n");
+            writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
+            writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
+            writer.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
+            writer.write("Total: " + Context.getInstance().getTotalPaths() + "\n");
+            writer.write("Time: " + Context.getInstance().getTime() + " s\n");
+            writer.write("=====================================\n");
+            writer.close();
         } catch (Exception e) {}
     }
 }
