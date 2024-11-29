@@ -213,6 +213,7 @@ public final class Tools {
         try (BufferedReader br = new BufferedReader(new FileReader(rpqs_file))) {
             String line;
             while ((line = br.readLine()) != null) {
+                if (line.startsWith("#")) continue;
                 rpqs.add(line);
             }
         } catch (Exception e) {

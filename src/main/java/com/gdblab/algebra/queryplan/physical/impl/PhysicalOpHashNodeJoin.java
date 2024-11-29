@@ -17,8 +17,6 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
     private Path slot;
     private Path nextRight = null;
     private Iterator<Path> partialLeft = null;
-    private List <Path> left = null;
-    private boolean isRecursiveLoop = true;
 
     public PhysicalOpHashNodeJoin(final PhysicalOperator leftChild, final PhysicalOperator rightChild) {
         super(leftChild, rightChild);
@@ -36,8 +34,6 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
 
     public PhysicalOpHashNodeJoin(final PhysicalOperator leftChild, final PhysicalOperator rightChild, boolean isRecursiveLoop) {
         super(leftChild, rightChild);
-
-        this.isRecursiveLoop = isRecursiveLoop;
 
         // This implementation hashes the left input and probes the right
         // a smarter implementation would hash the smaller input, but we don't have an optimizer yet
@@ -67,6 +63,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
 
     private Path moveToNextPathOrNull() {
         for ( ;; ) { // For rows from the right.
+            
             if ( nextRight == null ) {
                 if ( rightChild.hasNext() ) {
                     nextRight = rightChild.next();
@@ -74,36 +71,28 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
                 } else
                     return null;
             }
+
+
             if (partialLeft == null) {
-                this.left = hashTable.get(nextRight.first());
-                if (this.left == null) {
+                List<Path> left = hashTable.get(nextRight.first());
+                if (left == null) {
                     nextRight = null;
                     continue;
                 }
-                partialLeft = this.left.iterator();
+                partialLeft = left.iterator();
             }
 
             // There is a rowRight
             if (partialLeft.hasNext()) {
                 Path pl = partialLeft.next();
 
+                Path result =  Utils.NodeLink(pl, nextRight);
 
-
-                if (isRecursiveLoop) {
-                    if (pl.isTrail(nextRight)) {
-                        return Utils.NodeLink(pl, nextRight);
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else {
-                    return Utils.NodeLink(pl, nextRight);
+                if (result == null) {
+                    continue;
                 }
 
-
-
-
+                return result;
                 
             }
             // Nothing more for this rowRight.

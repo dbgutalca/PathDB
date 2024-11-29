@@ -1,6 +1,6 @@
 package com.gdblab.queryplan.physical.impl;
 
-import com.gdblab.schema.Path;
+import com.gdblab.graph.schema.Path;
 import org.junit.Test;
 
 public class PhysicalOpSequentialScanTest {

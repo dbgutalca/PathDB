@@ -266,8 +266,18 @@ public class Path extends GraphObject {
         }
     }
 
+    public ArrayList<String> getListIDEdgeSequence() {
+        ArrayList<String> ids = new ArrayList<>();
+        for (int i = 0; i < sequence.size(); i++) {
+            if (sequence.get(i) instanceof Edge edge) {
+                ids.add(edge.getId());
+            }
+        }
+        return ids;
+    }
+
     public boolean isTrail(Path pathB) {
-        return this.getEdgeSequence().stream().noneMatch(pathB.getEdgeSequence()::contains);
+        return this.getListIDEdgeSequence().stream().noneMatch(pathB.getListIDEdgeSequence()::contains);
     }
 
 }
