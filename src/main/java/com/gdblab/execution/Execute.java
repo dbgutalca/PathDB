@@ -227,7 +227,7 @@ public final class Execute {
                 writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Context.getInstance().getResultFilename()), "utf-8"));
                 Utils.writeConfig(writer);
 
-                BFSAutomaton bfsAutomaton = new BFSAutomaton(er);
+                BFSAutomaton bfsAutomaton = new BFSAutomaton(er, writer);
                 bfsAutomaton.Trail();
                 Context.getInstance().setTotalPaths(bfsAutomaton.getTotalPaths());
 
