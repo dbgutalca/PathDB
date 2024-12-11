@@ -5,6 +5,11 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -259,6 +264,7 @@ public final class Execute {
     }
 
     public static void interactive(String[] args) {
+
         try {
             Terminal terminal = TerminalBuilder.terminal();
             LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
@@ -273,11 +279,11 @@ public final class Execute {
                 Tools.showUsageArgs(args[0], args[1]);
                 Tools.loadCustomGraphFiles(args[0], args[1]);
             }
-            
-            
+
             String prompt = "PathDB> ";
 
             while (true) {
+
                 String line = reader.readLine(prompt);
 
                 if (line == null || line.equalsIgnoreCase(prefix + "q") ) {
@@ -287,14 +293,14 @@ public final class Execute {
 
                 reader.getHistory().add(line);
 
-                if (line.equalsIgnoreCase(prefix + "h")) {
+                if (line.equals(prefix + "h")) {
                     // clearConsole();
                     Tools.showHelp();
                     System.out.println();
                     continue;
                 }
 
-                if (line.startsWith(prefix + "m ")) {
+                else if (line.startsWith(prefix + "m ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -322,7 +328,7 @@ public final class Execute {
                     continue;
                 }
 
-                if (line.startsWith(prefix + "f ")) {
+                else if (line.startsWith(prefix + "f ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -344,7 +350,119 @@ public final class Execute {
                     continue;
                 }
 
-                if (line.startsWith(prefix + "i")) {
+                else if (line.startsWith(prefix + "s ")) {
+                    String[] parts = line.split(" ");
+
+                    if (parts.length != 2) {
+                        System.out.println("Invalid command. Use /e <1-3> to set a semantic.\n");
+                        continue;
+                    }
+
+                    try {
+                        Integer.parseInt(parts[1]);
+                    } catch (Exception e) {
+                        System.out.println("Invalid command. Use /e <1-3> to set a semantic.\n");
+                        continue;
+                    }
+
+                    if (Integer.parseInt(parts[1]) < 1 || Integer.parseInt(parts[1]) > 3) {
+                        System.out.println("Invalid command. Use /e <1-3> to set a semantic.\n");
+                        continue;
+                    }
+
+                    Context.getInstance().setSemantic(Integer.parseInt(parts[1]));
+                    Tools.showSelectedSemantic(Integer.parseInt(parts[1]));
+                    continue;
+                }
+
+                else if (line.endsWith(";")) {
+
+                    String[] parts = line.substring(0, line.length() - 1).split(",");
+
+                    if (parts.length != 3) {
+                        System.out.println("Invalid command. Use '(S,RQP,E);' to execute a RPQ.\n");
+                        continue;
+                    }
+
+                    String sn = parts[0].replaceAll("\\(", "");
+                    if (sn.isEmpty()) Context.getInstance().setStartNode("");
+                    else Context.getInstance().setStartNode(sn);
+
+                    String rpq = parts[1];
+                    if (rpq.isEmpty()) {
+                        System.out.println("Invalid command. Must include the RPQ. Use '(S,RQP,E);' to execute a RPQ.\n");
+                        continue;
+                    }
+                    Context.getInstance().setRPQ(rpq);
+
+                    String en = parts[2].replaceAll("\\)", "");
+                    if (en.isEmpty()) Context.getInstance().setEndNode("");
+                    else Context.getInstance().setEndNode(en);
+
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                    Future<Void> future = executor.submit(new runExecution());
+
+                    try {
+                        future.get(Context.getInstance().getTimeoutDuration(), Context.getInstance().getTimeoutTimeUnit());
+                    }
+                    catch (Exception e) {
+                        System.out.println("Execution timed out.\n");
+                        future.cancel(true);
+                    }
+
+                    executor.shutdownNow();
+                }
+
+                else if (line.startsWith(prefix + "t ")) {
+                    String[] parts = line.split(" ");
+
+                    if (parts.length != 2) {
+                        System.out.println("Invalid command. Use /t <#><U> to set a timeout.\n");
+                        continue;
+                    }
+
+                    if (parts[1].equals("0")) {
+                        Context.getInstance().setTimeoutDuration(Integer.MAX_VALUE);
+                        Context.getInstance().setTimeoutTimeUnit(TimeUnit.DAYS);
+                        System.out.println("Timeout disabled.\n");
+                        continue;
+                    }
+
+                    String number = parts[1].substring(0, parts[1].length() - 1);
+                    String unit = parts[1].substring(parts[1].length() - 1);
+
+                    try { Integer.parseInt(number); }
+                    catch (Exception e) {
+                        System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be a number.\n");
+                        continue;
+                    }
+
+                    if ( Integer.parseInt(number) < 1)  {
+                        System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be greater than 0.\n");
+                        continue;
+                    }
+
+                    switch (unit) {
+                        case "S": 
+                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.SECONDS);
+                            System.out.println("Timeout set to: " + number + " seconds.\n");
+                            break;
+                        case "M": 
+                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
+                            System.out.println("Timeout set to: " + number + " minutes.\n");
+                            break;
+                        case "H": 
+                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.HOURS);
+                            System.out.println("Timeout set to: " + number + " hours.\n");
+                            break;
+                    
+                        default:
+                            System.out.println("Invalid command. Use /t " + number + "<U> to set a timeout. U must be S, M or H.\n");
+                            continue;
+                    }
+                }
+
+                else if (line.equals(prefix + "i")) {
                     // clearConsole();
                     System.out.println("Graph Information:");
                     System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
@@ -355,74 +473,17 @@ public final class Execute {
                     continue;
                 }
                 
-                if (line.startsWith(prefix + "s")) {
+                else if (line.equals(prefix + "l")) {
                     System.out.println("Samples: ");
                     ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
                     for (Edge e : edges) {
-                       System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
+                    System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
                     }
                     System.out.println("\n");
                     continue;
                 }
 
-                if (line.endsWith(";")) {
-
-                    String[] parts = line.substring(0, line.length() - 1).split(",");
-
-                    String sn = parts[0].substring(1);
-                    String rpq = parts[1];
-                    String en = parts[2].substring(0, parts[2].length() - 1);
-
-                    if (rpq.isEmpty()) {
-                        System.out.println("Invalid command. Query cannot be empty.\n");
-                        continue;
-                    }
-                    else {
-                        Context.getInstance().setRPQ(rpq);
-                    }
-
-                    if (!sn.isEmpty()) {
-                        Context.getInstance().setStartNode(sn);
-                    }
-                    else {
-                        Context.getInstance().setStartNode("");
-                    }
-
-                    if (!en.isEmpty()) {
-                        Context.getInstance().setEndNode(en);
-                    }
-                    else {
-                        Context.getInstance().setEndNode("");
-                    }
-
-                    // Switch del method
-                    switch (Context.getInstance().getMethod()) {
-                        case 1:
-                            Execute.EvalRPQWithAlgebra();
-                            break;
-                        case 2:
-                            Execute.EvalRPQWithRegexDFS();
-                            break;
-                        case 3:
-                            Execute.EvalRPQWithRegexBFS();
-                            break;
-                        case 4:
-                            Execute.EvalRPQWithAutomatonDFS();
-                            break;
-                        case 5:
-                            Execute.EvalRPQWithAutomatonBFS();
-                            break;
-                    
-                        default:
-                            break;
-                    }
-                    
-                    System.out.println();
-                    continue;
-
-                }
-
-                if (line.startsWith(prefix + "o")) {
+                else if (line.startsWith(prefix + "o ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -445,12 +506,14 @@ public final class Execute {
                     }
                     continue;
                 }
-                System.out.println("Invalid command. For help, type /h.\n\n");
+
+                else {
+                    System.out.println("Invalid command. For help, type /h.\n\n");
+                }
             }
 
-        } catch (Exception e) {
-            System.out.println("Terminated execution.");
         }
+        catch (Exception e) {}
     }
 
     public static void experimental(String[] args) {
@@ -460,13 +523,15 @@ public final class Execute {
         String edges_file = args[1];
         String rpqs_file = args[2];
 
-        int lineNumber;         // 1st data in line
-        int method;             // 2nd data in line
-        int fixpoint;           // 3rd data in line
-        boolean isOptimized;    // 4th data in line
-        String sn;              // 5th data in line
-        String rpq;             // 6th data in line
-        String en;              // 7th data in line
+        Integer lineNumber;         // 1st column
+        Integer method;             // 2nd column
+        Integer fixpoint;           // 3rd column
+        Integer semantic;           // 4th column
+        String timeOut;             // 5th column
+        boolean isOptimized;        // 6th column
+        String sn;                  // 7th column
+        String rpq;                 // 8th column
+        String en;                  // 9th column
 
         Tools.loadCustomGraphFiles(nodes_file, edges_file);
 
@@ -475,67 +540,239 @@ public final class Execute {
         Context.getInstance().setRPQFileName(rpqs_file);
 
         for (String line : rpqs) {
-            String[] data = line.split(",");
 
+            // #region Check if line is valid
+            if (!line.endsWith(";")) {
+                System.out.println("Error in line: '" + line + "'. Missing semicolon. Must end with ';'. Skipping line.\n");
+                continue;
+            }
+
+            String[] data = line.split(",");
+            
+            if (data.length != 9) {
+                System.out.println("Error in line: '" + line + "'. Invalid number of arguments (9 expected). Skipping line.\n");
+            }
+            // #endregion
+
+            //#region 1st column - Line Number - Mandatory
             try {
                 lineNumber = Integer.parseInt(data[0]);
+                if (lineNumber < 0) {
+                    System.out.println("Error in line: '" + line + "'. Invalid line number. Must be a positive number. Skipping line.\n");
+                    continue;
+                }
                 Context.getInstance().setNumber(lineNumber);
             } catch (Exception e) {
+                System.out.println("Error in line: '" + line + "'. Invalid line number. Must be a positive number. Skipping line.\n");
                 continue;
             }
+            //#endregion
 
+            // #region 2nd column - Method - Optional (Default is 1 - Algebra)
             try {
-                method = Integer.parseInt(data[1]);
+                if (data[1].isEmpty()) {
+                    method = 1;
+                }
+                else{
+                    method = Integer.parseInt(data[1]);
+                    if (method < 1 || method > 5) {
+                        System.out.println("Error in line: '" + line + "'. Invalid method. Skipping line.\n");
+                        continue;
+                    }
+                }
                 Context.getInstance().setMethod(method);
-                if (method < 1 || method > 5) continue;
             } catch (Exception e) {
+                System.out.println("Error in line: '" + line + "'. Invalid method. Must be a number between 1 and 5. Skipping line.\n");
                 continue;
             }
+            // #endregion
+
+            // #region 3rd column - Fixpoint - Optional (Default is 5)
+            try {
+                if (data[2].isEmpty()) {
+                    fixpoint = 5;
+                }
+                else {
+                    fixpoint = Integer.parseInt(data[2]);
+                    if (fixpoint <= 0) {
+                        System.out.println("Error in line: '" + line + "'. Invalid fixpoint. Must be a positive number. Skipping line.\n");
+                        continue;
+                    }
+                }
+                Context.getInstance().setFixPoint(fixpoint);
+            } catch (Exception e) {
+                System.out.println("Error in line: '" + line + "'. Invalid fixpoint. Must be a number. Skipping line.\n");
+                continue;
+            }
+            // #endregion
+
+            // #region 4th column - Semantic - Optional (Default is 2 - Trail)
+            try {
+                System.out.println("Data:" + data[3] + "///");
+                if (data[3].equals("")) {
+                    semantic = 2;
+                    System.out.println("aaaa");
+                }
+                else {
+                    semantic = Integer.parseInt(data[3]);
+                    if (semantic < 1 || semantic > 3) {
+                        System.out.println("Error in line: '" + line + "'. Invalid semantic. Must be a number between 1 and 3. Skipping line.\n");
+                        continue;
+                    }
+                }
+                Context.getInstance().setSemantic(semantic);
+            } catch (Exception e) {
+                System.out.println("Error in line: '" + line + "'. Invalid semantic. Must be a number. Skipping line.\n");
+                continue;
+            }
+            //#endregion
+
+            // #region 5th column - Timeout - Optional (Default is 2 Minutes)
+            try {
+                timeOut = data[4];
+
+                if (timeOut.isEmpty()) {
+                    Context.getInstance().setTimeoutDuration(2);
+                    Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
+                }
+
+                else if (timeOut.equals("0")) {
+                    Context.getInstance().setTimeoutDuration(Integer.MAX_VALUE);
+                    Context.getInstance().setTimeoutTimeUnit(TimeUnit.DAYS);
+                }
+
+                else {
+                    String number = timeOut.substring(0, timeOut.length() - 1);
+                    String unit = timeOut.substring(timeOut.length() - 1);
+
+                    try {
+                        Integer numberInt = Integer.parseInt(number);
+                        if (numberInt < 1) {
+                            System.out.println("Error in line: '" + line + "'. Invalid timeout. Must be a positive number. Skipping line.\n");
+                            continue;
+                        }
+                        Context.getInstance().setTimeoutDuration(numberInt);
+                    } catch (Exception e) {
+                        System.out.println("Error in line: '" + line + "'. Invalid timeout. Must be a number. Skipping line.\n");
+                        continue;
+                    }
+
+                    if (!unit.equals("S") && !unit.equals("M") && !unit.equals("H")) {
+                        System.out.println("Error in line: '" + line + "'. Invalid timeout unit. Must be S (seconds), M (minutes) or H (hours). Skipping line.\n");
+                        continue;
+                    }
+
+                    switch (unit) {
+                        case "S":
+                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.SECONDS);
+                            break;
+                        case "M":
+                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
+                            break;
+                        case "H":
+                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.HOURS);
+                            break;
+                        default:
+                            System.out.println("Error in line: '" + line + "'. Invalid timeout unit. Must be S (seconds), M (minutes) or H (hours). Skipping line.\n");
+                            continue;
+                    }
+                }
+
+            } catch (Exception e) {}
+            //#endregion
+
+            // #region 6th column - Optimized - Optional (Default is false)
+            try {
+                if (data[5].isEmpty()) {
+                    isOptimized = false;
+                }
+                else {
+                    isOptimized = Boolean.parseBoolean(data[5]);
+                }
+                Context.getInstance().setOptimize(isOptimized);
+            } catch (Exception e) {
+                System.out.println("Error in line: '" + line + "'. Invalid optimized option. Must be true or false. Skipping line.\n");
+                continue;
+            }
+            // #endregion
+
+            // #region 7th column - Start Node - Optional (Default is empty)
+            try {
+                sn = data[6];
+                if (!sn.isEmpty()) Context.getInstance().setStartNode(sn);
+                else Context.getInstance().setStartNode("");
+            } catch (Exception e) {}
+            // #endregion
+
+            // #region 8th column - RPQ - Mandatory
+            try {
+                rpq = data[7];
+                if (!rpq.isEmpty()) {
+                    Context.getInstance().setRPQ(rpq);
+                }
+                else {
+                    System.out.println("Error in line: '" + line + "'. Invalid RPQ. RPQ is mandatory. Skipping line.\n");
+                    continue;
+                }
+            } catch (Exception e) {
+                System.out.println("Error in line: '" + line + "'. Invalid RPQ. Must be a string. Skipping line.\n");
+                continue;
+            }
+            // #endregion
+
+            // #region 9th column - End Node - Optional (Default is empty)
+            try {
+                en = data[8].replaceAll(";", "");
+                if (!en.isEmpty()) Context.getInstance().setEndNode(en);
+                else Context.getInstance().setEndNode("");
+            } catch (Exception e) {
+                System.out.println("Error in line: '" + line + "'. Invalid end node. Must be a string. Skipping line.\n");
+                continue;
+            }
+            // #endregion
+
+            // #region Execution of the RPQ
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Void> future = executor.submit(new runExecution());
 
             try {
-                fixpoint = Integer.parseInt(data[2]);
-                Context.getInstance().setFixPoint(fixpoint);
-                if (fixpoint < 0) continue;
-            } catch (Exception e) {
-                continue;
+                future.get(Context.getInstance().getTimeoutDuration(), Context.getInstance().getTimeoutTimeUnit());
+            }
+            catch (Exception e) {
+                System.out.println("Execution timed out.\n");
+                future.cancel(true);
             }
 
-            if (data[3].equalsIgnoreCase("true")) isOptimized = true;
-            else isOptimized = false;
-
-            Context.getInstance().setOptimize(isOptimized);
-
-            sn = data[4];
-            rpq = data[5].trim();
-            en = data[6].replaceAll(";", "");
-
-            
-            if (!rpq.isEmpty()) Context.getInstance().setRPQ(rpq);
-            else continue;
-
-            if (!sn.isEmpty()) Context.getInstance().setStartNode(sn);
-            else Context.getInstance().setStartNode("");
-
-            if (!en.isEmpty()) Context.getInstance().setEndNode(en);
-            else Context.getInstance().setEndNode("");
-
-            switch (method) {
-                case 1:
-                    Execute.EvalRPQWithAlgebra();
-                    break;
-                case 2:
-                    Execute.EvalRPQWithRegexDFS();
-                    break;
-                case 3:
-                    Execute.EvalRPQWithRegexBFS();
-                    break;
-                case 4:
-                    Execute.EvalRPQWithAutomatonDFS();
-                    break;
-                case 5:
-                    Execute.EvalRPQWithAutomatonBFS();
-                    break;
-            }
+            executor.shutdownNow();
+            // #endregion
         }
+    }
+
+}
+
+class runExecution implements Callable<Void> {
+
+    @Override
+    public Void call() throws Exception {
+        
+        switch (Context.getInstance().getMethod()) {
+            case 1:
+                Execute.EvalRPQWithAlgebra();
+                break;
+            case 2:
+                Execute.EvalRPQWithRegexDFS();
+                break;
+            case 3:
+                Execute.EvalRPQWithRegexBFS();
+                break;
+            case 4:
+                Execute.EvalRPQWithAutomatonDFS();
+                break;
+            case 5:
+                Execute.EvalRPQWithAutomatonBFS();
+                break;
+        }
+
+        return null;
     }
 }

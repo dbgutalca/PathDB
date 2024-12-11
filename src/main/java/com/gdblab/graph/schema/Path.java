@@ -276,8 +276,33 @@ public class Path extends GraphObject {
         return ids;
     }
 
+    public ArrayList<String> getListIDNodeSequence() {
+        ArrayList<String> ids = new ArrayList<>();
+        for (int i = 0; i < sequence.size(); i++) {
+            if (sequence.get(i) instanceof Node node) {
+                ids.add(node.getId());
+            }
+        }
+        return ids;
+    }
+
     public boolean isTrail(Path pathB) {
         return this.getListIDEdgeSequence().stream().noneMatch(pathB.getListIDEdgeSequence()::contains);
+    }
+
+    public boolean isSimplePath (Path pathB) {
+
+        List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size());
+
+        return this.getListIDNodeSequence().stream().noneMatch(res::contains);
+    }
+
+    public boolean isSelfSimplePath() {
+        return this.getListIDNodeSequence().stream().distinct().count() == this.getListIDNodeSequence().size();
+    }
+
+    public Integer getSumEdges(Path pathB) {
+        return this.getEdgeSequence().size() + pathB.getEdgeSequence().size();
     }
 
 }

@@ -55,12 +55,18 @@ public class Utils {
     }
 
     public static Path NodeLink (Path pathA, Path pathB) {
-        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        // System.out.println("PathA: " + pathA.getStringSequence());
-        // System.out.println("PathB: " + pathB.getStringSequence());
-        // System.out.println(pathA.isTrail(pathB));
-        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        if (pathA.isNodeLinkable(pathB) && pathA.isTrail(pathB)) {
+        
+        if (pathA.isNodeLinkable(pathB) && pathA.getSumEdges(pathB) <= Context.getInstance().getFixPoint()) {
+
+            switch (Context.getInstance().getSemantic()) {
+                case 2:
+                    if (!pathA.isTrail(pathB)) return null;
+                    break;
+                case 3:
+                    if (!pathA.isSimplePath(pathB)) return null;
+                    break;
+            }
+
             Path join_path = new Path("");
 
             if (pathA.getNodesAmount() == 1 && pathB.getNodesAmount() == 1) {

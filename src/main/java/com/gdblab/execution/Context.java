@@ -1,5 +1,7 @@
 package com.gdblab.execution;
 
+import java.util.concurrent.TimeUnit;
+
 public final class Context {
     private static Context INSTANCE;
 
@@ -15,10 +17,13 @@ public final class Context {
     private boolean isExperimental;
     private String resultFilename;
     private boolean optimize;
+    private Integer semantic;
+    private Integer timeoutDuration;
+    private TimeUnit timeoutTimeUnit;
 
     private Context() {
         method = 1;
-        fixPoint = 3;
+        fixPoint = 5;
         startNode = "";
         endNode = "";
         rpq = "";
@@ -29,6 +34,9 @@ public final class Context {
         isExperimental = false;
         resultFilename = "";
         optimize = false;
+        semantic = 2;
+        timeoutDuration = 2;
+        timeoutTimeUnit = TimeUnit.MINUTES;
     }
 
     public static Context getInstance() {
@@ -133,5 +141,29 @@ public final class Context {
 
     public boolean isOptimize() {
         return optimize;
+    }
+
+    public void setSemantic(Integer semantic) {
+        this.semantic = semantic;
+    }
+
+    public Integer getSemantic() {
+        return semantic;
+    }
+
+    public void setTimeoutDuration(Integer timeoutDuration) {
+        this.timeoutDuration = timeoutDuration;
+    }
+
+    public Integer getTimeoutDuration() {
+        return timeoutDuration;
+    }
+
+    public void setTimeoutTimeUnit(TimeUnit timeoutTimeUnit) {
+        this.timeoutTimeUnit = timeoutTimeUnit;
+    }
+
+    public TimeUnit getTimeoutTimeUnit() {
+        return timeoutTimeUnit;
     }
 }
