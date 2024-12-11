@@ -43,7 +43,6 @@ public class PhysicalOpRecursive extends UnaryPhysicalOp {
             this.join = new PhysicalOpHashNodeJoin(
                     new PhysicalOperatorListWrapper(originalChild.iterator()),
                     new PhysicalOperatorListWrapper(originalChild.iterator()));
-
         }
     }
 

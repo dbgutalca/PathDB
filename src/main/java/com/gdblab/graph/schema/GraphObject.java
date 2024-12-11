@@ -5,6 +5,8 @@
  */
 package com.gdblab.graph.schema;
 
+import java.util.Objects;
+
 /**
  *
  * @author ramhg
@@ -38,6 +40,16 @@ public class GraphObject {
     public void setLabel(String label) {
         this.label = label;
     }
-    
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GraphObject that)) return false;
+        return Objects.equals(id, that.id) && Objects.equals(label, that.label);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, label);
+    }
 }

@@ -226,9 +226,7 @@ public class Path extends GraphObject {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof Path) {
-
-            final Path p2 = (Path) obj;
+        if (obj instanceof Path p2) {
 
             final List<GraphObject> sequence1 = this.getSequence();
             final List<GraphObject> sequence2 = p2.getSequence();

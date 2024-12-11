@@ -32,21 +32,6 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
         }
     }
 
-    public PhysicalOpHashNodeJoin(final PhysicalOperator leftChild, final PhysicalOperator rightChild, boolean isRecursiveLoop) {
-        super(leftChild, rightChild);
-
-        // This implementation hashes the left input and probes the right
-        // a smarter implementation would hash the smaller input, but we don't have an optimizer yet
-        while (leftChild.hasNext()) {
-            final Path current = leftChild.next();
-            final Node key = current.last();
-            if (!hashTable.containsKey(key)) {
-                hashTable.put(key, new LinkedList<>());
-            }
-            hashTable.get(key).add(current);
-        }
-    }
-
     @Override
     public void acceptVisitor(final PhysicalPlanVisitor visitor) {
         visitor.visit(this);
@@ -71,8 +56,6 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
                 } else
                     return null;
             }
-
-
             if (partialLeft == null) {
                 List<Path> left = hashTable.get(nextRight.first());
                 if (left == null) {
@@ -81,19 +64,14 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
                 }
                 partialLeft = left.iterator();
             }
-
             // There is a rowRight
             if (partialLeft.hasNext()) {
                 Path pl = partialLeft.next();
-
                 Path result =  Utils.NodeLink(pl, nextRight);
-
                 if (result == null) {
                     continue;
                 }
-
                 return result;
-                
             }
             // Nothing more for this rowRight.
             nextRight = null;
