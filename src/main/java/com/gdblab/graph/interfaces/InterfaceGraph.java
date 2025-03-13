@@ -15,6 +15,8 @@ public interface InterfaceGraph {
 
     public Iterator<Edge> getEdgeIterator();
 
+    public Iterator<Edge> getEdgeIteratorByLabel(final String label);
+
     public Node insertNode(final Node node);
 
     public Edge insertEdge(final Edge edge);

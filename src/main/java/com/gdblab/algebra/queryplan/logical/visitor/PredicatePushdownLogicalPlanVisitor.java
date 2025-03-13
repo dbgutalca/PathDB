@@ -19,22 +19,12 @@ import com.gdblab.algebra.queryplan.logical.impl.LogicalOpProjection;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpRecursive;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpReverse;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelectionByLabel;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpUnion;
 
 public class PredicatePushdownLogicalPlanVisitor implements LogicalPlanVisitor {
 
     private final Stack<LogicalOperator> stack = new Stack<>();
-
-    @Override
-    public void visit(LogicalOpSelection logicalOpSelection) {
-        if (logicalOpSelection.getCondition() instanceof First || logicalOpSelection.getCondition() instanceof Last) {
-            stack.push(new LogicalOpSelection(null, logicalOpSelection.getCondition()));
-            logicalOpSelection.getChild().acceptVisitor(this);
-        } else {
-            logicalOpSelection.getChild().acceptVisitor(this);
-            stack.push(new LogicalOpSelection(stack.pop(), logicalOpSelection.getCondition()));
-        }
-    }
 
     @Override
     public void visit(LogicalOpProjection logicalOpProjection) {}
@@ -106,19 +96,42 @@ public class PredicatePushdownLogicalPlanVisitor implements LogicalPlanVisitor {
     @Override
     public void visit(LogicalOpRecursive logicalOpRecursive) {
         LogicalOpSelection otherSelection = null;
+        boolean isFirst = false;
+        boolean isLast = false;
+        
         if (!stack.isEmpty() && stack.peek() instanceof LogicalOpSelection lop){
+            if (lop.getCondition() instanceof First)        isFirst = true;
+            else if (lop.getCondition() instanceof Last)    isLast = true;
+
             if(lop.getCondition() instanceof First || lop.getCondition() instanceof Last){
-                logicalOpRecursive.setFilters(lop.getCondition() instanceof Last, lop.getCondition() instanceof First);
+                logicalOpRecursive.setFilters(isLast, isFirst);
             }
             else {
                 otherSelection = (LogicalOpSelection) stack.pop();
             }
         }
-        logicalOpRecursive.getChild().acceptVisitor(this);
+
+        if (logicalOpRecursive.hasFirstFilter()) {
+            // izquierdo esta filtrado y el derecho no, entonces el conjunto completo tiene que estar en el hijo derecho
+            logicalOpRecursive.getLeftChild().acceptVisitor(this);
+            logicalOpRecursive.setFilters(false, false);
+            logicalOpRecursive.getRightChild().acceptVisitor(this);
+        }
+        else {
+            // derecho esta filtrado y el izquierdo no, entonces el conjunto completo tiene que estar en el hijo izquierdo
+            logicalOpRecursive.getRightChild().acceptVisitor(this);
+            logicalOpRecursive.setFilters(false, false);
+            logicalOpRecursive.getLeftChild().acceptVisitor(this);
+        }
+
+        // volver al estado en el que estaba para saber en el operador fisico recursivo
+        logicalOpRecursive.setFilters(isLast, isFirst);
+
+
         if(otherSelection != null){
             stack.push(new LogicalOpSelection(logicalOpRecursive, otherSelection.getCondition()));
         } else {
-            stack.push(new LogicalOpRecursive(stack.pop(), logicalOpRecursive.hasLastFilter(), logicalOpRecursive.hasFirstFilter()));
+            stack.push(new LogicalOpRecursive(stack.pop(), stack.pop() , logicalOpRecursive.hasLastFilter(), logicalOpRecursive.hasFirstFilter()));
         }
     }
 
@@ -150,6 +163,32 @@ public class PredicatePushdownLogicalPlanVisitor implements LogicalPlanVisitor {
             }
         }
         stack.push(logicalOpAllEdges);
+    }
+
+    @Override
+    public void visit(LogicalOpSelection logicalOpSelection) {
+        if (logicalOpSelection.getCondition() instanceof First || logicalOpSelection.getCondition() instanceof Last) {
+            stack.push(new LogicalOpSelection(null, logicalOpSelection.getCondition()));
+            logicalOpSelection.getChild().acceptVisitor(this);
+        } else {
+            logicalOpSelection.getChild().acceptVisitor(this);
+            stack.push(new LogicalOpSelection(stack.pop(), logicalOpSelection.getCondition()));
+        }
+    }
+
+    @Override
+    public void visit(LogicalOpSelectionByLabel logicalOpSelectionByLabel) {
+        if (!stack.isEmpty() && stack.peek() instanceof LogicalOpSelection) {
+            LogicalOpSelection selection = (LogicalOpSelection) stack.pop();
+            if (selection.getChild()!=null){
+                stack.push(selection);
+            }
+            else if (selection.getCondition() instanceof Last || selection.getCondition() instanceof First) {
+                stack.push(new LogicalOpSelection(logicalOpSelectionByLabel, selection.getCondition()));
+                return;
+            }
+        }
+        stack.push(logicalOpSelectionByLabel);
     }
 
     @Override

@@ -37,13 +37,15 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
     @Override
     public void visit(final ZeroOrMoreExpression zeroOrMoreExpression) {
         zeroOrMoreExpression.getChild().acceptVisit(this);
-        stack.push(new LogicalOpUnion(new LogicalOpRecursive(stack.pop()), new LogicalOpAllNodes()));
+        zeroOrMoreExpression.getChild().acceptVisit(this);
+        stack.push(new LogicalOpUnion(new LogicalOpAllNodes(), new LogicalOpRecursive(stack.pop(), stack.pop())));
     }
 
     @Override
     public void visit(final OneOrMoreExpression oneOrMoreExpression) {
         oneOrMoreExpression.getChild().acceptVisit(this);
-        stack.push(new LogicalOpRecursive(stack.pop()));
+        oneOrMoreExpression.getChild().acceptVisit(this);
+        stack.push(new LogicalOpRecursive(stack.pop(), stack.pop()));
     }
 
     @Override
@@ -54,7 +56,7 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
 
     @Override
     public void visit(final LabelExpression labelExpression) {
-        stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Label( labelExpression.getLabel(), 1)));
+        stack.push(new LogicalOpSelectionByLabel(new Label( labelExpression.getLabel(), 1)));
     }
     
     @Override

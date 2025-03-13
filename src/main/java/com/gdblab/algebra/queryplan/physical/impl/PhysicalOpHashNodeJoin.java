@@ -3,9 +3,11 @@ package com.gdblab.algebra.queryplan.physical.impl;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.algebra.queryplan.util.Utils;
+import com.gdblab.execution.Context;
 import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,7 +28,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
             final Path current = leftChild.next();
             final Node key = current.last();
             if (!hashTable.containsKey(key)) {
-                hashTable.put(key, new LinkedList<>());
+                hashTable.put(key, new ArrayList<>());
             }
             hashTable.get(key).add(current);
         }
@@ -67,6 +69,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
             // There is a rowRight
             if (partialLeft.hasNext()) {
                 Path pl = partialLeft.next();
+
                 Path result =  Utils.NodeLink(pl, nextRight);
                 if (result == null) {
                     continue;

@@ -26,27 +26,38 @@ public class Path extends GraphObject {
     // y habría que modificar demasiado codigo para implementar solo
     // la lista de Edges en vez de una lista de Nodes y Edges.
     private List<GraphObject> sequence;
+    private Integer length;
 
     public Path(final String id, final String label) {
         super(id, label);
         this.sequence = new ArrayList<>();
+        this.length = 0;
     }
 
     public Path(final String id) {
         super(id);
         this.sequence = new ArrayList<>();
+        this.length = 0;
+    }
+
+    public Path(final String id, Integer length) {
+        super(id);
+        this.sequence = new ArrayList<>();
+        this.length = length;
     }
     
     public Path (final String id, final Edge edge) {
         super(id); 
         this.sequence = new ArrayList<>();
         this.insertEdge(edge);
+        this.length = 1;
     }
     
     public Path(final String id, final Node node) {
         super(id);
         this.sequence = new ArrayList<>();
         this.insertNode(node);
+        this.length = 0;
     }
 
     public Path(final String id, final List<Edge> edges) {
@@ -55,12 +66,14 @@ public class Path extends GraphObject {
         for (final Edge e : edges) {
             this.insertEdge(e);
         }
+        this.length = edges.size();
     }
     
     public Path(final String id, final boolean reverse, final List<GraphObject> sequence) {
         super(id);
         this.sequence = new ArrayList<GraphObject>(sequence);
         Collections.reverse(this.sequence);
+        this.length = this.getEdgeSequence().size();
     }
 
     public List<GraphObject> getSequence() {
@@ -300,7 +313,10 @@ public class Path extends GraphObject {
     }
 
     public Integer getSumEdges(Path pathB) {
-        return this.getEdgeSequence().size() + pathB.getEdgeSequence().size();
+        return this.getEdgeLength() + pathB.getEdgeLength();
     }
 
+    public Integer getEdgeLength() {
+        return this.length;
+    }
 }

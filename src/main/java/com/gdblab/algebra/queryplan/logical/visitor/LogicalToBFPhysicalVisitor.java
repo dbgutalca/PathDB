@@ -13,6 +13,7 @@ import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpHashNodeJoin;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpRecursive;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpReverse;
+import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSelectionByLabel;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSequentialScan;
 
 public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
@@ -80,8 +81,14 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
 
     @Override
     public void visit(final LogicalOpRecursive logicalOpRecursive) {
-        logicalOpRecursive.getChild().acceptVisitor(this);
-        stack.push(new PhysicalOpRecursive(stack.pop(), logicalOpRecursive));
+        if (logicalOpRecursive.hasFirstFilter()) {
+            logicalOpRecursive.getLeftChild().acceptVisitor(this);
+            logicalOpRecursive.getRightChild().acceptVisitor(this);
+        } else {
+            logicalOpRecursive.getRightChild().acceptVisitor(this);
+            logicalOpRecursive.getLeftChild().acceptVisitor(this);
+        }
+        stack.push(new PhysicalOpRecursive(stack.pop(), stack.pop(), logicalOpRecursive));
     }
 
     @Override
@@ -100,6 +107,11 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     public void visit(final LogicalOpReverse logicalOpReverse) {
         logicalOpReverse.getChild().acceptVisitor(this);
         stack.push(new PhysicalOpReverse(stack.pop(), logicalOpReverse));
+    }
+
+    @Override
+    public void visit(LogicalOpSelectionByLabel logicalOpSelectionByLabel) {
+        stack.push(new PhysicalOpSelectionByLabel(logicalOpSelectionByLabel));
     }
 
     public PhysicalPlan getPhysicalPlan() {

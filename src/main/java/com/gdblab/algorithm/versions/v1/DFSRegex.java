@@ -107,12 +107,12 @@ public class DFSRegex implements Algorithm {
 
     @Override
     public void Trail() {
-
+        checkZeroPaths();
 
         if (ns.equals("")) {
             Iterator<Node> nodes = this.nodes.iterator();
 
-            while (nodes.hasNext()) {
+            while (this.counter <= 100 && nodes.hasNext()) {
                 Node node = nodes.next();
                 Set<String> visitedEdges = new HashSet<>();
                 Path iterPath = new Path("");
@@ -126,14 +126,13 @@ public class DFSRegex implements Algorithm {
                 TrailUtils(node, visitedEdges, iterPath);
             });
         }
-        checkZeroPaths();
     }
 
     private void TrailUtils(Node node, Set<String> visitedEdges, Path iterPath) {
 
         Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (neighbours.hasNext()) {
+        while (this.counter <= 100 && neighbours.hasNext()) {
             Edge edge = neighbours.next();
 
             if (!visitedEdges.contains(edge.getId())) {
@@ -147,7 +146,8 @@ public class DFSRegex implements Algorithm {
                     
                     if (this.ne.equals("")) {
                         if (isExperimental) {
-                            this.writePath(newPath);
+                            // this.writePath(newPath);
+                            this.printPath(newPath);
                         }
                         else {
                             this.printPath(newPath);
@@ -156,7 +156,8 @@ public class DFSRegex implements Algorithm {
                     else {
                         if (newPath.last().getId().equals(ne)) {
                             if (isExperimental) {
-                                this.writePath(newPath);
+                                // this.writePath(newPath);
+                                this.printPath(newPath);
                             }
                             else {
                                 this.printPath(newPath);
@@ -171,6 +172,8 @@ public class DFSRegex implements Algorithm {
                 visitedEdges.remove(edge.getId());
             }
         }
+
+        return;
     }
 
     @Override
@@ -234,7 +237,7 @@ public class DFSRegex implements Algorithm {
                 path.insertNode(node);
                 
                 if (isExperimental) {
-                    this.writePath(path);
+                    this.printPath(path);
                 }
                 else {
                     this.printPath(path);
@@ -246,7 +249,7 @@ public class DFSRegex implements Algorithm {
     @Override
     public void printPath(Path p) {
 
-        if (this.counter <= 10) {
+        if (this.counter <= 100) {
             System.out.print("Path #" + counter + " - ");
             for (GraphObject go : p.getSequence()) {
                 if (go instanceof Edge) {
@@ -259,9 +262,9 @@ public class DFSRegex implements Algorithm {
             System.out.println();
         }
 
-        if (this.counter == 11) {
-            System.out.println("...");
-        }
+        // if (this.counter == 11) {
+        //     System.out.println("...");
+        // }
 
         counter++;
     }
