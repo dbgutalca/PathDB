@@ -18,14 +18,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Utils {
     
     public static List<Path> iterToList(final PhysicalOperator physicalOp) {
-        List<Path> l = new LinkedList<>();
+        List<Path> l = new ArrayList<>();
         while (physicalOp.hasNext()) {
             l.add(physicalOp.next());
         }
@@ -33,7 +33,7 @@ public class Utils {
     }
     
     public static List<Edge> edgesIterToList( Iterator<Edge> edges) {
-        List<Edge> l = new LinkedList<>();
+        List<Edge> l = new ArrayList<>();
         while (edges.hasNext()) {
             l.add(edges.next());
         }
@@ -41,7 +41,7 @@ public class Utils {
     }
 
     public static List<Node> nodesIterToList( Iterator<Node> nodes) {
-        List<Node> l = new LinkedList<>();
+        List<Node> l = new ArrayList<>();
         while (nodes.hasNext()) {
             l.add(nodes.next());
         }
@@ -51,17 +51,23 @@ public class Utils {
     public static String getTime(long start, long end){
         long duration = end - start;
         double durationInSeconds = (double) duration / 1_000_000_000.0;
-        return String.format("%.5f", durationInSeconds);
+        return String.format("%.3f", durationInSeconds);
     }
 
     public static Path NodeLink (Path pathA, Path pathB) {
-        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        // System.out.println("PathA: " + pathA.getStringSequence());
-        // System.out.println("PathB: " + pathB.getStringSequence());
-        // System.out.println(pathA.isTrail(pathB));
-        // System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        if (pathA.isNodeLinkable(pathB) && pathA.isTrail(pathB)) {
-            Path join_path = new Path("");
+        
+        if (pathA.isNodeLinkable(pathB) && pathA.getSumEdges(pathB) <= Context.getInstance().getFixPoint()) {
+
+            switch (Context.getInstance().getSemantic()) {
+                case 2:
+                    if (!pathA.isTrail(pathB)) return null;
+                    break;
+                case 3:
+                    if (!pathA.isSimplePath(pathB)) return null;
+                    break;
+            }
+
+            Path join_path = new Path("", (pathA.getEdgeLength() + pathB.getEdgeLength()));
 
             if (pathA.getNodesAmount() == 1 && pathB.getNodesAmount() == 1) {
                 join_path.insertNode(pathA.first());
@@ -77,93 +83,81 @@ public class Utils {
     }
     
     public static int printAndCountPaths(PhysicalOperator po){
-        int counter = 1;
+        Integer counterMS = 1;
+        Integer counterLP = 1;
 
-        Integer ms = 10;
-        // if (ms <= 0) {
-        //     while (po.hasNext()) {
-        //         Path p = po.next();
-        //         System.out.print("Path #" + counter + " - ");
-        //         for (GraphObject go : p.getSequence()) {
-        //             System.out.print( go.getLabel() + " ");
-        //         }
-        //         System.out.println();
-        //         counter++;
-        //     }
-        // }
+        Integer maxShowPaths = Context.getInstance().getShowPaths();
+        Integer limitCalculatePaths = Context.getInstance().getMaxPaths();
 
-        // else {
+        while (counterLP <= limitCalculatePaths && po.hasNext() ) {
+            Path p = po.next();
 
-            while ( po.hasNext() ) {
-                Path p = po.next();
-    
-                if (counter <= ms) {
-                    System.out.print("Path #" + counter + " - ");
-                    for (GraphObject go : p.getSequence()) {
-                        if (go instanceof Edge) {
-                            System.out.print( go.getId() + "(" + go.getLabel() + ")" + " ");
-                        }
-                        else {
-                            System.out.print( go.getId() + " ");
-                        }
-                        
+            if (counterMS <= maxShowPaths) {
+                System.out.print("Path #" + counterMS + " - ");
+                for (GraphObject go : p.getSequence()) {
+                    if (go instanceof Edge) {
+                        System.out.print( go.getId() + "(" + go.getLabel() + ")" + " ");
                     }
-                    System.out.println();
+                    else {
+                        System.out.print( go.getId() + " ");
+                    }
+                    
                 }
-                if (counter == (ms + 1)) {
-                    System.out.println("...");
-                }
-                counter++;
+                System.out.println();
             }
+            if (counterMS == (maxShowPaths + 1)) {
+                System.out.println("...");
+            }
+            counterMS++;
+            counterLP++;
+        }
 
-        //}
-        
-        return counter;
+        return counterLP;
     }
 
     public static void writeAndCountPaths(PhysicalOperator po) {
         int counter = 1;
-        String filename = Context.getInstance().getResultFilename();
-        Writer writer = null;
+        // String filename = Context.getInstance().getResultFilename();
+        // Writer writer = null;
 
         try {
-            writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "utf-8"));
+            // writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "utf-8"));
             
-            writeConfig(writer);
+            // writeConfig(writer);
 
-            while (po.hasNext()) {
+            while (po.hasNext() && Context.getInstance().getMaxPaths() > counter) {
                 Path p = po.next();
-                writer.write("Path #" + counter + " - ");
-                for (GraphObject go : p.getSequence()) {
-                    if (go instanceof Edge) {
-                        writer.write(go.getId() + "(" + go.getLabel() + ") ");
-                    }
-                    else {
-                        writer.write(go.getLabel() + " ");
-                    }
-                }
-                writer.write("\n");
+                // writer.write("Path #" + counter + " - ");
+                // for (GraphObject go : p.getSequence()) {
+                //     if (go instanceof Edge) {
+                //         writer.write(go.getId() + "(" + go.getLabel() + ") ");
+                //     }
+                //     else {
+                //         writer.write(go.getLabel() + " ");
+                //     }
+                // }
+                // writer.write("\n");
                 counter++;
             }
 
         } catch (Exception e) {
         } finally {
-            try {writer.close();} catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            Context.getInstance().setTotalPaths(counter - 1);
+            // try {writer.close();} catch (Exception ex) {
+            //     ex.printStackTrace();
+            // }
+            Context.getInstance().setTotalPaths(counter);
         }
     }
 
     public static void writeConfig(Writer writer) {
         try {
-            writer.write("=====================================\n");
-            writer.write("Method: " + Tools.getSelectedMethod(Context.getInstance().getMethod()) + "\n");
-            writer.write("Fix Point: " + Context.getInstance().getFixPoint() + "\n");
-            writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
-            writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
+            // writer.write("=====================================\n");
+            // writer.write("Method: " + Tools.getSelectedMethod(Context.getInstance().getMethod()) + "\n");
+            // writer.write("Fix Point: " + Context.getInstance().getFixPoint() + "\n");
+            // writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
+            // writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
             writer.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
-            if (Context.getInstance().getMethod() == 1) writer.write("Optimized: " + Context.getInstance().isOptimize() + "\n");
+            // if (Context.getInstance().getMethod() == 1) writer.write("Optimized: " + Context.getInstance().isOptimize() + "\n");
             writer.write("Total: <$TOTAL_PATHS$>\n");
             writer.write("Time: <$TOTAL_TIME$> s\n");
             writer.write("=====================================\n");

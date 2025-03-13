@@ -96,7 +96,7 @@ public class BFSAutomaton implements Algorithm {
             }
         }
 
-        while (!queue.isEmpty()) {
+        while (this.counter <= 100 && !queue.isEmpty()) {
             PathWithGOCount current = queue.poll();
             Path currentPath = current.getPath();
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
@@ -127,9 +127,11 @@ public class BFSAutomaton implements Algorithm {
 
     @Override
     public void Trail() {
+        checkZeroPaths();
+        
         if (ns.equals("")) {
             Iterator<Node> nodes = this.nodes.iterator();
-            while (nodes.hasNext()) {
+            while (this.counter <= 100 && nodes.hasNext()) {
                 Node node = nodes.next();
                 TrailUtils(node);
             }
@@ -139,26 +141,23 @@ public class BFSAutomaton implements Algorithm {
                 TrailUtils(node);
             });
         }
-        checkZeroPaths();
     }
 
     private void TrailUtils(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
-        Iterator<Edge> edgeIt = edges.iterator();
+        Iterator<Edge> edgeIt = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
         while (edgeIt.hasNext()) {
             Edge e = edgeIt.next();
 
-            if (e.getSource().getId().equals(node.getId())) {
-                Path p = new Path("", e);
-                Map<String, Integer> visitCountMap = new HashMap<>();
-                visitCountMap.put(e.getId(), 1);
-                queue.add(new PathWithGOCount(p, visitCountMap));
-            }
+            Path p = new Path("", e);
+            Map<String, Integer> visitCountMap = new HashMap<>();
+            visitCountMap.put(e.getId(), 1);
+            queue.add(new PathWithGOCount(p, visitCountMap));
         }
 
-        while (!queue.isEmpty()) {
+        while (this.counter <= 100 && !queue.isEmpty()) {
             PathWithGOCount current = queue.poll();
             Path currentPath = current.getPath();
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
@@ -166,7 +165,8 @@ public class BFSAutomaton implements Algorithm {
             if (this.matcher.match(currentPath.getStringEdgeSequenceAscii()) == "Accepted") {
                 if (this.ne.equals("")) {
                     if (isExperimental) {
-                        this.writePath(currentPath);
+                        this.printPath(currentPath);
+                        // this.writePath(currentPath);
                     }
                     else {
                         this.printPath(currentPath);
@@ -175,7 +175,8 @@ public class BFSAutomaton implements Algorithm {
                 else {
                     if (currentPath.last().getId().equals(this.ne)) {
                         if (isExperimental) {
-                            this.writePath(currentPath);
+                            this.printPath(currentPath);
+                            // this.writePath(currentPath);
                         }
                         else {
                             this.printPath(currentPath);
@@ -188,12 +189,12 @@ public class BFSAutomaton implements Algorithm {
                 continue;
             }
 
-            edgeIt = edges.iterator();
+            edgeIt = Graph.getGraph().getNeighbours(currentPath.last().getId()).iterator();
 
             while (edgeIt.hasNext()) {
                 Edge e = edgeIt.next();
 
-                if ( currentPath.last().getId().equals(e.getSource().getId()) && currentVisitCount.getOrDefault(e.getId(), 0) < 1 ) {
+                if ( currentVisitCount.getOrDefault(e.getId(), 0) < 1 ) {
                     Path p = new Path("", currentPath.getEdgeSequence());
                     p.insertEdge(e);
                     Map<String, Integer> visitCountMap = new HashMap<>(currentVisitCount);
@@ -281,7 +282,8 @@ public class BFSAutomaton implements Algorithm {
                 path.insertNode(node);
                 
                 if (isExperimental) {
-                    this.writePath(path);
+                    // this.writePath(path);
+                    this.printPath(path);
                 }
                 else {
                     this.printPath(path);
@@ -293,7 +295,7 @@ public class BFSAutomaton implements Algorithm {
     @Override
     public void printPath(Path p) {
 
-        if (this.counter <= 10) {
+        if (this.counter <= 100) {
             System.out.print("Path #" + counter + " - ");
             for (GraphObject go : p.getSequence()) {
                 if (go instanceof Edge) {
@@ -306,10 +308,10 @@ public class BFSAutomaton implements Algorithm {
             System.out.println();
         }
         
-        if (this.counter == 11) {
-            System.out.println("...");
+        // if (this.counter == 11) {
+        //     System.out.println("...");
 
-        }
+        // }
 
         counter++;
     }

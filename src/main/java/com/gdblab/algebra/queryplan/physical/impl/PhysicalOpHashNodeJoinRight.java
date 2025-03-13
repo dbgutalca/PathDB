@@ -70,15 +70,11 @@ public class PhysicalOpHashNodeJoinRight extends BinaryPhysicalOp {
             }
             if (partialRight.hasNext()) {
                 Path pr = partialRight.next();
-
                 Path result = Utils.NodeLink(nextLeft, pr);
-
                 if (result == null) {
                     continue;
                 }
-                
                 return result;
-                
             }
             nextLeft = null;
         }

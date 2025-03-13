@@ -15,8 +15,8 @@ public class CSRVPMin implements InterfaceGraph {
 
     private static CSRVPMin instance = null;
 
-    private final HashMap<String, Node> nodes;
-    private final HashMap<String, LinkedList<Edge>> edges;
+    private final HashMap<String, Node> nodes; // El string es el ID del Node
+    private final HashMap<String, LinkedList<Edge>> edges; // El string es el label de los edges que estan en la LinkedList
 
     public static InterfaceGraph getInstance() {
         if (instance == null) {
@@ -80,6 +80,11 @@ public class CSRVPMin implements InterfaceGraph {
                 return e;
             }
         };
+    }
+
+    @Override
+    public Iterator<Edge> getEdgeIteratorByLabel(final String label) {
+        return edges.get(label).iterator();
     }
 
     @Override
@@ -162,5 +167,5 @@ public class CSRVPMin implements InterfaceGraph {
         }
         return nodesTemp;
     }
-    
+
 }

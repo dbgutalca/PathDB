@@ -9,6 +9,7 @@ import java.util.Iterator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllEdges;
 import com.gdblab.algebra.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
+import com.gdblab.execution.Context;
 import com.gdblab.graph.Graph;
 import com.gdblab.graph.schema.Edge;
 import com.gdblab.graph.schema.Path;
@@ -40,6 +41,13 @@ public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
         while (edges.hasNext()){
             Edge edge = edges.next();
             Path p = new Path("", edge);
+
+            if (Context.getInstance().getSemantic() == 3) {
+                if (p.lenght() > 1 && !p.isSelfSimplePath()) {
+                    continue;
+                }
+            }
+
             slot = p;
             return true;
         }

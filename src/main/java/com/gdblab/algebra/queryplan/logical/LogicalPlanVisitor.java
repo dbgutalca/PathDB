@@ -35,4 +35,6 @@ public interface LogicalPlanVisitor {
 
     void visit(final LogicalOpReverse logicalOpReverse);
 
+    void visit(final LogicalOpSelectionByLabel logicalOpSelectionByLabel);
+
 }

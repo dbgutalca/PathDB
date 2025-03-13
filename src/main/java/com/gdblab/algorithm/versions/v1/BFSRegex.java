@@ -119,10 +119,11 @@ public class BFSRegex implements Algorithm {
 
     @Override
     public void Trail() {
+        checkZeroPaths();
 
         if (ns.equals("")) {
             Iterator<Node> nodes = this.nodes.iterator();
-            while (nodes.hasNext()) {
+            while (this.counter <= 100 && nodes.hasNext()) {
                 Node node = nodes.next();
                 TrailUtils(node);
             }
@@ -132,29 +133,22 @@ public class BFSRegex implements Algorithm {
                 TrailUtils(node);
             });
         }
-
-        checkZeroPaths();
     }
 
     private void TrailUtils(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
-        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
+        Iterator<Edge> edgeIt = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        Iterator<Edge> edgeIt = edges.iterator();
-
-        while (neighbours.hasNext()) {
-            Edge e = neighbours.next();
-
-            if (e.getSource().getId().equals(node.getId())) {
-                Path p = new Path("", e);
-                Map<String, Integer> visitCountMap = new HashMap<>();
-                visitCountMap.put(e.getId(), 1);
-                queue.add(new PathWithGOCount(p, visitCountMap));
-            }
+        while (edgeIt.hasNext()) {
+            Edge e = edgeIt.next();
+            Path p = new Path("", e);
+            Map<String, Integer> visitCountMap = new HashMap<>();
+            visitCountMap.put(e.getId(), 1);
+            queue.add(new PathWithGOCount(p, visitCountMap));
         }
 
-        while (!queue.isEmpty()) {
+        while (this.counter <= 100 && !queue.isEmpty()) {
             PathWithGOCount current = queue.poll();
             Path currentPath = current.getPath();
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
@@ -162,7 +156,8 @@ public class BFSRegex implements Algorithm {
             if (pattern.matcher(currentPath.getStringEdgeSequenceAscii()).matches()) {
                 if (this.ne.equals("")) {
                     if (isExperimental) {
-                        this.writePath(currentPath);
+                        this.printPath(currentPath);
+                        // this.writePath(currentPath);
                     }
                     else {
                         printPath(currentPath);
@@ -171,7 +166,8 @@ public class BFSRegex implements Algorithm {
                 else {
                     if (currentPath.last().getId().equals(this.ne)) {
                         if (isExperimental) {
-                            this.writePath(currentPath);
+                            this.printPath(currentPath);
+                            // this.writePath(currentPath);
                         }
                         else {
                             printPath(currentPath);
@@ -194,6 +190,8 @@ public class BFSRegex implements Algorithm {
                 }
             }
         }
+
+        return;
     }
 
     @Override
@@ -282,7 +280,7 @@ public class BFSRegex implements Algorithm {
     @Override
     public void printPath(Path p) {
 
-        if (this.counter <= 10) {
+        if (this.counter <= 100) {
             System.out.print("Path #" + counter + " - ");
             for (GraphObject go : p.getSequence()) {
                 if (go instanceof Edge) {
@@ -293,12 +291,12 @@ public class BFSRegex implements Algorithm {
                 }
             }
             System.out.println();
-        }
-        
-        if (this.counter == 11) {
-            System.out.println("...");
+        }    
 
-        }
+        // if (this.counter == 11) {
+        //     System.out.println("...");
+
+        // }
 
         counter++;
     }

@@ -26,27 +26,38 @@ public class Path extends GraphObject {
     // y habría que modificar demasiado codigo para implementar solo
     // la lista de Edges en vez de una lista de Nodes y Edges.
     private List<GraphObject> sequence;
+    private Integer length;
 
     public Path(final String id, final String label) {
         super(id, label);
         this.sequence = new ArrayList<>();
+        this.length = 0;
     }
 
     public Path(final String id) {
         super(id);
         this.sequence = new ArrayList<>();
+        this.length = 0;
+    }
+
+    public Path(final String id, Integer length) {
+        super(id);
+        this.sequence = new ArrayList<>();
+        this.length = length;
     }
     
     public Path (final String id, final Edge edge) {
         super(id); 
         this.sequence = new ArrayList<>();
         this.insertEdge(edge);
+        this.length = 1;
     }
     
     public Path(final String id, final Node node) {
         super(id);
         this.sequence = new ArrayList<>();
         this.insertNode(node);
+        this.length = 0;
     }
 
     public Path(final String id, final List<Edge> edges) {
@@ -55,12 +66,14 @@ public class Path extends GraphObject {
         for (final Edge e : edges) {
             this.insertEdge(e);
         }
+        this.length = edges.size();
     }
     
     public Path(final String id, final boolean reverse, final List<GraphObject> sequence) {
         super(id);
         this.sequence = new ArrayList<GraphObject>(sequence);
         Collections.reverse(this.sequence);
+        this.length = this.getEdgeSequence().size();
     }
 
     public List<GraphObject> getSequence() {
@@ -226,9 +239,7 @@ public class Path extends GraphObject {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof Path) {
-
-            final Path p2 = (Path) obj;
+        if (obj instanceof Path p2) {
 
             final List<GraphObject> sequence1 = this.getSequence();
             final List<GraphObject> sequence2 = p2.getSequence();
@@ -276,8 +287,36 @@ public class Path extends GraphObject {
         return ids;
     }
 
+    public ArrayList<String> getListIDNodeSequence() {
+        ArrayList<String> ids = new ArrayList<>();
+        for (int i = 0; i < sequence.size(); i++) {
+            if (sequence.get(i) instanceof Node node) {
+                ids.add(node.getId());
+            }
+        }
+        return ids;
+    }
+
     public boolean isTrail(Path pathB) {
         return this.getListIDEdgeSequence().stream().noneMatch(pathB.getListIDEdgeSequence()::contains);
     }
 
+    public boolean isSimplePath (Path pathB) {
+
+        List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size());
+
+        return this.getListIDNodeSequence().stream().noneMatch(res::contains);
+    }
+
+    public boolean isSelfSimplePath() {
+        return this.getListIDNodeSequence().stream().distinct().count() == this.getListIDNodeSequence().size();
+    }
+
+    public Integer getSumEdges(Path pathB) {
+        return this.getEdgeLength() + pathB.getEdgeLength();
+    }
+
+    public Integer getEdgeLength() {
+        return this.length;
+    }
 }

@@ -1,10 +1,13 @@
 package com.gdblab.execution;
 
+import java.util.concurrent.TimeUnit;
+
 public final class Context {
     private static Context INSTANCE;
 
     private Integer method;
     private Integer fixPoint;
+    private Integer maxRecursion;
     private String startNode;
     private String endNode;
     private String rpq;
@@ -15,10 +18,19 @@ public final class Context {
     private boolean isExperimental;
     private String resultFilename;
     private boolean optimize;
+    private Integer semantic;
+    private Integer timeoutDuration;
+    private TimeUnit timeoutTimeUnit;
+    private Integer showPaths;
+
+    private boolean activateMaxRecursion;
+    private boolean activateFixpoint;
+    private Integer maxPaths;
 
     private Context() {
         method = 1;
-        fixPoint = 3;
+        fixPoint = 10;
+        maxRecursion = 4;
         startNode = "";
         endNode = "";
         rpq = "";
@@ -28,7 +40,15 @@ public final class Context {
         totalPaths = 0;
         isExperimental = false;
         resultFilename = "";
-        optimize = false;
+        optimize = true;
+        semantic = 2;
+        timeoutDuration = 2;
+        timeoutTimeUnit = TimeUnit.MINUTES;
+        showPaths = 10;
+
+        activateMaxRecursion = false;
+        activateFixpoint = false;
+        maxPaths = Integer.MAX_VALUE;
     }
 
     public static Context getInstance() {
@@ -53,6 +73,14 @@ public final class Context {
 
     public Integer getFixPoint() {
         return fixPoint;
+    }
+
+    public void setMaxRecursion(Integer maxRecursion) {
+        this.maxRecursion = maxRecursion;
+    }
+
+    public Integer getMaxRecursion() {
+        return maxRecursion;
     }
 
     public void setStartNode(String startNode) {
@@ -133,5 +161,61 @@ public final class Context {
 
     public boolean isOptimize() {
         return optimize;
+    }
+
+    public void setSemantic(Integer semantic) {
+        this.semantic = semantic;
+    }
+
+    public Integer getSemantic() {
+        return semantic;
+    }
+
+    public void setTimeoutDuration(Integer timeoutDuration) {
+        this.timeoutDuration = timeoutDuration;
+    }
+
+    public Integer getTimeoutDuration() {
+        return timeoutDuration;
+    }
+
+    public void setTimeoutTimeUnit(TimeUnit timeoutTimeUnit) {
+        this.timeoutTimeUnit = timeoutTimeUnit;
+    }
+
+    public TimeUnit getTimeoutTimeUnit() {
+        return timeoutTimeUnit;
+    }
+
+    public void setShowPaths(Integer showPaths) {
+        this.showPaths = showPaths;
+    }
+
+    public Integer getShowPaths() {
+        return showPaths;
+    }
+
+    public void setActivateMaxRecursion(boolean activateMaxRecursion) {
+        this.activateMaxRecursion = activateMaxRecursion;
+    }
+
+    public boolean isActivateMaxRecursion() {
+        return activateMaxRecursion;
+    }
+
+    public void setActivateFixpoint(boolean activateFixpoint) {
+        this.activateFixpoint = activateFixpoint;
+    }
+
+    public boolean isActivateFixpoint() {
+        return activateFixpoint;
+    }
+
+    public void setMaxPaths(Integer maxPaths) {
+        this.maxPaths = maxPaths;
+    }
+
+    public Integer getMaxPaths() {
+        return maxPaths;
     }
 }

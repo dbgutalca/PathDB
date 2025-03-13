@@ -133,23 +133,34 @@ public final class Tools {
     public static void showHelp() {
         String[] help = {
             "List of available commands:",
-            "   /h              Show this help.",
-            "   /m <1-5>        Select evaluation method.",
-            "                       1 - Algebra (Default).",
-            "                       2 - Regex + DFS.",
-            "                       3 - Regex + BFS.",
-            "                       4 - Automaton + DFS.",
-            "                       5 - Automaton + BFS.",
-            "   /f #            Set the fix point of recursion loops (Default is 3).",
-            "   (S, RPQ, E);    Query to evaluate.",
-            "                       S = Start Node.",
-            "                       RPQ = Regular Path Query.",
-            "                       E = End Node.",
-            "                       Example: (N1,(A?.B+)*,N2);",
-            "   /i              Show the information of the graph.",
-            "   /s              Show a sample of each label in the graph.",
-            "   /o              Set optimized option (Default is false).",
-            "   /q              Quit the program."
+            "   /h, /help                                           Show this help.",
+            // "   /m <1-5>        Select evaluation method.",
+            // "                       1 - Algebra (Default).",
+            // "                       2 - Regex + DFS.",
+            // "                       3 - Regex + BFS.",
+            // "                       4 - Automaton + DFS.",
+            // "                       5 - Automaton + BFS.",
+            "   /ml <#>, /max_length <#>                            Set the fix point of max path length (Default is 10).",
+            "   /mr, /max_recursion <#>                             Set the max recursion depth (Default is 4).",
+            "   /sem <1-3> or /semantic <1-3>                       Select evaluation semantics.",
+            "                                                           1 - Arbitrary.",
+            "                                                           2 - Trail (Default).",
+            "                                                           3 - Simple Path.",
+            "   (S,RPQ,T);                                          Query to evaluate.",
+            "                                                           S = Source Node.",
+            "                                                           RPQ = Regular Path Query.",
+            "                                                           T = Target Node.",
+            "                                                           Example: (N1,(A?.B+)*,N2);",
+            "   /pts <#>, </paths_to_show> <#>                      Set the number of paths to show (Default is 10).",
+            "                                                           Note: Only show the first # paths but calculate all.",
+            "   /lim <#/all>, /limit <#/all>                        Set the limit of paths to calculate (Default calculate all).",
+            "   /to <#><U>, /timeout<#><U>                          Set timeout for rpq executions.",
+            "                                                           '#' is the amount, and 'U' is the unit (S=seconds, M=minutes and H=hours).",
+            "                                                           Example: /t 30S (30 seconds) or /timeout 2M (2 minutes).",
+            "   /opt <true/false>, /optimization <true/false>       Set optimized option (Default is false).",
+            "   /i, /information                                    Show the information of the graph.",
+            "   /l, /labels                                         Show a sample of each label in the graph.",
+            "   /q, /quit                                           Quit the program."
         };
         for (String u : help) {
             System.out.println(u);
@@ -172,6 +183,19 @@ public final class Tools {
         System.out.println();
     }
     
+    public static void showSemantics() {
+        String[] semantics = {
+            "List of available semantics:",
+            "   1 - Arbitrary",
+            "   2 - Trail",
+            "   3 - Simple Path"
+        };
+        for (String u : semantics) {
+            System.out.println(u);
+        }
+        System.out.println();
+    }
+
     public static void showSelectedMethod(Integer m) {
         switch (m) {
             case 1:
@@ -196,6 +220,22 @@ public final class Tools {
         }
     }
 
+    public static void showSelectedSemantic(Integer e) {
+        switch (e) {
+            case 1:
+                System.out.println("Selected evaluation semantics: Arbitrary\n");
+                break;
+
+            case 2:
+                System.out.println("Selected evaluation semantics: Trail\n");
+                break;
+
+            case 3:
+                System.out.println("Selected evaluation semantics: Simple Path\n");
+                break;
+        }
+    }
+
     public static String getSelectedMethod(Integer m) {
         switch (m) {
             case 1: return "Algebra";
@@ -203,6 +243,15 @@ public final class Tools {
             case 3: return "Regex + BFS";
             case 4: return "Automaton + DFS";
             case 5: return "Automaton + BFS";
+        }
+        return "";
+    }
+
+    public static String getSelectedSemantic(Integer e) {
+        switch (e) {
+            case 1: return "Arbitrary";
+            case 2: return "Trail";
+            case 3: return "Simple Path";
         }
         return "";
     }
