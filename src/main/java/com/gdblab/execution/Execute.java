@@ -248,7 +248,6 @@ public final class Execute {
         return new LogicalOpSelection(lo, new Last(Context.getInstance().getEndNode()));
     }
 
-    @SuppressWarnings("removal")
     public static void interactive(String[] args) {
 
         try {
@@ -262,7 +261,7 @@ public final class Execute {
                 Tools.loadDefaultGraph();
             }
             else {
-                Tools.showUsageArgs(args[0], args[1]);
+                Tools.showUsageArgsLoadingCustomGraph(args[0], args[1]);
                 Tools.loadCustomGraphFiles(args[0], args[1]);
             }
 
@@ -441,47 +440,41 @@ public final class Execute {
                     continue;
                 }
 
-                else if (line.startsWith(prefix + "to ") || line.startsWith(prefix + "timeout ")) {
-                    String[] parts = line.split(" ");
-
-                    if (parts.length != 2) {
-                        System.out.println("Invalid command. Use /t <#><U> to set a timeout.\n");
-                        continue;
-                    }
-
-                    String number = parts[1].substring(0, parts[1].length() - 1);
-                    String unit = parts[1].substring(parts[1].length() - 1).toUpperCase();
-
-                    try { Integer.parseInt(number); }
-                    catch (Exception e) {
-                        System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be a number.\n");
-                        continue;
-                    }
-
-                    if ( Integer.parseInt(number) < 1)  {
-                        System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be greater than 0.\n");
-                        continue;
-                    }
-
-                    switch (unit) {
-                        case "S": 
-                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.SECONDS);
-                            System.out.println("Timeout set to: " + number + " seconds.\n");
-                            break;
-                        case "M": 
-                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
-                            System.out.println("Timeout set to: " + number + " minutes.\n");
-                            break;
-                        case "H": 
-                            Context.getInstance().setTimeoutTimeUnit(TimeUnit.HOURS);
-                            System.out.println("Timeout set to: " + number + " hours.\n");
-                            break;
-                    
-                        default:
-                            System.out.println("Invalid command. Use /t " + number + "<U> to set a timeout. U must be S, M or H.\n");
-                            continue;
-                    }
-                }
+                // else if (line.startsWith(prefix + "to ") || line.startsWith(prefix + "timeout ")) {
+                //     String[] parts = line.split(" ");
+                //     if (parts.length != 2) {
+                //         System.out.println("Invalid command. Use /t <#><U> to set a timeout.\n");
+                //         continue;
+                //     }
+                //     String number = parts[1].substring(0, parts[1].length() - 1);
+                //     String unit = parts[1].substring(parts[1].length() - 1).toUpperCase();
+                //     try { Integer.parseInt(number); }
+                //     catch (Exception e) {
+                //         System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be a number.\n");
+                //         continue;
+                //     }
+                //     if ( Integer.parseInt(number) < 1)  {
+                //         System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be greater than 0.\n");
+                //         continue;
+                //     }
+                //     switch (unit) {
+                //         case "S": 
+                //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.SECONDS);
+                //             System.out.println("Timeout set to: " + number + " seconds.\n");
+                //             break;
+                //         case "M": 
+                //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
+                //             System.out.println("Timeout set to: " + number + " minutes.\n");
+                //             break;
+                //         case "H": 
+                //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.HOURS);
+                //             System.out.println("Timeout set to: " + number + " hours.\n");
+                //             break;
+                //         default:
+                //             System.out.println("Invalid command. Use /t " + number + "<U> to set a timeout. U must be S, M or H.\n");
+                //             continue;
+                //     }
+                // }
 
                 else if (line.startsWith(prefix + "opt ") || line.startsWith(prefix + "optimize ")) {
                     String[] parts = line.split(" ");
@@ -509,6 +502,8 @@ public final class Execute {
 
                 else if (line.endsWith(";")) {
 
+                    line = line.trim();
+
                     String[] parts = line.substring(0, line.length() - 1).split(",");
 
                     if (parts.length != 3) {
@@ -531,38 +526,23 @@ public final class Execute {
                     if (en.isEmpty()) Context.getInstance().setEndNode("");
                     else Context.getInstance().setEndNode(en);
 
-                    Thread tt = new Thread( () -> {
-                        switch (Context.getInstance().getMethod  ()) {
-                            case 1:
-                                Execute.EvalRPQWithAlgebra();
-                                break;
-                            case 2:
-                                Execute.EvalRPQWithRegexDFS();
-                                break;
-                            case 3:
-                                Execute.EvalRPQWithRegexBFS();
-                                break;
-                            case 4:
-                                Execute.EvalRPQWithAutomatonDFS();
-                                break;
-                            case 5:
-                                Execute.EvalRPQWithAutomatonBFS();
-                                break;
-                        }
-                    });
-
-                    tt.start();
-
-                    try {
-                        TimeUnit tu = Context.getInstance().getTimeoutTimeUnit();
-                        int td = Context.getInstance().getTimeoutDuration();
-
-                        tt.join(tu.toMillis(td));
-                        if (tt.isAlive()) {
-                            System.out.println("Timeout!...");
-                            tt.stop();
-                        }
-                    } catch (Exception e) {}
+                    switch (Context.getInstance().getMethod  ()) {
+                        case 1:
+                            Execute.EvalRPQWithAlgebra();
+                            break;
+                        case 2:
+                            Execute.EvalRPQWithRegexDFS();
+                            break;
+                        case 3:
+                            Execute.EvalRPQWithRegexBFS();
+                            break;
+                        case 4:
+                            Execute.EvalRPQWithAutomatonDFS();
+                            break;
+                        case 5:
+                            Execute.EvalRPQWithAutomatonBFS();
+                            break;
+                    }
 
                 }
 

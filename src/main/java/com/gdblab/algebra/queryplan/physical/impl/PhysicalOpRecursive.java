@@ -24,7 +24,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     protected Iterator<Path> leftIterator = null;
     protected Iterator<Path> rightIterator = null;
 
-    protected HashMap<Node, List<Path>> HashTable = new HashMap<>();
+    protected HashMap<String, List<Path>> HashTable = new HashMap<>();
 
     protected Path nextLeft = null;
     protected Path nextRight = null;
@@ -37,10 +37,10 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
         this.maxRecursion = Context.getInstance().getMaxRecursion();
         this.lop = lop;
         if (this.lop.hasLastFilter()) {
-            saveListAsHashMap(Utils.iterToList(leftChild));
+            saveRightListAsHashMap(Utils.iterToList(leftChild));
         }
         else {
-            saveListAsHashMap(Utils.iterToList(rightChild));
+            saveLeftListAsHashMap(Utils.iterToList(rightChild));
         }
         
         this.currentRecursion = 1;
@@ -69,6 +69,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     }
 
     protected Path getNextRightPath() {
+        System.out.println("Right");
         while (true) {
             while (this.rightChild.hasNext()) {
                 final Path path = this.rightChild.next();
@@ -123,6 +124,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     protected Path getNextLeftPath() {
         while (true) {
             
+            
             while (this.leftChild.hasNext()) {
                 final Path path = this.leftChild.next();
     
@@ -140,16 +142,20 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
                 this.leftIterator = this.leftList.iterator();
             }
     
-            while (leftIterator.hasNext() || this.nextLeft != null) {
+            while (this.leftIterator.hasNext() || this.nextLeft != null) {
                 if (this.nextLeft == null) {
-                    this.nextLeft = leftIterator.next();
+                    this.nextLeft = this.leftIterator.next();
                 }
 
-                if (this.rightIterator == null) { 
-                    this.rightIterator = this.HashTable.get(this.nextLeft.last()).iterator();
+                if (this.rightIterator == null) {
+                    List<Path> r = this.HashTable.get(this.nextLeft.last().getId());
+                    if (r != null) {
+                        this.rightIterator = r.iterator();
+                    }
+                    
                 }
     
-                while (this.rightIterator.hasNext()) {
+                while (this.rightIterator != null && this.rightIterator.hasNext()) {
                     final Path rightPath = this.rightIterator.next();
                     final Path result = Utils.NodeLink(this.nextLeft, rightPath);
 
@@ -173,9 +179,19 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
         }
     }
     
-    private void saveListAsHashMap(List<Path> list) {
+    private void saveLeftListAsHashMap(List<Path> list) {
         for (Path path : list) {
-            final Node key = path.last();
+            final String key = path.first().getId();
+            if (!this.HashTable.containsKey(key)) {
+                this.HashTable.put(key, new ArrayList<>());
+            }
+            this.HashTable.get(key).add(path);
+        }
+    }
+    
+    private void saveRightListAsHashMap(List<Path> list) {
+        for (Path path : list) {
+            final String key = path.last().getId();
             if (!this.HashTable.containsKey(key)) {
                 this.HashTable.put(key, new ArrayList<>());
             }
