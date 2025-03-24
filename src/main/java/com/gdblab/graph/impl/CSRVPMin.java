@@ -168,4 +168,14 @@ public class CSRVPMin implements InterfaceGraph {
         return nodesTemp;
     }
 
+    @Override
+    public void cleanNodes() {
+        nodes.clear();
+    }
+
+    @Override
+    public void cleanEdges() {
+        edges.clear();
+    }
+
 }
