@@ -589,12 +589,14 @@ public final class Execute {
             }
 
         }
+        catch (OutOfMemoryError e) {
+            System.out.println("Out of memory error. Try again with more memory.\n");
+        }
         catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("An unexpected error occurred.\n");
         }
     }
 
-    @SuppressWarnings("removal")
     public static void experimental(String[] args) {
         // Context.getInstance().setExperimental(true);
         // String nodes_file = args[0];

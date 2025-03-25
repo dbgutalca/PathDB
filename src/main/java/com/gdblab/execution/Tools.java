@@ -144,7 +144,7 @@ public final class Tools {
 
     public static void showUsageNoArgs() {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
             "",
             "No graph loaded. Using default graph.",
             "If you want to use a custom graph, run the program with the following arguments: ",
@@ -161,7 +161,7 @@ public final class Tools {
 
     public static void showUsageArgsLoadingCustomGraph(String nf, String ef) {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
             "",
             "Uploading custom graph to PathDB...",
             "",
@@ -176,7 +176,7 @@ public final class Tools {
 
     public static void showUsageArgsLoadedCustomGraph(String nf, String ef) {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
             "",
             "Graph loaded successfully. Using " + nf + " and " + ef + " files.",
             "",
@@ -191,7 +191,7 @@ public final class Tools {
 
     public static void showUsageArgsErrorLoadingGraph(String nf, String ef) {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
             "",
             "An error occurred while trying to load the database. Loading default graph instead.",
             "",
