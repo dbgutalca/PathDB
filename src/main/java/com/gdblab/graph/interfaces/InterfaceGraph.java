@@ -34,4 +34,8 @@ public interface InterfaceGraph {
     public HashMap<String, Integer> getEdgesByLabelQuantity();
 
     public ArrayList<Edge> getSampleOfEachlabel();
+
+    public void cleanNodes();
+
+    public void cleanEdges();
 }

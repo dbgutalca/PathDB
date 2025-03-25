@@ -11,6 +11,7 @@ import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpAllNodes;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpHashNodeJoin;
+import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpHashNodeJoinRight;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpRecursive;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSelectionByLabel;
@@ -38,7 +39,7 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
         //we visit both children, to get the two *push* operations, and thus we can do two *pop*s in the end
         logicalOpNodeJoin.getRightChild().acceptVisitor(this);
         logicalOpNodeJoin.getLeftChild().acceptVisitor(this);
-        stack.push(new PhysicalOpHashNodeJoin(stack.pop(), stack.pop()));
+        stack.push(new PhysicalOpHashNodeJoin(stack.pop(), stack.pop(), logicalOpNodeJoin));
     }
 
     @Override

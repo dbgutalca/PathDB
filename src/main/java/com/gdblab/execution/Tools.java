@@ -5,7 +5,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 import com.gdblab.algorithm.utils.LabelMap;
-import com.gdblab.graph.DefaultGraph;
+import com.gdblab.graph.DefaultGraph2;
 import com.gdblab.graph.Graph;
 import com.gdblab.graph.interfaces.InterfaceGraph;
 import com.gdblab.graph.schema.Edge;
@@ -58,7 +58,10 @@ public final class Tools {
                 Graph.getGraph().insertNode(node);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Tools.clearConsole();
+            Tools.showUsageArgsErrorLoadingGraph(nodesFile, edgesFile);
+            Tools.loadDefaultGraph();
+            return;
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(edgesFile))) {
@@ -78,18 +81,25 @@ public final class Tools {
                 Graph.getGraph().insertEdge(edge);
                 i++;
             }
+
+            Tools.clearConsole();
+            Tools.showUsageArgsLoadedCustomGraph(nodesFile, edgesFile);
         } catch (Exception e) {
-            e.printStackTrace();
+            Tools.clearConsole();
+            Tools.showUsageArgsErrorLoadingGraph(nodesFile, edgesFile);
+            Graph.getGraph().cleanNodes();
+            Tools.loadDefaultGraph();
+            return;
         }
     }
 
     public static void loadDefaultGraph() {
         InterfaceGraph graph = Graph.getGraph();
 
-        Node[] nodes = DefaultGraph.getDefaultNodes();
+        Node[] nodes = DefaultGraph2.getDefaultNodes();
         for (Node n : nodes) { graph.insertNode(n); }
 
-        Edge[] edges = DefaultGraph.getDefaultEdges();
+        Edge[] edges = DefaultGraph2.getDefaultEdges();
         for (Edge e : edges) {
 
             if (!LabelMap.containsKey(e.getLabel())) LabelMap.put(e.getLabel());
@@ -106,28 +116,58 @@ public final class Tools {
             "If you want to use a custom graph, run the program with the following arguments: ",
             "java -jar PathDB.jar -n nodes_file.txt -e edges_file.txt",
             "",
-            "For help, type /h."
+            "For help, type /h.",
+            ""
         };
 
         for (String u : usage) {
             System.out.println(u);
         }
-        System.out.println();
     }
 
-    public static void showUsageArgs(String nf, String ef) {
+    public static void showUsageArgsLoadingCustomGraph(String nf, String ef) {
+        String[] usage = {
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "",
+            "Uploading custom graph to PathDB...",
+            "",
+            "Using " + nf + " and " + ef + " files.",
+            ""
+        };
+
+        for (String u : usage) {
+            System.out.println(u);
+        }
+    }
+
+    public static void showUsageArgsLoadedCustomGraph(String nf, String ef) {
         String[] usage = {
             "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
             "",
             "Graph loaded successfully. Using " + nf + " and " + ef + " files.",
             "",
-            "For help, type /h."
+            "For help, type /h.",
+            ""
         };
 
         for (String u : usage) {
             System.out.println(u);
         }
-        System.out.println();
+    }
+
+    public static void showUsageArgsErrorLoadingGraph(String nf, String ef) {
+        String[] usage = {
+            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Graphs.",
+            "",
+            "An error occurred while trying to load the database. Loading default graph instead.",
+            "",
+            "For help, type /h.",
+            ""
+        };
+
+        for (String u : usage) {
+            System.out.println(u);
+        }
     }
 
     public static void showHelp() {
@@ -154,9 +194,9 @@ public final class Tools {
             "   /pts <#>, </paths_to_show> <#>                      Set the number of paths to show (Default is 10).",
             "                                                           Note: Only show the first # paths but calculate all.",
             "   /lim <#/all>, /limit <#/all>                        Set the limit of paths to calculate (Default calculate all).",
-            "   /to <#><U>, /timeout<#><U>                          Set timeout for rpq executions.",
-            "                                                           '#' is the amount, and 'U' is the unit (S=seconds, M=minutes and H=hours).",
-            "                                                           Example: /t 30S (30 seconds) or /timeout 2M (2 minutes).",
+            // "   /to <#><U>, /timeout<#><U>                          Set timeout for rpq executions.",
+            // "                                                           '#' is the amount, and 'U' is the unit (S=seconds, M=minutes and H=hours).",
+            // "                                                           Example: /to 30S (30 seconds) or /timeout 2M (2 minutes).",
             "   /opt <true/false>, /optimization <true/false>       Set optimized option (Default is false).",
             "   /i, /information                                    Show the information of the graph.",
             "   /l, /labels                                         Show a sample of each label in the graph.",
@@ -271,4 +311,5 @@ public final class Tools {
 
         return rpqs;
     }
+
 }
