@@ -8,8 +8,12 @@ public final class Context {
     private Integer method;
     private Integer fixPoint;
     private Integer maxRecursion;
-    private String startNode;
-    private String endNode;
+    
+    private String startNodeProp;
+    private String startNodeValue;
+    private String endNodeProp;
+    private String endNodeValue;
+
     private String rpq;
     private String rpqFileName;
     private String time;
@@ -30,9 +34,13 @@ public final class Context {
     private Context() {
         method = 1;
         fixPoint = 10;
-        maxRecursion = 4;
-        startNode = "";
-        endNode = "";
+        maxRecursion = 6;
+
+        startNodeProp = "";
+        startNodeValue = "";
+        endNodeProp = "";
+        endNodeValue = "";
+
         rpq = "";
         rpqFileName = "";
         time = "";
@@ -83,20 +91,36 @@ public final class Context {
         return maxRecursion;
     }
 
-    public void setStartNode(String startNode) {
-        this.startNode = startNode;
+    public void setStartNodeProp(String startNodeProp) {
+        this.startNodeProp = startNodeProp;
     }
 
-    public String getStartNode() {
-        return startNode;
+    public String getStartNodeProp() {
+        return startNodeProp;
     }
 
-    public void setEndNode(String endNode) {
-        this.endNode = endNode;
+    public void setStartNodeValue(String startNodeValue) {
+        this.startNodeValue = startNodeValue;
     }
 
-    public String getEndNode() {
-        return endNode;
+    public String getStartNodeValue() {
+        return startNodeValue;
+    }
+
+    public void setEndNodeProp(String endNodeProp) {
+        this.endNodeProp = endNodeProp;
+    }
+
+    public String getEndNodeProp() {
+        return endNodeProp;
+    }
+
+    public void setEndNodeValue(String endNodeValue) {
+        this.endNodeValue = endNodeValue;
+    }
+
+    public String getEndNodeValue() {
+        return endNodeValue;
     }
 
     public void setRPQ(String rpq) {

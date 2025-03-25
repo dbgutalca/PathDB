@@ -10,37 +10,40 @@ import com.gdblab.graph.schema.Path;
  *
  * @author ramhg
  */
-public class Last  extends Condition{
+public class Last extends Condition{
     
-    public String id;
+    public String prop;
+    public String value;
 
-    public Last(String id) {
-        this.id = id;
+    public Last(String prop, String value) {
+        this.prop = prop;
+        this.value = value;
     }
-    
 
     @Override
     public boolean eval(Path p) {
-        return p.last().getId().equals(this.getId());
+        if(p != null)
+            return p.last().getProperty(prop).equals(value);
+        return false;
     }
 
-    public String getId() {
-        return id;
+    public String getProp() {
+        return prop;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getValue() {
+        return value;
     }
 
     @Override
     public String toString() {
-        return "Last: "+id;
+        return "Last{" + "prop=" + prop + ", value=" + value + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof Last) {
-            return id.equals(((Last) o).id);
+            return ((Last)o).prop.equals(prop) && ((Last)o).value.equals(value);
         }
         return false;
     }

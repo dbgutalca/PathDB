@@ -3,6 +3,8 @@ package com.gdblab.execution;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import com.gdblab.algorithm.utils.LabelMap;
 import com.gdblab.graph.DefaultGraph2;
@@ -50,12 +52,35 @@ public final class Tools {
     }
 
     public static void loadCustomGraphFiles(String nodesFile, String edgesFile) {
+
         try (BufferedReader br = new BufferedReader(new FileReader(nodesFile))) {
             String line;
+
+            ArrayList<String> schemaNode = new ArrayList<>();
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                Node node = new Node(data[0], data[1]);
-                Graph.getGraph().insertNode(node);
+                
+                if (line.startsWith("@")) {
+                    schemaNode = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                }
+
+                else {
+                    ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                    
+                    HashMap<String, String> properties = new HashMap<>();
+
+                    for (int i = 2; i < data.size() && i < schemaNode.size(); i++) {
+                        properties.put(schemaNode.get(i), data.get(i));
+                    }
+
+                    Node node = new Node(
+                        data.get(0),
+                        data.get(1),
+                        properties
+                    );
+
+                    Graph.getGraph().insertNode(node);
+                }
+
             }
         } catch (Exception e) {
             Tools.clearConsole();
@@ -68,18 +93,23 @@ public final class Tools {
             int i = 1;
             String line;
             while ((line = br.readLine()) != null) {
-                String[] data = line.split(",");
-                Edge edge = new Edge(
-                    "E" + i,
-                    data[1],
-                    Graph.getGraph().getNode(data[0]),
-                    Graph.getGraph().getNode(data[2])
-                );
+                    if (line.startsWith("@")) continue;
 
-                if (!LabelMap.containsKey(edge.getLabel())) LabelMap.put(edge.getLabel());
+                    String[] data = line.split("\\|");
+                    String _id_ = "E" + i++;
+                    String _label_ = data[0];
+                    String _from_ = data[2];
+                    String _to_ = data[3];
 
-                Graph.getGraph().insertEdge(edge);
-                i++;
+                    Edge e = new Edge(
+                        _id_,
+                        _label_,
+                        Graph.getGraph().getNode(_from_),
+                        Graph.getGraph().getNode(_to_)
+                    );
+
+                    Graph.getGraph().insertEdge(e);
+                
             }
 
             Tools.clearConsole();
@@ -91,6 +121,10 @@ public final class Tools {
             Tools.loadDefaultGraph();
             return;
         }
+
+
+
+
     }
 
     public static void loadDefaultGraph() {
@@ -181,16 +215,16 @@ public final class Tools {
             // "                       4 - Automaton + DFS.",
             // "                       5 - Automaton + BFS.",
             "   /ml <#>, /max_length <#>                            Set the fix point of max path length (Default is 10).",
-            "   /mr, /max_recursion <#>                             Set the max recursion depth (Default is 4).",
+            "   /mr, /max_recursion <#>                             Set the max recursion depth (Default is 6).",
             "   /sem <1-3> or /semantic <1-3>                       Select evaluation semantics.",
             "                                                           1 - Arbitrary.",
             "                                                           2 - Trail (Default).",
             "                                                           3 - Simple Path.",
-            "   (S,RPQ,T);                                          Query to evaluate.",
-            "                                                           S = Source Node.",
-            "                                                           RPQ = Regular Path Query.",
-            "                                                           T = Target Node.",
-            "                                                           Example: (N1,(A?.B+)*,N2);",
+            "   (X{prop:value})-[RE]->(Y);                          Query to evaluate.",
+            "                                                           X{prop:value} = The source node filtered by a property.",
+            "                                                           RE = Regular Expression to evaluate.",
+            "                                                           Y{prop:value} = The target node filtered by a property.",
+            "                                                           Example: (x)-[knows]->(y{name:John});",
             "   /pts <#>, </paths_to_show> <#>                      Set the number of paths to show (Default is 10).",
             "                                                           Note: Only show the first # paths but calculate all.",
             "   /lim <#/all>, /limit <#/all>                        Set the limit of paths to calculate (Default calculate all).",
