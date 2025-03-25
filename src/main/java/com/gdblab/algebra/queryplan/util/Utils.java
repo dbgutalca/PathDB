@@ -197,8 +197,8 @@ public class Utils {
     public static void writeOnSummary() {
         try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("summary.txt", true), "utf-8"))) {
             writer.write("Method: " + Tools.getSelectedMethod(Context.getInstance().getMethod()) + "\n");
-            writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
-            writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
+            // writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
+            // writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
             writer.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
             writer.write("Total: " + Context.getInstance().getTotalPaths() + "\n");
             writer.write("Time: " + Context.getInstance().getTime() + " s\n");

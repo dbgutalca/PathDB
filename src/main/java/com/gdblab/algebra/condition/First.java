@@ -10,39 +10,43 @@ import com.gdblab.graph.schema.Path;
  *
  * @author ramhg
  */
-public class First  extends Condition{
+public class First extends Condition{
     
-    public String id;
+    public String prop;
+    public String value;
 
-    public First(String id) {
-        this.id = id;
+    public First(String prop, String value) {
+        this.prop = prop;
+        this.value = value;
     }
     
-
     @Override
     public boolean eval(Path p) {
-        if(p != null)
-            return p.first().getId().equals(this.getId());
+        if(p != null){
+            Boolean propExists = p.first().getProperties().containsKey(this.prop);
+            if(!propExists) return false;
+            return p.first().getProperty(this.prop).equals(this.value);
+        }
         return false;
     }
 
-    public String getId() {
-        return id;
+    public String getProp() {
+        return prop;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public String getValue() {
+        return value;
     }
 
     @Override
     public String toString() {
-        return "First: "+id;
+        return "First{" + "prop=" + prop + ", value=" + value + '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (o instanceof First)
-            return id.equals(((First) o).id);
+            return ((First)o).prop.equals(prop) && ((First)o).value.equals(value);
         return false;
     }
 

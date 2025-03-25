@@ -9,9 +9,9 @@ public final class DefaultGraph {
     
     public static Node[] getDefaultNodes(){
         Node[] nodes = new Node[3];
-        nodes[0] = new Node("N1", "N1");
-        nodes[1] = new Node("N2", "N2");
-        nodes[2] = new Node("N3", "N3");
+        // nodes[0] = new Node("N1", "N1");
+        // nodes[1] = new Node("N2", "N2");
+        // nodes[2] = new Node("N3", "N3");
         return nodes;
     }
 

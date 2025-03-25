@@ -84,6 +84,8 @@ public class CSRVPMin implements InterfaceGraph {
 
     @Override
     public Iterator<Edge> getEdgeIteratorByLabel(final String label) {
+        LinkedList<Edge> list = edges.get(label);
+        if (list == null) return new LinkedList<Edge>().iterator();
         return edges.get(label).iterator();
     }
 
