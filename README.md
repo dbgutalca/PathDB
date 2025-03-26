@@ -107,7 +107,7 @@ This dataset, provided as files, represents a graph where:
 - Nodes are **authors**
 - Edges denote **co-authorship**  
 
-Two authors are connected by an edge if they co-authored the same article. The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships.
+Two authors are connected by an edge if they co-authored the same article. The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships. You can download it clicking [here](https://drive.google.com/file/d/1e4vtARAzhwEuTehOSE3-YFmecyx65wwS/view?usp=sharing).
 
 ##### Nodes
 - Author(name).
