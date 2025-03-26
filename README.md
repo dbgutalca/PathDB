@@ -50,35 +50,101 @@ $ java -jar PathDB.jar -n NodesFile -e EdgesFile
 
 If you have already loaded a database or are using one of the default ones, we recommend using the `/help` command to see all the configuration options available in PathDB.
 
-#### Sample Dataset
+#### Demo Datasets
 
-If you want to test PathDB with the same datasets used during testing, you can download the nodes and edges file by [clicking here](https://drive.google.com/file/d/1IR1kSo4gCvRAoaywpWMPweDd4AiUjObx/view?usp=sharing).
+For this release of PathDB we test with two datasets
 
-##### Sample Data
+##### Social Network
 
-| Type  | Attributes                | Example                                  |
-|-------|---------------------------|------------------------------------------|
-| Node  | ID, Label, Name           | 1970866537 \\| Author \\| Renzo Angles         |
-| Node  | ID, Label, Name           | 2106576185 \\| Author \\| Claudio Gutierrez   |
-| Node  | ID, Label, Name           | 1969282344 \\| Author \\| Alberto O. Mendelzon   |
-| Node  | ID, Label, Name           | 2289364316 \\| Author \\| Jeffrey D. Ullman   |
-| Node  | ID, Label, Name           | 2156312790 \\| Author \\| Ron Graham   |
-| Node  | ID, Label, Name           | 1337865506 \\| Author \\| Paul Erdös          |
+This dataset is a integrated into the application as a property graph simulating a social network. Each node has: An identigier, a label and a property. Each edge has: An identifier and a label.
 
-##### Sample Query
+###### Nodes
+- Person(name)
+- Message(txt)
+###### Edges
+- Knows (Person, Person)
+- Likes (Person, Message)
+- Has_Creator (Message, Person)
 
-`PathDB> (x{name:Renzo Angles})-[COAUTHOR+]->(y{name:Paul Erdös});`
+the property graph contains **7 nodes** and **11 edges** and looks as follows:
+<div align="center">
+  <img src="readmeAssets/image-3.png" alt="Social network simulating property graph">
+</div>
 
-##### Sample Output
 
-```java
-Path #1 - 1970866537 E486243(COAUTHOR)
-          2106576185 E14464(COAUTHOR)
-          1969282344 E7069515(COAUTHOR)
-          2289364316 E2339853(COAUTHOR)
-          2156312790 E1662154(COAUTHOR)
-          1337865506
+#### Sample Query
+
+This property graphs allow both **internal** and **external** loops queries, such as:
+
+##### Internal Loop
+
+```plaintext
+PathDB> (x{name:Moe})-[knows+]->(y);
 ```
+
+**Results:**
+- Path #1: p1 E1(knows) p2  
+- Path #2: p1 E1(knows) p2 E2(knows) p3  
+- Path #3: p1 E1(knows) p2 E4(knows) p4  
+- Path #4: p1 E1(knows) p2 E2(knows) p3 E3(knows) p2  
+- Path #5: p1 E1(knows) p2 E2(knows) p3 E3(knows) p2 E4(knows) p4  
+
+##### External Loop
+```plaintext
+PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
+```
+
+**Results:**
+- Path #1: p1 E5(likes) m1 E9(hasCreator) p3  
+- Path #2: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4  
+- Path #3: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4 E7(likes) m3 E11(hasCreator) p1  
+
+
+
+##### DBLP CoAuthor
+
+This dataset, provided as files, represents a graph where:
+- Nodes are **authors**
+- Edges denote **co-authorship**  
+
+Two authors are connected by an edge if they co-authored the same article. The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships.
+
+##### Nodes
+- Author(name).
+
+##### Edges
+- CoAuthor (Author, Author).
+
+<div align="center">
+  <img src="readmeAssets/image-2.png" alt="DBLPGraph">
+</div>
+
+This graph contains **2,155,848 nodes** and **14,531,802 edges**.
+
+#### Sample Query
+An interesting query for this dataset involves calculating the **Erdős distance** or **Erdős number**, which describes the collaborative distance between two authors. PathDB allows retrieving the **shortest path** and its length to determine the Erdős distance.
+
+For example, to calculate the Erdős distance for the author **Renzo Angles**:
+1. Configure PathDB to limit results to 1:  
+   ```plaintext
+   PathDB> /lim 1
+   ```
+2. Set the maximum recursion depth to 5:  
+   ```plaintext
+   PathDB> /mr 5
+   ```
+3. Execute the query:  
+   ```plaintext
+   PathDB> (x{name:Renzo Angles})-[COAUTHOR+]->(y{name:Paul Erdős});
+   ```
+
+**Result:**  
+```plaintext
+Path #1 - 1970866537 E486243(COAUTHOR) 2106576185 E14464(COAUTHOR)  
+          1969282344 E7069515(COAUTHOR) 2289364316 E2339853(COAUTHOR)  
+          2156312790 E1662154(COAUTHOR) 1337865506
+```
+The result is a path between "Renzo Angles" and "Paul Erdős" with a length of 5.
 
 #### Contributors
 * Renzo Angles.
