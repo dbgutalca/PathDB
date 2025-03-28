@@ -2,14 +2,6 @@
 
 PathDB is a Java-based graph database designed for loading and querying data in memory. It uses Regular Path Queries (RPQ) and a closed path algebra to process path queries.
 
-## Requirements
-
-Before running PathDB, you must make sure you have the following requirements installed:
-* [Java 18](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html) (or above).
-* [Maven](https://maven.apache.org/download.cgi).
-
-#### Preliminaries 
-
 The current structure of PathDB for handling nodes and edges is based on a property graph. Nodes must have an ID and a label, and optionally, properties can be added. For edges, they must currently have 4 attributes: label, direction, source node, and target node, but they do not support additional properties.
 
 The language used by PathDB is based on GQL and has the following structure: `(x{prop:value})-[RE]->(y{prop:value});`. For now, PathDB only allows filtering one property per node, for example: `(x{name:Juan})-[knows*]->(y{name:Pedro});`.
@@ -30,7 +22,11 @@ expression: label                   // Single Label
 
 With these operations available, an example of a regular expression accepted by PathDB would be `knows+|(likes.hasCreator)+`.
 
-#### Running PathDB
+## Running PathDB
+
+Before running PathDB, you must make sure you have the following requirements installed:
+* [Java 18](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html) (or above).
+* [Maven](https://maven.apache.org/download.cgi).
 
 Once the requirements are installed, you can download our latest release by [clicking here](). You will get a file with a `.jar` extension. To run it, open a terminal and navigate to where `PathDB.jar` is located.
 
@@ -50,11 +46,7 @@ $ java -jar PathDB.jar -n NodesFile -e EdgesFile
 
 If you have already loaded a database or are using one of the default ones, we recommend using the `/help` command to see all the configuration options available in PathDB.
 
-#### Demo Datasets
-
-For this release of PathDB we test with two datasets
-
-##### Social Network
+## Demo 1: Small Social Network 
 
 This dataset is a integrated into the application as a property graph simulating a social network. Each node has: An identigier, a label and a property. Each edge has: An identifier and a label.
 
@@ -100,14 +92,13 @@ PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
 - Path #3: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4 E7(likes) m3 E11(hasCreator) p1  
 
 
+## Demo 2: Co-author network (DBLP)
 
-##### DBLP CoAuthor
+The graph represents a co-authorship network obtained from DBLP. 
+Specifically, the nodes are **authors** and the edges represent the **co-authorship** relation.  
+Two authors are connected by an edge if they co-authored the same article. 
 
-This dataset, provided as files, represents a graph where:
-- Nodes are **authors**
-- Edges denote **co-authorship**  
-
-Two authors are connected by an edge if they co-authored the same article. The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships. You can download it clicking [here](https://drive.google.com/file/d/1e4vtARAzhwEuTehOSE3-YFmecyx65wwS/view?usp=sharing).
+The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships. You can download it clicking [here](https://drive.google.com/file/d/1e4vtARAzhwEuTehOSE3-YFmecyx65wwS/view?usp=sharing).
 
 ##### Nodes
 - Author(name).
