@@ -1,26 +1,6 @@
 # PathDB
 
-PathDB is a Java-based graph database designed for loading and querying data in memory. It uses Regular Path Queries (RPQ) and a closed path algebra to process path queries.
-
-The current structure of PathDB for handling nodes and edges is based on a property graph. Nodes must have an ID and a label, and optionally, properties can be added. For edges, they must currently have 4 attributes: label, direction, source node, and target node, but they do not support additional properties.
-
-The language used by PathDB is based on GQL and has the following structure: `(x{prop:value})-[RE]->(y{prop:value});`. For now, PathDB only allows filtering one property per node, for example: `(x{name:Juan})-[knows*]->(y{name:Pedro});`.
-
-Additionally, a regular expression can be formed using the following operations supported by PathDB:
-
-```ANTLR4
-expression: label                   // Single Label
-    | '!' label                     // Negation
-    | '(' expression ')'            // Parenthesis
-    | expression '?'                // Optional
-    | expression '+'                // Plus
-    | expression '*'                // Kleene
-    | expression '.' expression     // Concatenation
-    | expression '|' expression     // Union
-    ;   
-```
-
-With these operations available, an example of a regular expression accepted by PathDB would be `knows+|(likes.hasCreator)+`.
+PathDB is a Java-based application which allows to evaluate regular path queries over a property graph loaded in main memory (RAM). The novel characteristic of PathDB is the use of a path algebra for query evaluation instead of ad-hoc algorithms (like most graph database systems do). Hence, PathDB generates evaluation trees that can be manipulated for query optimization.  
 
 ## Running PathDB
 
@@ -37,56 +17,49 @@ If you do not have a test database and want to use the default one, simply run P
 ```bash
 $ java -jar PathDB.jar
 ```
-
 If you have a database that follows the structure mentioned in the [preliminaries](#preliminaries), you can load it into PathDB using the following command:
 
 ```bash
 $ java -jar PathDB.jar -n NodesFile -e EdgesFile
 ```
 
-If you have already loaded a database or are using one of the default ones, we recommend using the `/help` command to see all the configuration options available in PathDB.
+PathDB contains several options that can be observed by using the command `/help`.
 
-## Demo 1: Small Social Network 
+```plaintext
+PathDB> /help
+```
 
-This dataset is a integrated into the application as a property graph simulating a social network. Each node has: An identigier, a label and a property. Each edge has: An identifier and a label.
+PathDB contains a default property graph representing a small social network. The schema of the graph is the following:
+- Types of Nodes: Person(name), Message(txt).
+- Types of Edges: Knows (Person, Person), Likes (Person, Message), Has_Creator (Message, Person).
 
-###### Nodes
-- Person(name)
-- Message(txt)
-###### Edges
-- Knows (Person, Person)
-- Likes (Person, Message)
-- Has_Creator (Message, Person)
-
-the property graph contains **7 nodes** and **11 edges** and looks as follows:
+The property graph contains **7 nodes** and **11 edges** and looks as follows:
 <div align="center">
   <img src="readmeAssets/image-3.png" alt="Social network simulating property graph">
 </div>
 
+A simple example of recursive property graph query is the following:
 
-#### Sample Query
-
-This property graphs allow both **internal** and **external** loops queries, such as:
-
-##### Internal Loop
-
+***Query:***
 ```plaintext
 PathDB> (x{name:Moe})-[knows+]->(y);
 ```
 
-**Results:**
+***Results:***
 - Path #1: p1 E1(knows) p2  
 - Path #2: p1 E1(knows) p2 E2(knows) p3  
 - Path #3: p1 E1(knows) p2 E4(knows) p4  
 - Path #4: p1 E1(knows) p2 E2(knows) p3 E3(knows) p2  
 - Path #5: p1 E1(knows) p2 E2(knows) p3 E3(knows) p2 E4(knows) p4  
 
-##### External Loop
+A more complex example is the following:
+
+***Query:***
 ```plaintext
 PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
 ```
 
-**Results:**
+***Results:***
 - Path #1: p1 E5(likes) m1 E9(hasCreator) p3  
 - Path #2: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4  
 - Path #3: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4 E7(likes) m3 E11(hasCreator) p1  
@@ -94,25 +67,15 @@ PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
 
 ## Demo 2: Co-author network (DBLP)
 
-The graph represents a co-authorship network obtained from DBLP. 
-Specifically, the nodes are **authors** and the edges represent the **co-authorship** relation.  
-Two authors are connected by an edge if they co-authored the same article. 
-
-The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships. You can download it clicking [here](https://drive.google.com/file/d/1e4vtARAzhwEuTehOSE3-YFmecyx65wwS/view?usp=sharing).
-
-##### Nodes
-- Author(name).
-
-##### Edges
-- CoAuthor (Author, Author).
+The graph represents a co-authorship network obtained from DBLP. Specifically, the nodes are **authors** and the edges represent the **co-authorship** relation.  Two authors are connected by an edge if they co-authored the same article. The schema of the graph is shown in the following figure:
 
 <div align="center">
   <img src="readmeAssets/image-2.png" alt="DBLPGraph">
 </div>
 
-This graph contains **2,155,848 nodes** and **14,531,802 edges**.
+The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships. You can download it clicking [here](https://drive.google.com/file/d/1e4vtARAzhwEuTehOSE3-YFmecyx65wwS/view?usp=sharing). This graph contains **2,155,848 nodes** and **14,531,802 edges**.
 
-#### Sample Query
+
 An interesting query for this dataset involves calculating the **Erdős distance** or **Erdős number**, which describes the collaborative distance between two authors. PathDB allows retrieving the **shortest path** and its length to determine the Erdős distance.
 
 For example, to calculate the Erdős distance for the author **Renzo Angles**:
@@ -129,7 +92,7 @@ For example, to calculate the Erdős distance for the author **Renzo Angles**:
    PathDB> (x{name:Renzo Angles})-[COAUTHOR+]->(y{name:Paul Erdős});
    ```
 
-**Result:**  
+***Result:***  
 ```plaintext
 Path #1 - 1970866537 E486243(COAUTHOR) 2106576185 E14464(COAUTHOR)  
           1969282344 E7069515(COAUTHOR) 2289364316 E2339853(COAUTHOR)  
@@ -137,13 +100,13 @@ Path #1 - 1970866537 E486243(COAUTHOR) 2106576185 E14464(COAUTHOR)
 ```
 The result is a path between "Renzo Angles" and "Paul Erdős" with a length of 5.
 
-#### Contributors
+## Contributors
 * Renzo Angles.
 * Roberto García.
 * Sebastian Ferrada.
 * Vicente Rojas.
 
-#### License
+## License
 
  This software is released in open source under the Apache License, 
  Version 2.0 (the "License"); you may not use this file except in 
