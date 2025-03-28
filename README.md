@@ -67,7 +67,7 @@ PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
 
 ## Demo 2: Co-author network (DBLP)
 
-The graph represents a co-authorship network obtained from DBLP. Specifically, the nodes are **authors** and the edges represent the **co-authorship** relation.  Two authors are connected by an edge if they co-authored the same article. The schema of the graph is shown in the following figure:
+The graph represents a co-authorship network created with data obtained from [DBLP](https://dblp.org). Specifically, the nodes are **authors** and the edges represent the **co-authorship** relation. Two authors are connected by an edge if they co-authored the same article. The schema of the graph is shown in the following figure:
 
 <div align="center">
   <img src="readmeAssets/image-2.png" alt="DBLPGraph">
