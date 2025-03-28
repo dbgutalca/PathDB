@@ -2,7 +2,7 @@
 
 PathDB is a Java-based graph database designed for loading and querying data in memory. It uses Regular Path Queries (RPQ) and a closed path algebra to process path queries.
 
-#### Requirements
+## Requirements
 
 Before running PathDB, you must make sure you have the following requirements installed:
 * [Java 18](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html) (or above).
