@@ -113,7 +113,9 @@ public final class Tools {
             }
 
             Tools.clearConsole();
-            Tools.showUsageArgsLoadedCustomGraph(nodesFile, edgesFile);
+            if (!Context.getInstance().isExperimental()) {
+                Tools.showUsageArgsLoadedCustomGraph(nodesFile, edgesFile);
+            }
         } catch (Exception e) {
             Tools.clearConsole();
             Tools.showUsageArgsErrorLoadingGraph(nodesFile, edgesFile);

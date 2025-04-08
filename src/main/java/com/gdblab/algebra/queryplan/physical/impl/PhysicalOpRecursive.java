@@ -37,10 +37,10 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
         this.maxRecursion = Context.getInstance().getMaxRecursion();
         this.lop = lop;
         if (this.lop.hasLastFilter()) {
-            saveRightListAsHashMap(Utils.iterToList(leftChild));
+            saveRightListAsHashMap(leftChild);
         }
         else {
-            saveLeftListAsHashMap(Utils.iterToList(rightChild));
+            saveLeftListAsHashMap(rightChild);
         }
         
         this.currentRecursion = 1;
@@ -179,23 +179,31 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
         }
     }
     
-    private void saveLeftListAsHashMap(List<Path> list) {
-        for (Path path : list) {
-            final String key = path.first().getId();
-            if (!this.HashTable.containsKey(key)) {
-                this.HashTable.put(key, new ArrayList<>());
+    private void saveLeftListAsHashMap(PhysicalOperator op) {
+        while (op.hasNext()) {
+            final Path path = op.next();
+            if (path.getEdgeLength() <= Context.getInstance().getFixPoint()) {
+                final String key = path.first().getId();
+                if (!this.HashTable.containsKey(key)) {
+                    this.HashTable.put(key, new ArrayList<>());
+                }
+                this.HashTable.get(key).add(path);
             }
-            this.HashTable.get(key).add(path);
+            
         }
+        
     }
     
-    private void saveRightListAsHashMap(List<Path> list) {
-        for (Path path : list) {
-            final String key = path.last().getId();
-            if (!this.HashTable.containsKey(key)) {
-                this.HashTable.put(key, new ArrayList<>());
+    private void saveRightListAsHashMap(PhysicalOperator op) {
+        while (op.hasNext()) {
+            final Path path = op.next();
+            if (path.getEdgeLength() <= Context.getInstance().getFixPoint()) {
+                final String key = path.last().getId();
+                if (!this.HashTable.containsKey(key)) {
+                    this.HashTable.put(key, new ArrayList<>());
+                }
+                this.HashTable.get(key).add(path);
             }
-            this.HashTable.get(key).add(path);
         }
     }
 }

@@ -43,8 +43,10 @@ public class BFSAutomaton implements Algorithm {
     public BFSAutomaton(String regex, Writer writer) {
         this.matcher = new RegexMatcher(regex);
 
-        this.ns = Context.getInstance().getStartNode();
-        this.ne = Context.getInstance().getEndNode();
+        // this.ns = Context.getInstance().getStartNode();
+        this.ns = "";
+        // this.ne = Context.getInstance().getEndNode();
+        this.ne = "";
 
         this.fixPoint = 3;
 
@@ -58,8 +60,10 @@ public class BFSAutomaton implements Algorithm {
     public BFSAutomaton(String regex) {
         this.matcher = new RegexMatcher(regex);
 
-        this.ns = Context.getInstance().getStartNode();
-        this.ne = Context.getInstance().getEndNode();
+        // this.ns = Context.getInstance().getStartNode();
+        this.ns = "";
+        // this.ne = Context.getInstance().getEndNode();
+        this.ne = "";
 
         this.fixPoint = 3;
 
@@ -268,15 +272,15 @@ public class BFSAutomaton implements Algorithm {
             while (it.hasNext()) {
                 Node node = it.next();
 
-                if (!Context.getInstance().getStartNode().equals("") &&
-                    !Context.getInstance().getStartNode().equals(node.getId())) {
-                    continue;
-                }
+                // if (!Context.getInstance().getStartNode().equals("") &&
+                //     !Context.getInstance().getStartNode().equals(node.getId())) {
+                //     continue;
+                // }
 
-                if (!Context.getInstance().getEndNode().equals("") &&
-                    !Context.getInstance().getEndNode().equals(node.getId())) {
-                    continue;
-                }
+                // if (!Context.getInstance().getEndNode().equals("") &&
+                //     !Context.getInstance().getEndNode().equals(node.getId())) {
+                //     continue;
+                // }
 
                 Path path = new Path("");
                 path.insertNode(node);

@@ -41,8 +41,11 @@ public class BFSRegex implements Algorithm {
 
     public BFSRegex(String regex, Writer writer) {
         this.pattern = Pattern.compile(regex);
-        this.ns = Context.getInstance().getStartNode();
-        this.ne = Context.getInstance().getEndNode();
+        
+        // this.ns = Context.getInstance().getStartNode();
+        this.ns = "";
+        // this.ne = Context.getInstance().getEndNode();
+        this.ne = "";
 
         this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
@@ -53,8 +56,11 @@ public class BFSRegex implements Algorithm {
 
     public BFSRegex(String regex) {
         this.pattern = Pattern.compile(regex);
-        this.ns = Context.getInstance().getStartNode();
-        this.ne = Context.getInstance().getEndNode();
+        
+        // this.ns = Context.getInstance().getStartNode();
+        this.ns = "";
+        // this.ne = Context.getInstance().getEndNode();
+        this.ne = "";;
 
         this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
@@ -254,15 +260,15 @@ public class BFSRegex implements Algorithm {
             while (it.hasNext()) {
                 Node node = it.next();
 
-                if (!Context.getInstance().getStartNode().equals("") &&
-                    !Context.getInstance().getStartNode().equals(node.getId())) {
-                    continue;
-                }
+                // if (!Context.getInstance().getStartNode().equals("") &&
+                //     !Context.getInstance().getStartNode().equals(node.getId())) {
+                //     continue;
+                // }
 
-                if (!Context.getInstance().getEndNode().equals("") &&
-                    !Context.getInstance().getEndNode().equals(node.getId())) {
-                    continue;
-                }
+                // if (!Context.getInstance().getEndNode().equals("") &&
+                //     !Context.getInstance().getEndNode().equals(node.getId())) {
+                //     continue;
+                // }
 
                 Path path = new Path("");
                 path.insertNode(node);
