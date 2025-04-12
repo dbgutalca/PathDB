@@ -43,6 +43,12 @@ public class PhysicalOpAllEdges implements NullaryPhysicalOperator{
             Path p = new Path("", edge);
 
             if (Context.getInstance().getSemantic() == 3) {
+                if (p.lenght() > 1 && !p.isSelfAcyclic()) {
+                    continue;
+                }
+            }
+
+            if (Context.getInstance().getSemantic() == 4) {
                 if (p.lenght() > 1 && !p.isSelfSimplePath()) {
                     continue;
                 }

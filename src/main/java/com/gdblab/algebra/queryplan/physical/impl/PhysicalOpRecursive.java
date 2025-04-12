@@ -74,7 +74,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
             while (this.rightChild.hasNext()) {
                 final Path path = this.rightChild.next();
     
-                if (path.getEdgeLength() <= Context.getInstance().getFixPoint()) {
+                if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
                     this.rightList.add(path);
                     return path;
                 }
@@ -128,7 +128,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
             while (this.leftChild.hasNext()) {
                 final Path path = this.leftChild.next();
     
-                if (path.getEdgeLength() <= Context.getInstance().getFixPoint()) {
+                if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
                     this.leftList.add(path);
                     return path;
                 }
@@ -182,7 +182,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     private void saveLeftListAsHashMap(PhysicalOperator op) {
         while (op.hasNext()) {
             final Path path = op.next();
-            if (path.getEdgeLength() <= Context.getInstance().getFixPoint()) {
+            if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
                 final String key = path.first().getId();
                 if (!this.HashTable.containsKey(key)) {
                     this.HashTable.put(key, new ArrayList<>());
@@ -197,7 +197,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     private void saveRightListAsHashMap(PhysicalOperator op) {
         while (op.hasNext()) {
             final Path path = op.next();
-            if (path.getEdgeLength() <= Context.getInstance().getFixPoint()) {
+            if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
                 final String key = path.last().getId();
                 if (!this.HashTable.containsKey(key)) {
                     this.HashTable.put(key, new ArrayList<>());
