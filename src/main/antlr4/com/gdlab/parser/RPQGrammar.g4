@@ -35,8 +35,8 @@ conditionalsEvaluation: variable '.' property ( comparisonString | comparisonNum
 variable: id;
 property: id;
 
-comparisonString: '=' '"' string '"' # stringEquals
-        | '!=' '"' string '"' # stringNotEquals
+comparisonString: '=' STRING # stringEquals
+        | '!=' STRING # stringNotEquals
         ;
 
 comparisonNumber: '=' decimal # numberEquals
@@ -61,11 +61,10 @@ regularExpression: id # edge
 
 id: LETTER (LETTER | DIGIT)*;
 unsignedInteger: DIGIT+;
-integer: '-'? DIGIT+;
+integer: '-'? DIGIT+ ;
 decimal: '-'? DIGIT+ ('.' DIGIT+)?;
-string: EXTENDEDLETTER*;
 
-EXTENDEDLETTER: [0-9a-zA-Z\u00C0-\u00FF];
+STRING: '"' (~["\\] | '\\' .)* '"' ;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
 WS: [ \t\r\n]+ -> skip;
