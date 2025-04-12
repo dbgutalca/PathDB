@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.gdblab.algorithm.utils.LabelMap;
-
 /**
  *
  * @author ramhg
@@ -136,17 +134,6 @@ public class Path extends GraphObject {
         }
         return edges;
     }
-
-    public String getStringEdgeSequenceAscii() {;
-        String seq = "";
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Edge edge) {
-                seq += LabelMap.getByLabel(edge.getLabel());
-            }
-        }
-        return seq;
-    }
-    
     public String getStringSequence() {
         String seq = "";
         for (int i = 0; i < sequence.size(); i++) {
@@ -301,16 +288,24 @@ public class Path extends GraphObject {
         return this.getListIDEdgeSequence().stream().noneMatch(pathB.getListIDEdgeSequence()::contains);
     }
 
-    public boolean isSimplePath (Path pathB) {
-
+    public boolean isAcyclic (Path pathB) {
         List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size());
+        return this.getListIDNodeSequence().stream().noneMatch(res::contains);
+    }
 
+    public boolean isSelfAcyclic() {
+        return this.getListIDNodeSequence().stream().distinct().count() == this.getListIDNodeSequence().size();
+    }
+
+    public boolean isSimplePath (Path pathB) {
+        List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size() - 1);
         return this.getListIDNodeSequence().stream().noneMatch(res::contains);
     }
 
     public boolean isSelfSimplePath() {
-        return this.getListIDNodeSequence().stream().distinct().count() == this.getListIDNodeSequence().size();
+        return this.getListIDNodeSequence().stream().distinct().count() == (this.getListIDNodeSequence().size() - 1);
     }
+
 
     public Integer getSumEdges(Path pathB) {
         return this.getEdgeLength() + pathB.getEdgeLength();
