@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
-import com.gdblab.algebra.parser.error.SyntaxErrorDetails;
+import com.gdblab.algebra.parser.error.ErrorDetails;
 import com.gdblab.algebra.parser.error.SyntaxErrorException;
 
 public class RPQErrorListener extends BaseErrorListener{
@@ -16,7 +16,7 @@ public class RPQErrorListener extends BaseErrorListener{
         } else {
             msg = "Syntax error. No message available.";
         }
-        SyntaxErrorDetails details = new SyntaxErrorDetails(line, charPositionInLine, msg);
+        ErrorDetails details = new ErrorDetails(line, charPositionInLine, msg);
         throw new SyntaxErrorException(details);
     }
 }
