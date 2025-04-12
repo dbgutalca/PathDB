@@ -1,14 +1,20 @@
 package com.gdblab.algebra.parser.error;
 
-public class SyntaxErrorException extends RuntimeException {
-    private final SyntaxErrorDetails details;
+import com.gdblab.execution.Context;
 
-    public SyntaxErrorException(SyntaxErrorDetails details) {
-        super(details.toString());
+public class SyntaxErrorException extends RuntimeException {
+    private final ErrorDetails details;
+
+    public SyntaxErrorException(ErrorDetails details) {
         this.details = details;
     }
 
-    public SyntaxErrorDetails getDetails() {
-        return details;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Syntax Error: ").append(details.getMsg()).append("\n")
+            .append(Context.getInstance().getCompleteQuery()).append("\n")
+            .append(" ".repeat(details.getPos())).append("^");
+        return sb.toString();
     }
 }
