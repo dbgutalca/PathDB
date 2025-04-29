@@ -26,7 +26,26 @@ public class Node extends GraphObject {
 
     @Override
     public String toString() {
-        return "Node{" + "id=" + this.getId() + ", label=" + getLabel() + '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");
+        sb.append("  \"id\": \"").append(this.getId()).append("\",\n");
+        sb.append("  \"label\": \"").append(this.getLabel()).append("\",\n");
+        sb.append("  \"properties\": {\n");
+
+        if (properties != null && !properties.isEmpty()) {
+            int count = 0;
+            for (var entry : properties.entrySet()) {
+                sb.append("    \"").append(entry.getKey()).append("\": \"").append(entry.getValue()).append("\"");
+                if (++count < properties.size()) {
+                    sb.append(",");
+                }
+                sb.append("\n");
+            }
+        }
+
+        sb.append("  }\n");
+        sb.append("}");
+        return sb.toString();
     }
 
     @Override

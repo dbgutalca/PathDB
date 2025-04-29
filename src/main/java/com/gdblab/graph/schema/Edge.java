@@ -41,6 +41,23 @@ public class Edge extends GraphObject {
         this.target = target;
     }
     
-    
+    @Override
+    public String toString() {
+        // CAMBIAR ID LABEL A NODE.TOSTRING();
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");
+        sb.append("  \"id\": \"").append(this.getId()).append("\",\n");
+        sb.append("  \"label\": \"").append(this.getLabel()).append("\",\n");
+        sb.append("  \"source\": {\n");
+        sb.append("    \"id\": \"").append(this.source.getId()).append("\",\n");
+        sb.append("    \"label\": \"").append(this.source.getLabel()).append("\"\n");
+        sb.append("  },\n");
+        sb.append("  \"target\": {\n");
+        sb.append("    \"id\": \"").append(this.target.getId()).append("\",\n");
+        sb.append("    \"label\": \"").append(this.target.getLabel()).append("\"\n");
+        sb.append("  }\n");
+        sb.append("}");
+        return sb.toString();
+    }
     
 }

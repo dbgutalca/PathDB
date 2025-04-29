@@ -314,4 +314,25 @@ public class Path extends GraphObject {
     public Integer getEdgeLength() {
         return this.length;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\n");
+        sb.append("  \"pathId\": \"").append(this.getId()).append("\",\n");
+        sb.append("  \"sequence\": [\n");
+
+        List<GraphObject> seg = this.getSequence();
+        for (int i = 0; i < seg.size(); i++) {
+            sb.append("    ").append(seg.get(i).toString());
+            if (i < seg.size() - 1) {
+                sb.append(",");
+            }
+            sb.append("\n");
+        }
+
+        sb.append("  ]\n");
+        sb.append("}");
+        return sb.toString();
+    }
 }

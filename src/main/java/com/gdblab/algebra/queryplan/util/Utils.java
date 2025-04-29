@@ -2,22 +2,13 @@ package com.gdblab.algebra.queryplan.util;
 
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.execution.Context;
-import com.gdblab.execution.Tools;
 import com.gdblab.graph.schema.Edge;
 import com.gdblab.graph.schema.GraphObject;
 import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
+import de.vandermeer.asciitable.AsciiTable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,6 +82,12 @@ public class Utils {
 
         Integer maxShowPaths = Context.getInstance().getTotalPathsToShow();
         Integer limitCalculatePaths = Context.getInstance().getLimit();
+
+        AsciiTable table = new AsciiTable();
+
+        table.addRule();
+        table.addRow("Path #", "Path");
+        table.addRule();
 
         while (counterLP <= limitCalculatePaths && po.hasNext() ) {
             Path p = po.next();

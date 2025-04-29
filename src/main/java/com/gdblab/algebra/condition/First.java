@@ -13,10 +13,12 @@ import com.gdblab.graph.schema.Path;
 public class First extends Condition{
     
     public String prop;
+    public String condition;
     public String value;
 
-    public First(String prop, String value) {
+    public First(String prop, String condition, String value) {
         this.prop = prop;
+        this.condition = condition;
         this.value = value;
     }
     
@@ -25,7 +27,34 @@ public class First extends Condition{
         if(p != null){
             Boolean propExists = p.first().getProperties().containsKey(this.prop);
             if(!propExists) return false;
-            return p.first().getProperty(this.prop).equals(this.value);
+
+            Float value_1 = null;
+            Float value_2 = null;
+
+            switch (this.condition) {
+                case "=":
+                    return p.first().getProperty(this.prop).equals(this.value);
+                case "!=":
+                    return !p.first().getProperty(this.prop).equals(this.value);
+                case "<":
+                    value_1 = Float.parseFloat(this.value);
+                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    return value_2 < value_1;
+                case "<=":
+                    value_1 = Float.parseFloat(this.value);
+                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    return value_2 <= value_1;
+                case ">":
+                    value_1 = Float.parseFloat(this.value);
+                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    return value_2 > value_1;
+                case ">=":
+                    value_1 = Float.parseFloat(this.value);
+                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    return value_2 >= value_1;
+                default:
+                    return false;
+            }
         }
         return false;
     }
@@ -34,7 +63,7 @@ public class First extends Condition{
         return prop;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 

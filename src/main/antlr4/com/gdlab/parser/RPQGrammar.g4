@@ -15,12 +15,10 @@ nodePatternLeft: nodePattern;
 nodePatternRight: nodePattern;
 nodePattern: '(' filterVar? ')';
 edgePattern: '-['regularExpressionRule']' rangeRecursive? '->' ;
-rangeRecursive: '{' rangeMinValue? '..' rangeMaxValue '}'
-        |'{' rangeMinValue '..' rangeMaxValue? '}'
-        ;
+rangeRecursive: '{..' rangeMaxValue '}';
 
-rangeMinValue: integer;
-rangeMaxValue: integer;
+// rangeMinValue: integer;
+rangeMaxValue: unsignedInteger;
 pathName: id;
 filterVar: id;
 
