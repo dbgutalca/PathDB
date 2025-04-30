@@ -15,14 +15,17 @@ public class GraphObject {
     
     private String id;
     private String label;
+    private Integer length;
 
-    public GraphObject(String id, String label) {
+    public GraphObject(String id, String label, Integer length) {
         this.id = id;
         this.label = label;
+        this.length = length;
     }
     
-    public GraphObject(String id) {
+    public GraphObject(String id, Integer length) {
         this.id = id;
+        this.length = length;
     }
 
     public String getId() {
@@ -39,6 +42,14 @@ public class GraphObject {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public Integer getLength() {
+        return length;
+    }
+
+    public void setLength(Integer length) {
+        this.length = length;
     }
 
     @Override

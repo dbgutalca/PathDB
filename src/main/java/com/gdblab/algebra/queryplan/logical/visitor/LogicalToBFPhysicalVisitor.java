@@ -11,7 +11,6 @@ import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpAllNodes;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpHashNodeJoin;
-import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpHashNodeJoinRight;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpRecursive;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSelectionByLabel;

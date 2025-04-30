@@ -14,13 +14,13 @@ public class Edge extends GraphObject {
     private Node target;
 
     public Edge(String id, String label, Node source, Node target) {
-        super(id, label);
+        super(id, label, 1);
         this.source = source;
         this.target = target;
     }
     
     public Edge(String id, Node source, Node target) {
-        super(id);
+        super(id, 1);
         this.source = source;
         this.target = target;
     }
@@ -45,17 +45,17 @@ public class Edge extends GraphObject {
     public String toString() {
         // CAMBIAR ID LABEL A NODE.TOSTRING();
         StringBuilder sb = new StringBuilder();
-        sb.append("{\n");
-        sb.append("  \"id\": \"").append(this.getId()).append("\",\n");
-        sb.append("  \"label\": \"").append(this.getLabel()).append("\",\n");
-        sb.append("  \"source\": {\n");
-        sb.append("    \"id\": \"").append(this.source.getId()).append("\",\n");
-        sb.append("    \"label\": \"").append(this.source.getLabel()).append("\"\n");
-        sb.append("  },\n");
-        sb.append("  \"target\": {\n");
-        sb.append("    \"id\": \"").append(this.target.getId()).append("\",\n");
-        sb.append("    \"label\": \"").append(this.target.getLabel()).append("\"\n");
-        sb.append("  }\n");
+        sb.append("{");
+        sb.append(" \"id\": \"").append(this.getId()).append("\",");
+        sb.append("\"label\": \"").append(this.getLabel()).append("\",");
+        sb.append("\"source\": {");
+        sb.append("\"id\": \"").append(this.source.getId()).append("\",");
+        sb.append("\"label\": \"").append(this.source.getLabel()).append("\"");
+        sb.append("},");
+        sb.append("\"target\": {");
+        sb.append("\"id\": \"").append(this.target.getId()).append("\",");
+        sb.append("\"label\": \"").append(this.target.getLabel()).append("\"");
+        sb.append("}");
         sb.append("}");
         return sb.toString();
     }

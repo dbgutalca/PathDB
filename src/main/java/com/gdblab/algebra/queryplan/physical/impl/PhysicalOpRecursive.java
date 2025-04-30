@@ -10,7 +10,6 @@ import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.execution.Context;
-import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 
 public class PhysicalOpRecursive extends BinaryPhysicalOp {
@@ -94,7 +93,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
                 }
 
                 if (this.leftIterator == null) { 
-                    this.leftIterator = this.HashTable.get(this.nextRight.first()).iterator();
+                    this.leftIterator = this.HashTable.get(this.nextRight.first().getId()).iterator();
                 }
     
                 while (this.leftIterator.hasNext()) {

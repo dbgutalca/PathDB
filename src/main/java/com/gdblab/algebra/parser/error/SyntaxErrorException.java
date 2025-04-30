@@ -14,7 +14,7 @@ public class SyntaxErrorException extends RuntimeException {
         StringBuilder sb = new StringBuilder();
         sb.append("Syntax Error: ").append(details.getMsg()).append("\n")
             .append(Context.getInstance().getCompleteQuery()).append("\n")
-            .append(" ".repeat(details.getPos())).append("^");
+            .append(" ".repeat(details.getPos())).append("^").append("\n");
         return sb.toString();
     }
 }

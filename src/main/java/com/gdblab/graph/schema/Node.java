@@ -16,34 +16,33 @@ public class Node extends GraphObject {
     HashMap<String, String> properties;
     
     public Node(String id, String label, HashMap<String, String> properties) {
-        super(id, label);
+        super(id, label, 0);
         this.properties = properties;
     } 
     
     public Node(String id) {
-        super(id);
+        super(id, 0);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("{\n");
-        sb.append("  \"id\": \"").append(this.getId()).append("\",\n");
-        sb.append("  \"label\": \"").append(this.getLabel()).append("\",\n");
-        sb.append("  \"properties\": {\n");
+        sb.append("{");
+        sb.append(" \"id\": \"").append(this.getId()).append("\",");
+        sb.append(" \"label\": \"").append(this.getLabel()).append("\",");
+        sb.append(" \"properties\": {");
 
         if (properties != null && !properties.isEmpty()) {
             int count = 0;
             for (var entry : properties.entrySet()) {
-                sb.append("    \"").append(entry.getKey()).append("\": \"").append(entry.getValue()).append("\"");
+                sb.append("\"").append(entry.getKey()).append("\": \"").append(entry.getValue()).append("\"");
                 if (++count < properties.size()) {
                     sb.append(",");
                 }
-                sb.append("\n");
             }
         }
 
-        sb.append("  }\n");
+        sb.append("}");
         sb.append("}");
         return sb.toString();
     }

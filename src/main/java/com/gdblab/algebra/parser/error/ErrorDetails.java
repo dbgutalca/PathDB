@@ -15,12 +15,13 @@ public class ErrorDetails {
 
     public ErrorDetails(int line, String var ,String msg) {
         this.line = line;
+        System.out.println("var: " + var);
         this.pos = this.getPos(var);
         this.msg = msg;
     }
 
     private int getPos(String var) {
-        String[] query = Context.getInstance().getCompleteQuery().split("WHERE");
+        String[] query = Context.getInstance().getCompleteQuery().split("");
         // Fin the first occurrence of the variable in the query[1]
         int pos = query[1].indexOf(var);
         if (pos == -1) {

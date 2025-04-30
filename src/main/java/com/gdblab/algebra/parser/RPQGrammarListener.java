@@ -4,8 +4,10 @@ import com.gdblab.algebra.condition.And;
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.algebra.condition.First;
 import com.gdblab.algebra.condition.Last;
+import com.gdblab.algebra.condition.Length;
 import com.gdblab.algebra.condition.Or;
 import com.gdblab.algebra.parser.error.ErrorDetails;
+import com.gdblab.algebra.parser.error.PropertyDoesntExist;
 import com.gdblab.algebra.parser.error.VariableNotFoundException;
 import com.gdblab.algebra.parser.impl.*;
 import com.gdblab.execution.Context;
@@ -153,12 +155,24 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
         String variableToFind = data2[0];
         String propertyToFind = data2[1];
 
-        if (variableToFind.equals(Context.getInstance().getLeftVarName())) {
+        if (variableToFind.equals(Context.getInstance().getPathsName())) {
+            switch (propertyToFind) {
+                case "length":
+                    Length length = new Length(Integer.parseInt(valueToFind), condition);
+                    this.conditionalStack.push(length);
+                    break;
+            
+                default:
+                    ErrorDetails ed = new ErrorDetails(0, propertyToFind, "Property " + propertyToFind +" not found.");
+                    throw new PropertyDoesntExist(ed);
+            }
+        }
+        else if (variableToFind.equals(Context.getInstance().getLeftVarName())) {
             First first = new First(propertyToFind, condition, valueToFind);
             this.conditionalStack.push(first);
         }
         else if (variableToFind.equals(Context.getInstance().getRightVarName())) {
-            Last last = new Last(propertyToFind,condition , valueToFind);
+            Last last = new Last(propertyToFind, condition , valueToFind);
             this.conditionalStack.push(last);
         }
         else {

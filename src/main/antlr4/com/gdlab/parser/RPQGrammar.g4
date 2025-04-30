@@ -5,8 +5,7 @@ query: 'MATCH' restrictorsStatement? pathPattern returnStatement limitStatement?
 restrictorsStatement: 'WALK' | 'TRAIL' | 'ACYCLIC' | 'SIMPLE';
 pathPattern: pathName '=' nodePatternLeft edgePattern nodePatternRight conditionalExpression?;
 returnStatement: 'RETURN' returnOption (',' returnOption)*;
-returnOption: '*' # returnAll
-        | variable # returnVariable
+returnOption: variable # returnVariable
         | variable '.' property # returnVariableWithProperty
         ;
 

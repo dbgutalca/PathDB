@@ -12,4 +12,4 @@
 #### TO DO
 - [ ] Falta agregar el Return como tabla con los datos
 - [ ] Falta revisar las variables entregadas por el return para que existan.
-- [ ] Agregar el .length para los paths y usarlo en el where.
+- [x] Agregar el .length para los paths y usarlo en el where.

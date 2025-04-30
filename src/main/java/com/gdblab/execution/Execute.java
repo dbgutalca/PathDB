@@ -182,8 +182,19 @@ public final class Execute {
                 }
                 
                 else if (line.endsWith(";")) {
-                    Context.getInstance().setCompleteQuery(line);
-                    EvalRPQWithAlgebra();
+                    try {
+                        Context.getInstance().setCompleteQuery(line);
+                        EvalRPQWithAlgebra();   
+                    }
+                    catch (OutOfMemoryError e) {
+                        System.out.println("Out of memory error. Try again with more memory.\n");
+                    }
+                    catch (SyntaxErrorException see) {
+                        System.out.println(see.toString());
+                    }
+                    catch (VariableNotFoundException e) {
+                        System.out.println(e.toString());
+                    }
                 }
 
                 else if (line.equals(prefix + "in") || line.equals(prefix + "information")) {
@@ -213,18 +224,12 @@ public final class Execute {
             }
 
         }
-        catch (OutOfMemoryError e) {
-            System.out.println("Out of memory error. Try again with more memory.\n");
-        }
-        catch (SyntaxErrorException see) {
-            System.out.println("Syntax error: " + see.getMessage() + "\n");
-        }
-        catch (VariableNotFoundException e) {
-            System.out.println(e.toString());
-        }
         catch (IOException e) {
             System.out.println(e.toString());
         }
+        // catch (Exception e) {
+        //     System.out.println("Any Error");
+        // }
     }
 
     public static LogicalOperator addFilter(LogicalOperator lo) {
