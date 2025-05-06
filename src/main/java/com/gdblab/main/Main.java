@@ -4,7 +4,7 @@ import com.gdblab.execution.Execute;
 
 public class Main {
 
-    // MATCH p = (X)-[A.B]->(Y) WHERE FIRST().PROP = "algo" RETURN p;
+    // MATCH p = (x)-[Knows]->(y) WHERE FIRST().name = "Bart" RETURN x.name;
 
     // RETURN
     //     FIRST()

@@ -1,10 +1,10 @@
 package com.gdblab.algebra.parser.error;
 
-public class PropertyDoesntExist extends RuntimeException {
+public class PropertyNotFoundException extends RuntimeException {
 
     private final ErrorDetails details;
 
-    public PropertyDoesntExist(ErrorDetails details) {
+    public PropertyNotFoundException(ErrorDetails details) {
         this.details = details;
     }
 

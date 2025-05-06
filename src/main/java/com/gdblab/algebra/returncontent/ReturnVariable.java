@@ -7,7 +7,8 @@ public class ReturnVariable extends ReturnContent {
 
     String variableName;
 
-    public ReturnVariable(String variableName) {
+    public ReturnVariable(String variableName, String returnName) {
+        super(returnName);
         this.variableName = variableName;
     }
 
