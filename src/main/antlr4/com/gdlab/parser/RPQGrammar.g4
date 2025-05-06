@@ -7,6 +7,16 @@ pathPattern: pathName '=' nodePatternLeft edgePattern nodePatternRight condition
 returnStatement: 'RETURN' returnOption (',' returnOption)*;
 returnOption: variable # returnVariable
         | variable '.' property # returnVariableWithProperty
+        | 'FIRST()' # returnFirst
+        | 'FIRST().' property # returnFirstWithProperty
+        | 'LAST()' # returnLast
+        | 'LAST().' property # returnLastWithProperty
+        | 'NODE(' unsignedInteger ')' # returnNode
+        | 'NODE(' unsignedInteger ').' property # returnNodeWithProperty
+        | 'EDGE(' unsignedInteger ')' # returnEdge
+        | 'EDGE(' unsignedInteger ').' property # returnEdgeWithProperty
+        | 'LABEL(NODE(' unsignedInteger '))' # returnLabelNode
+        | 'LABEL(EDGE(' unsignedInteger '))' # returnLabelEdge
         ;
 
 limitStatement: 'LIMIT' unsignedInteger;
@@ -26,9 +36,18 @@ conditionals: '(' conditionals ')' # parenthesisConditionals
         | conditionals 'AND' conditionals # andConditionals
         | conditionals 'OR' conditionals # orConditionals
         | conditionalsEvaluation # conditionalsEval
+        | conditionalsFunction # conditionalsEvalFunction
         ;
 
 conditionalsEvaluation: variable '.' property ( comparisonString | comparisonNumber);
+conditionalsFunction: 'FIRST().' property ( comparisonString | comparisonNumber)
+        | 'LAST().' property ( comparisonString | comparisonNumber)
+        | 'NODE(' unsignedInteger ').' property ( comparisonString | comparisonNumber)
+        | 'EDGE(' unsignedInteger ').' property ( comparisonString | comparisonNumber)
+        | 'LABEL(NODE(' unsignedInteger '))' comparisonString
+        | 'LABEL(EDGE(' unsignedInteger '))' comparisonString
+        ;
+
 variable: id;
 property: id;
 

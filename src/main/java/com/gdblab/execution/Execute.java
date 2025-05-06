@@ -14,7 +14,6 @@ import org.jline.terminal.TerminalBuilder;
 import com.gdblab.algebra.parser.RPQErrorListener;
 import com.gdblab.algebra.parser.RPQExpression;
 import com.gdblab.algebra.parser.RPQGrammarListener;
-import com.gdblab.algebra.parser.error.ErrorDetails;
 import com.gdblab.algebra.parser.error.SyntaxErrorException;
 import com.gdblab.algebra.parser.error.VariableNotFoundException;
 import com.gdblab.algebra.parser.impl.RPQtoAlgebraVisitor;
@@ -33,7 +32,6 @@ public final class Execute {
     private static final String prefix = "/";
 
     public static void EvalRPQWithAlgebra(){
-        // MATCH p=(x)-[Knows]->(y) RETURN p LIMIT 10;
         long start = System.nanoTime();
 
         int counter = 1;        

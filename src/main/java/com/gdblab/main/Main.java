@@ -4,6 +4,18 @@ import com.gdblab.execution.Execute;
 
 public class Main {
 
+    // MATCH p = (X)-[A.B]->(Y) WHERE FIRST().PROP = "algo" RETURN p;
+
+    // RETURN
+    //     FIRST()
+    //     FIRST().PROP
+    //     LAST()
+    //     LAST().PROP
+    //     NODE(#)
+    //     NODE(#).PROP
+    //     EDGE(#)
+    //     EDGE(#).PROP
+
     public static void main(String[] args) {
 
         if (args.length == 4) {

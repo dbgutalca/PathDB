@@ -3,13 +3,17 @@ package com.gdblab.algebra.parser;
 import com.gdblab.algebra.condition.And;
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.algebra.condition.First;
+import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.condition.Last;
 import com.gdblab.algebra.condition.Length;
+import com.gdblab.algebra.condition.Node;
 import com.gdblab.algebra.condition.Or;
 import com.gdblab.algebra.parser.error.ErrorDetails;
 import com.gdblab.algebra.parser.error.PropertyDoesntExist;
 import com.gdblab.algebra.parser.error.VariableNotFoundException;
 import com.gdblab.algebra.parser.impl.*;
+import com.gdblab.algebra.returncontent.ReturnContent;
+import com.gdblab.algebra.returncontent.ReturnVariable;
 import com.gdblab.execution.Context;
 import com.gdblab.execution.Tools;
 import com.gdlab.parser.RPQGrammarBaseListener;
@@ -26,6 +30,8 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
 
     Condition conditionRoot = null;
     final Stack<Condition> conditionalStack = new Stack<>();
+
+    final ArrayList<ReturnContent> returnContent = new ArrayList<>();
     
     boolean finished = false;
 
@@ -95,32 +101,25 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     }
     
 
-
     @Override public void exitReturnStatement(final RPQGrammarParser.ReturnStatementContext ctx) {
-        String returnStatement = ctx.getText().replace("RETURN", "").trim();
-        String[] data = returnStatement.split(",");
-        ArrayList<String> variables = new ArrayList<>();
-        variables.add(Context.getInstance().getPathsName());
-        variables.add(Context.getInstance().getLeftVarName());
-        variables.add(Context.getInstance().getRightVarName());
-        for (String s : data) {
-            String variable = s.trim();
-
-            if (variables.contains(variable)) {
-
-                if (!Context.getInstance().getReturnedVariables().contains(variable)){
-                    Context.getInstance().addReturnedVariable(variable);
-                }
-                else {
-
-                }
-            }
-            else {
-                ErrorDetails ed = new ErrorDetails(0, variable, "Variable " + variable +" not found.");
-                throw new VariableNotFoundException(ed);
-            }
-        }
+        Context.getInstance().setReturnedVariables(this.returnContent);
     }
+
+    @Override public void exitReturnVariable(final RPQGrammarParser.ReturnVariableContext ctx) {
+        this.returnContent.add(new ReturnVariable(ctx.getText()));
+    }
+    
+    @Override public void exitReturnVariableWithProperty(final RPQGrammarParser.ReturnVariableWithPropertyContext ctx) {}
+    @Override public void exitReturnFirst(final RPQGrammarParser.ReturnFirstContext ctx) {}
+    @Override public void exitReturnFirstWithProperty(final RPQGrammarParser.ReturnFirstWithPropertyContext ctx) {}
+    @Override public void exitReturnLast(final RPQGrammarParser.ReturnLastContext ctx) {}
+    @Override public void exitReturnLastWithProperty(final RPQGrammarParser.ReturnLastWithPropertyContext ctx) {}
+    @Override public void exitReturnNode(final RPQGrammarParser.ReturnNodeContext ctx) {}
+    @Override public void exitReturnNodeWithProperty(final RPQGrammarParser.ReturnNodeWithPropertyContext ctx) {}
+    @Override public void exitReturnEdge(final RPQGrammarParser.ReturnEdgeContext ctx) {}
+    @Override public void exitReturnEdgeWithProperty(final RPQGrammarParser.ReturnEdgeWithPropertyContext ctx) {}
+    @Override public void exitReturnLabelNode(final RPQGrammarParser.ReturnLabelNodeContext ctx) {}
+    @Override public void exitReturnLabelEdge(final RPQGrammarParser.ReturnLabelEdgeContext ctx) {}
 
 
 
@@ -181,6 +180,49 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
         }
     }
 
+    @Override public void exitConditionalsEvalFunction(final RPQGrammarParser.ConditionalsEvalFunctionContext ctx) {
+        String condition = Tools.getConditional(ctx.getText());
+
+        String data[] = ctx.getText().split(condition);
+        String valueToFind = data[1].replaceAll("\"", "");
+
+        String data2[] = data[0].split("\\.");
+        String function = data2[0];
+        String propertyToFind = data2[1];
+
+        System.out.println("Value: " + valueToFind);
+        System.out.println("Function: " + function);
+        System.out.println("Property: " + propertyToFind);
+
+        if (function.startsWith("FIRST()")) {
+            First first = new First(propertyToFind, condition, valueToFind);
+            this.conditionalStack.push(first);
+        }
+        else if (function.startsWith("LAST()")) {
+            Last last = new Last(propertyToFind, condition , valueToFind);
+            this.conditionalStack.push(last);
+        }
+        else if (function.startsWith("NODE(")) {
+            int pos = Integer.parseInt(function.substring(5, function.length() - 1));
+            Node node = new Node(propertyToFind, condition, valueToFind, pos);
+            this.conditionalStack.push(node);
+        }
+        else if (function.startsWith("LABEL(NODE(")) {
+            int pos = Integer.parseInt(function.substring(11, function.length() - 2));
+            Label label = new Label(valueToFind, "node", pos);
+            this.conditionalStack.push(label);
+        }
+        else if (function.startsWith("LABEL(EDGE(")) {
+            int pos = Integer.parseInt(function.substring(11, function.length() - 2));
+            Label label = new Label(valueToFind, "edge", pos);
+            this.conditionalStack.push(label);
+        }
+        else {
+            ErrorDetails ed = new ErrorDetails(0, function, "Function " + function +" not found.");
+            throw new VariableNotFoundException(ed);
+        }
+    }
+
 
 
     @Override public void exitRestrictorsStatement(final RPQGrammarParser.RestrictorsStatementContext ctx) {
@@ -205,11 +247,15 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     }
 
     @Override public void exitNodePatternLeft(final RPQGrammarParser.NodePatternLeftContext ctx) {
-        Context.getInstance().setLeftVarName(ctx.getText().substring(1, ctx.getText().length() - 1));
+        if (ctx.getText().equals("()")) {
+            Context.getInstance().setLeftVarName(ctx.getText().substring(1, ctx.getText().length() - 1));
+        }
     }
 
     @Override public void exitNodePatternRight(final RPQGrammarParser.NodePatternRightContext ctx) {
-        Context.getInstance().setRightVarName(ctx.getText().substring(1, ctx.getText().length() - 1));
+        if (ctx.getText().equals("()")) {
+            Context.getInstance().setRightVarName(ctx.getText().substring(1, ctx.getText().length() - 1));
+        }
     }
     
 }
