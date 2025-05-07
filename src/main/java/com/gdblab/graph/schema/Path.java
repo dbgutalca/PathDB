@@ -148,7 +148,7 @@ public class Path extends GraphObject {
 
     public Node getNodeAt(final int pos) {
         final List<Node> seq = this.getNodeSequence();
-        if (seq.size() >= pos) {
+        if (pos >= 0 && pos < seq.size()) {
             return seq.get(pos);
         }
         return null;
@@ -311,13 +311,12 @@ public class Path extends GraphObject {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
-        sb.append("\"pathId\": \"").append(this.getId()).append("\",");
         sb.append("\"sequence\": [");
 
-        List<GraphObject> seg = this.getSequence();
-        for (int i = 0; i < seg.size(); i++) {
-            sb.append("    ").append(seg.get(i).toString());
-            if (i < seg.size() - 1) {
+        List<GraphObject> seq = this.getSequence();
+        for (int i = 0; i < seq.size(); i++) {
+            sb.append("    ").append(seq.get(i).toString());
+            if (i < seq.size() - 1) {
                 sb.append(",");
             }
             sb.append("");
