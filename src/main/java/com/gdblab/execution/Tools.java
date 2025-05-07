@@ -97,27 +97,33 @@ public final class Tools {
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(edgesFile))) {
-            int i = 1;
             String line;
+
+            ArrayList<String> schemaEdge = new ArrayList<>();
             while ((line = br.readLine()) != null) {
-                    if (line.startsWith("@")) continue;
 
-                    String[] data = line.split("\\|");
-                    String _id_ = "E" + i++;
-                    String _label_ = data[0];
-                    String _from_ = data[2];
-                    String _to_ = data[3];
+                    if (line.startsWith("@")) {
+                        schemaEdge = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                    }
+                    else {
+                        ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                        HashMap<String, String> properties = new HashMap<>();
 
-                    Edge e = new Edge(
-                        _id_,
-                        _label_,
-                        Graph.getGraph().getNode(_from_),
-                        Graph.getGraph().getNode(_to_)
-                    );
+                        for (int j = 4; j < data.size() && j < schemaEdge.size(); j++) {
+                            properties.put(schemaEdge.get(j), data.get(j));
+                        }
 
-                    Graph.getGraph().insertEdge(e);
-                
-            }
+                        Edge e = new Edge(
+                            data.get(0),
+                            data.get(1),
+                            Graph.getGraph().getNode(data.get(2)),
+                            Graph.getGraph().getNode(data.get(3)),
+                            properties
+                        );
+
+                        Graph.getGraph().insertEdge(e);
+                    }
+                }
 
             Tools.clearConsole();
             Tools.showUsageArgsLoadedCustomGraph(nodesFile, edgesFile);
@@ -249,6 +255,23 @@ public final class Tools {
         Matcher matcher = pattern.matcher(evaluation);
     
         return matcher.find() ? matcher.group() : "null";
+    }
+
+    public static void resetContext() {
+        Context.getInstance().setMaxPathsLength(10);
+        Context.getInstance().setMaxRecursion(4);
+        Context.getInstance().setTotalPathsObtained(0);
+        Context.getInstance().setSemantic(2);
+        Context.getInstance().setLimit(Integer.MAX_VALUE);
+        Context.getInstance().setTotalPathsToShow(Integer.MAX_VALUE);
+
+        Context.getInstance().setLeftVarName("");
+        Context.getInstance().setRightVarName("");
+        Context.getInstance().setPathsName("");
+        Context.getInstance().setCondition(null);
+        Context.getInstance().setRegularExpression(null);
+        Context.getInstance().setCompleteQuery("");
+        Context.getInstance().setReturnedVariables(new ArrayList<>());
     }
 
     @SuppressWarnings("unchecked")
