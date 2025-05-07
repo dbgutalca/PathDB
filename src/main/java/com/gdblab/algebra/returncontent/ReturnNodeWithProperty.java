@@ -15,11 +15,8 @@ public class ReturnNodeWithProperty extends ReturnContent {
 
     @Override
     public String getContent(Path p) {
-        if (nodePos < 0 || nodePos > p.getNodesAmount()) return "";
-        if (p.getNodeAt(nodePos).getProperties().containsKey(propertyName)) {
-            return p.getNodeAt(nodePos).getProperty(propertyName);
-        }
-        // MAYBE THROW AN EXCEPTION OF PROPERTY NOT EXISTS
+        if (this.nodePos == -2) return p.last().getProperty(propertyName).toString();
+        if (nodePos < p.getNodesAmount() && nodePos >= 0) return p.getNodeAt(nodePos).getProperty(propertyName).toString();
         return "";
     }
     
