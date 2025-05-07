@@ -2,6 +2,7 @@ package com.gdblab.algebra.parser;
 
 import com.gdblab.algebra.condition.And;
 import com.gdblab.algebra.condition.Condition;
+import com.gdblab.algebra.condition.Edge;
 import com.gdblab.algebra.condition.First;
 import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.condition.Last;
@@ -12,10 +13,7 @@ import com.gdblab.algebra.parser.error.ErrorDetails;
 import com.gdblab.algebra.parser.error.PropertyNotFoundException;
 import com.gdblab.algebra.parser.error.VariableNotFoundException;
 import com.gdblab.algebra.parser.impl.*;
-import com.gdblab.algebra.returncontent.ReturnContent;
-import com.gdblab.algebra.returncontent.ReturnNode;
-import com.gdblab.algebra.returncontent.ReturnVariable;
-import com.gdblab.algebra.returncontent.ReturnVariableWithProperty;
+import com.gdblab.algebra.returncontent.*;
 import com.gdblab.execution.Context;
 import com.gdblab.execution.Tools;
 import com.gdlab.parser.RPQGrammarBaseListener;
@@ -122,14 +120,20 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
         this.returnContent.add(new ReturnNode(1, ctx.getText()));
     }
 
-    @Override public void exitReturnFirstWithProperty(final RPQGrammarParser.ReturnFirstWithPropertyContext ctx) {}
+    @Override public void exitReturnFirstWithProperty(final RPQGrammarParser.ReturnFirstWithPropertyContext ctx) {
+        String[] data = ctx.getText().split("\\.");
+        String propertyName = data[1];
+        this.returnContent.add(new ReturnNodeWithProperty(1, propertyName, ctx.getText()));
+    }
 
     @Override public void exitReturnLast(final RPQGrammarParser.ReturnLastContext ctx) {
         this.returnContent.add(new ReturnNode(-1, ctx.getText()));
     }
 
     @Override public void exitReturnLastWithProperty(final RPQGrammarParser.ReturnLastWithPropertyContext ctx) {
-        System.out.println("exitReturnLastWithProperty: " + ctx.getText());
+        String[] data = ctx.getText().split("\\.");
+        String propertyName = data[1];
+        this.returnContent.add(new ReturnNodeWithProperty(-1, propertyName, ctx.getText()));
     }
 
     @Override public void exitReturnNode(final RPQGrammarParser.ReturnNodeContext ctx) {
@@ -138,25 +142,33 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     }
 
     @Override public void exitReturnNodeWithProperty(final RPQGrammarParser.ReturnNodeWithPropertyContext ctx) {
-        System.out.println("exitReturnNodeWithProperty: " + ctx.getText());
+        String[] data = ctx.getText().split("\\.");
+        String propertyName = data[1];
+        int pos = Integer.parseInt(data[0].substring(5, data[0].length() - 1));
+        this.returnContent.add(new ReturnNodeWithProperty(pos, propertyName, ctx.getText()));
     }
 
     @Override public void exitReturnEdge(final RPQGrammarParser.ReturnEdgeContext ctx) {
-        System.out.println("exitReturnEdge: " + ctx.getText());
+        int pos = Integer.parseInt(ctx.getText().substring(5, ctx.getText().length() - 1));
+        this.returnContent.add(new ReturnEdge(pos, ctx.getText()));
     }
 
     @Override public void exitReturnEdgeWithProperty(final RPQGrammarParser.ReturnEdgeWithPropertyContext ctx) {
-        System.out.println("exitReturnEdgeWithProperty: " + ctx.getText());
+        String[] data = ctx.getText().split("\\.");
+        String propertyName = data[1];
+        int pos = Integer.parseInt(data[0].substring(5, data[0].length() - 1));
+        this.returnContent.add(new ReturnEdgeWithProperty(pos, propertyName, ctx.getText()));
     }
 
     @Override public void exitReturnLabelNode(final RPQGrammarParser.ReturnLabelNodeContext ctx) {
-        System.out.println("exitReturnLabelNode: " + ctx.getText());
+        int pos = Integer.parseInt(ctx.getText().substring(11, ctx.getText().length() - 2));
+        this.returnContent.add(new ReturnLabelNode(pos, ctx.getText()));
     }
 
     @Override public void exitReturnLabelEdge(final RPQGrammarParser.ReturnLabelEdgeContext ctx) {
-        System.out.println("exitReturnLabelEdge: " + ctx.getText());
+        int pos = Integer.parseInt(ctx.getText().substring(11, ctx.getText().length() - 2));
+        this.returnContent.add(new ReturnLabelEdge(pos, ctx.getText()));
     }
-
 
 
 
@@ -241,6 +253,11 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
             int pos = Integer.parseInt(function.substring(5, function.length() - 1));
             Node node = new Node(propertyToFind, condition, valueToFind, pos);
             this.conditionalStack.push(node);
+        }
+        else if (function.startsWith("EDGE(")) {
+            int pos = Integer.parseInt(function.substring(5, function.length() - 1));
+            Edge edge = new Edge(propertyToFind, condition, valueToFind, pos);
+            this.conditionalStack.push(edge);
         }
         else if (function.startsWith("LABEL(NODE(")) {
             int pos = Integer.parseInt(function.substring(11, function.length() - 2));
