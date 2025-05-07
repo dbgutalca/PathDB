@@ -4,18 +4,6 @@ import com.gdblab.execution.Execute;
 
 public class Main {
 
-    // MATCH p = (x)-[Knows]->(y) WHERE FIRST().name = "Bart" RETURN x.name;
-
-    // RETURN
-    //     FIRST()
-    //     FIRST().PROP
-    //     LAST()
-    //     LAST().PROP
-    //     NODE(#)
-    //     NODE(#).PROP
-    //     EDGE(#)
-    //     EDGE(#).PROP
-
     public static void main(String[] args) {
 
         if (args.length == 4) {
