@@ -66,6 +66,7 @@ public final class Execute {
         System.out.println("\nTotal paths: " + (counter - 1) + " paths");
         System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
         System.out.println("");
+        Tools.resetContext();
     }
 
     public static void interactive(String[] args) {
