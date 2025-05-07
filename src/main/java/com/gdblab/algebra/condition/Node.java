@@ -10,7 +10,7 @@ import com.gdblab.graph.schema.Path;
  *
  * @author ramhg
  */
-public class Node  extends Condition{
+public class Node  extends Condition {
     
     public String prop;
     public String condition;
@@ -21,7 +21,7 @@ public class Node  extends Condition{
         this.prop = prop;
         this.condition = condition;
         this.value = value;
-        this.pos = pos;
+        this.pos = pos - 1;
     }
     
 
@@ -32,7 +32,7 @@ public class Node  extends Condition{
             com.gdblab.graph.schema.Node node = p.getNodeAt(this.pos);
 
             if (node == null) return false;
-            if (node.getProperties().containsKey(this.prop)) return false;
+            if (!node.getProperties().containsKey(this.prop)) return false;
 
             Float value_1 = null;
             Float value_2 = null;
