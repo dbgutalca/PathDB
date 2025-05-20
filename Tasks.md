@@ -10,6 +10,6 @@
 - [x] Condicionales del where estan listas y se construyen completas.
 
 #### TO DO
-- [ ] Falta agregar el Return como tabla con los datos
-- [ ] Falta revisar las variables entregadas por el return para que existan.
+- [x] Falta agregar el Return como tabla con los datos
+- [x] Falta revisar las variables entregadas por el return para que existan.
 - [x] Agregar el .length para los paths y usarlo en el where.
