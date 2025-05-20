@@ -35,13 +35,13 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     
     boolean finished = false;
 
+    //#region Query
     @Override public void exitQuery(final RPQGrammarParser.QueryContext ctx) {
         finished = true;
     }
+    //#endregion Query
 
-
-
-    
+    //#region Regular Expression
     @Override public void exitRegularExpressionRule(final RPQGrammarParser.RegularExpressionRuleContext ctx) {
         try { this.regularExpressionRoot = this.regularExpressionStack.pop(); }
         catch (EmptyStackException ese) { this.regularExpressionRoot = null; }
@@ -85,9 +85,9 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     @Override public void exitPlus(final RPQGrammarParser.PlusContext ctx) {
         regularExpressionStack.push(new OneOrMoreExpression(regularExpressionStack.pop()));
     }
+    //#endregion Regular Expression
 
-
-
+    //#region Limit & Range
     @Override public void exitRangeRecursive(final RPQGrammarParser.RangeRecursiveContext ctx) {
         String range = ctx.getText().substring(3, ctx.getText().length() - 1);
         int rangeValue = Integer.parseInt(range);
@@ -99,8 +99,9 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
         int limitValue = Integer.parseInt(limit);
         Context.getInstance().setLimit(limitValue);
     }
-    
+    //#endregion Limit & Range
 
+    //#region Returns
     @Override public void exitReturnStatement(final RPQGrammarParser.ReturnStatementContext ctx) {
         Context.getInstance().setReturnedVariables(this.returnContent);
     }
@@ -170,8 +171,16 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
         this.returnContent.add(new ReturnLabelEdge(pos, ctx.getText()));
     }
 
+    @Override public void exitReturnLabelFirst(final RPQGrammarParser.ReturnLabelFirstContext ctx) {
+        this.returnContent.add(new ReturnLabelNode(1, ctx.getText()));
+    }
 
+    @Override public void exitReturnLabelLast(final RPQGrammarParser.ReturnLabelLastContext ctx) {
+        this.returnContent.add(new ReturnLabelNode(-1, ctx.getText()));
+    }
+    //#endregion Returns
 
+    //#region Conditions
     @Override public void exitConditionalExpression(final RPQGrammarParser.ConditionalExpressionContext ctx) {
         try { this.conditionRoot = this.conditionalStack.pop(); }
         catch (EmptyStackException ese) { this.conditionRoot = null; }
@@ -269,14 +278,22 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
             Label label = new Label(valueToFind, "edge", pos - 1);
             this.conditionalStack.push(label);
         }
+        else if (function.startsWith("LABEL(FIRST())")) {
+            Label label = new Label(valueToFind, "node", 0);
+            this.conditionalStack.push(label);
+        }
+        else if (function.startsWith("LABEL(LAST())")) {
+            Label label = new Label(valueToFind, "node", -1);
+            this.conditionalStack.push(label);
+        }
         else {
             ErrorDetails ed = new ErrorDetails(0, function, "Function " + function +" not found.");
             throw new VariableNotFoundException(ed);
         }
     }
+    //#endregion Conditions
 
-
-
+    //#region Restrictors & Variables
     @Override public void exitRestrictorsStatement(final RPQGrammarParser.RestrictorsStatementContext ctx) {
         switch (ctx.getText()) {
             case "WALK":
@@ -309,5 +326,6 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
             Context.getInstance().setRightVarName(ctx.getText().substring(1, ctx.getText().length() - 1));
         }
     }
-    
+    //#endregion Restrictors & Variables
+
 }

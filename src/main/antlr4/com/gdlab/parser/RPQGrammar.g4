@@ -17,6 +17,8 @@ returnOption: variable # returnVariable
         | 'EDGE(' unsignedInteger ').' property # returnEdgeWithProperty
         | 'LABEL(NODE(' unsignedInteger '))' # returnLabelNode
         | 'LABEL(EDGE(' unsignedInteger '))' # returnLabelEdge
+        | 'LABEL(FIRST())' # returnLabelFirst
+        | 'LABEL(LAST())' # returnLabelLast
         ;
 
 limitStatement: 'LIMIT' unsignedInteger;
@@ -46,6 +48,8 @@ conditionalsFunction: 'FIRST().' property ( comparisonString | comparisonNumber)
         | 'EDGE(' unsignedInteger ').' property ( comparisonString | comparisonNumber)
         | 'LABEL(NODE(' unsignedInteger '))' comparisonString
         | 'LABEL(EDGE(' unsignedInteger '))' comparisonString
+        | 'LABEL(FIRST())' comparisonString
+        | 'LABEL(LAST())' comparisonString
         ;
 
 variable: id;

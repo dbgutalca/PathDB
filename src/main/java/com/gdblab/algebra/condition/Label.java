@@ -29,8 +29,15 @@ public class Label extends Condition{
         switch (this.type) {
             case "node":
                 if (p.getNodeSequence().size() <= this.pos) return false;
-                Node n = p.getNodeAt(this.pos); if (n == null) return false;
+                Node n = null;
+                
+                if (this.pos == -1) n = p.last();
+                else n = p.getNodeAt(this.pos);
+
+                if (n == null) return false;
+
                 return n.getLabel().equals(this.label);
+
             case "edge":
                 if (p.getEdgeSequence().size() <= this.pos) return false;
                 Edge e = p.getEdgeAt(this.pos); if (e == null) return false;

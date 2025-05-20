@@ -211,7 +211,7 @@ public final class Execute {
                     System.out.println("Samples: ");
                     ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
                     for (Edge e : edges) {
-                    System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
+                        System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
                     }
                     System.out.println("\n");
                     continue;

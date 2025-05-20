@@ -89,6 +89,7 @@ public final class Tools {
                 }
 
             }
+
         } catch (Exception e) {
             Tools.clearConsole();
             Tools.showUsageArgsErrorLoadingGraph(nodesFile, edgesFile);
@@ -102,28 +103,28 @@ public final class Tools {
             ArrayList<String> schemaEdge = new ArrayList<>();
             while ((line = br.readLine()) != null) {
 
-                    if (line.startsWith("@")) {
-                        schemaEdge = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                    }
-                    else {
-                        ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                        HashMap<String, String> properties = new HashMap<>();
-
-                        for (int j = 4; j < data.size() && j < schemaEdge.size(); j++) {
-                            properties.put(schemaEdge.get(j), data.get(j));
-                        }
-
-                        Edge e = new Edge(
-                            data.get(0),
-                            data.get(1),
-                            Graph.getGraph().getNode(data.get(2)),
-                            Graph.getGraph().getNode(data.get(3)),
-                            properties
-                        );
-
-                        Graph.getGraph().insertEdge(e);
-                    }
+                if (line.startsWith("@")) {
+                    schemaEdge = new ArrayList<>(Arrays.asList(line.split("\\|")));
                 }
+                else {
+                    ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                    HashMap<String, String> properties = new HashMap<>();
+
+                    for (int j = 4; j < data.size() && j < schemaEdge.size(); j++) {
+                        properties.put(schemaEdge.get(j), data.get(j));
+                    }
+
+                    Edge e = new Edge(
+                        data.get(0),
+                        data.get(1),
+                        Graph.getGraph().getNode(data.get(3)),
+                        Graph.getGraph().getNode(data.get(4)),
+                        properties
+                    );
+
+                    Graph.getGraph().insertEdge(e);
+                }
+            }
 
             Tools.clearConsole();
             Tools.showUsageArgsLoadedCustomGraph(nodesFile, edgesFile);
