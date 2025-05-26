@@ -291,7 +291,7 @@ public final class Execute {
                     String[] parts = line.split(" ");
                     if (parts.length != 2) {
                         // clearConsole();
-                        System.out.println("Invalid command. Use /m # to select a method.\n");
+                        System.out.println("Invalid command. Use /me # to select a method.\n");
                         continue;
                     }
                     try {

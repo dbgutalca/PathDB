@@ -42,8 +42,8 @@ public class DFSAutomaton implements Algorithm {
         this.matcher = new RegexMatcher(regex);
         this.fixPoint = 3;
 
-        this.ns = Context.getInstance().getStartNode();
-        this.ne = Context.getInstance().getEndNode();
+        this.ns = Context.getInstance().getStartNodeID();
+        this.ne = Context.getInstance().getEndNodeID();
 
         this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
@@ -56,8 +56,8 @@ public class DFSAutomaton implements Algorithm {
         this.matcher = new RegexMatcher(regex);
         this.fixPoint = 10;
 
-        this.ns = Context.getInstance().getStartNode();
-        this.ne = Context.getInstance().getEndNode();
+        this.ns = Context.getInstance().getStartNodeID();
+        this.ne = Context.getInstance().getEndNodeID();
 
         this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
         this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
@@ -232,13 +232,13 @@ public class DFSAutomaton implements Algorithm {
             while (it.hasNext()) {
                 Node node = it.next();
 
-                if (!Context.getInstance().getStartNode().equals("") &&
-                    !Context.getInstance().getStartNode().equals(node.getId())) {
+                if (!Context.getInstance().getStartNodeID().equals("") &&
+                    !Context.getInstance().getStartNodeID().equals(node.getId())) {
                     continue;
                 }
 
-                if (!Context.getInstance().getEndNode().equals("") &&
-                    !Context.getInstance().getEndNode().equals(node.getId())) {
+                if (!Context.getInstance().getEndNodeID().equals("") &&
+                    !Context.getInstance().getEndNodeID().equals(node.getId())) {
                     continue;
                 }
 

@@ -9,8 +9,10 @@ public final class Context {
     private Integer fixPoint;
     private Integer maxRecursion;
     
+    private String startNodeID;
     private String startNodeProp;
     private String startNodeValue;
+    private String endNodeID;
     private String endNodeProp;
     private String endNodeValue;
 
@@ -32,12 +34,14 @@ public final class Context {
     private Integer maxPaths;
 
     private Context() {
-        method = 1;
+        method = 2;
         fixPoint = 10;
         maxRecursion = 6;
 
+        startNodeID = "";
         startNodeProp = "";
         startNodeValue = "";
+        endNodeID = "";
         endNodeProp = "";
         endNodeValue = "";
 
@@ -49,7 +53,7 @@ public final class Context {
         isExperimental = false;
         resultFilename = "";
         optimize = true;
-        semantic = 2;
+        semantic = 1;
         timeoutDuration = 2;
         timeoutTimeUnit = TimeUnit.MINUTES;
         showPaths = 10;
@@ -91,6 +95,14 @@ public final class Context {
         return maxRecursion;
     }
 
+    public void setStartNodeID(String startNodeID) {
+        this.startNodeID = startNodeID;
+    }
+
+    public String getStartNodeID() {
+        return startNodeID;
+    }
+
     public void setStartNodeProp(String startNodeProp) {
         this.startNodeProp = startNodeProp;
     }
@@ -105,6 +117,14 @@ public final class Context {
 
     public String getStartNodeValue() {
         return startNodeValue;
+    }
+
+    public void setEndNodeID(String endNodeID) {
+        this.endNodeID = endNodeID;
+    }
+
+    public String getEndNodeID() {
+        return endNodeID;
     }
 
     public void setEndNodeProp(String endNodeProp) {
