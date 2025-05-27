@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
-import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.algorithm.automata.RegexMatcher;
 import com.gdblab.algorithm.versions.utils.Algorithm;
 import com.gdblab.algorithm.versions.utils.PathWithGOCount;
@@ -23,77 +22,63 @@ import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 
 public class BFSAutomaton implements Algorithm {
-
-    private List<Node> nodes;
-    private List<Edge> edges;
-
-    private String ns;
-    private String ne;
-
     private RegexMatcher matcher;
-
-    final private Integer fixPoint;
-
-    private int counter = 1;
-
-    private boolean isExperimental;
-
-    private Writer writer;
-
-    public BFSAutomaton(String regex, Writer writer) {
-        this.matcher = new RegexMatcher(regex);
-
-        this.ns = Context.getInstance().getStartNodeID();
-        this.ne = Context.getInstance().getEndNodeID();
-
-        this.fixPoint = 3;
-
-        this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
-        this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
-
-        this.isExperimental = Context.getInstance().isExperimental();
-        this.writer = writer;
-    }
+    private int limit;
+    private int maxAppearances;
+    private int counter;
 
     public BFSAutomaton(String regex) {
         this.matcher = new RegexMatcher(regex);
-
-        this.ns = Context.getInstance().getStartNodeID();
-        this.ne = Context.getInstance().getEndNodeID();
-
-        this.fixPoint = 3;
-
-        this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
-        this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
-
-        this.isExperimental = Context.getInstance().isExperimental();
-        this.writer = null;
+        this.limit = Context.getInstance().getLimit();
+        this.maxAppearances = Context.getInstance().getMaxRecursion();
+        this.counter = 0;
     }
 
     @Override
-    public void Arbitrary() {
-        Iterator<Node> nodes = this.nodes.iterator();
+    public void execute() {
+        checkZeroPaths();
+        Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
 
-        while (nodes.hasNext()) {
-            Node node = nodes.next();
-            ArbitraryUtils(node);
+        Integer semantic = Context.getInstance().getSemantic();
+        switch (semantic) {
+            case 1:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    walk(node);
+                }
+                break;
+            case 2:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    trail(node);
+                }
+                break;
+            case 3:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    simple(node);
+                }
+                break;
+            case 4:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    acyclic(node);
+                }
+                break;
         }
     }
 
-    private void ArbitraryUtils(Node node) {
+    private void walk(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
-        Iterator<Edge> edgeIt = edges.iterator();
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (edgeIt.hasNext()) {
-            Edge e = edgeIt.next();
-
-            if (e.getSource().getId().equals(node.getId())) {
-                Path p = new Path("", e);
-                Map<String, Integer> visitCountMap = new HashMap<>();
-                visitCountMap.put(e.getId(), 1);
-                queue.add(new PathWithGOCount(p, visitCountMap));
-            }
+        while (neighbours.hasNext()) {
+            Edge e = neighbours.next();
+            Path p = new Path("", e);
+            Map<String, Integer> visitCountMap = new HashMap<>();
+            visitCountMap.put(e.getId(), 1);
+            queue.add(new PathWithGOCount(p, visitCountMap));
         }
 
         while (!queue.isEmpty()) {
@@ -109,12 +94,12 @@ public class BFSAutomaton implements Algorithm {
                 continue;
             }
 
-            edgeIt = edges.iterator();
+            neighbours = Graph.getGraph().getNeighbours(currentPath.last().getId()).iterator();
 
-            while (edgeIt.hasNext()) {
-                Edge e = edgeIt.next();
+            while (neighbours.hasNext()) {
+                Edge e = neighbours.next();
 
-                if ( currentPath.last().getId().equals(e.getSource().getId()) && currentVisitCount.getOrDefault(e.getId(), 0) < this.fixPoint ) {
+                if ( currentVisitCount.getOrDefault(e.getId(), 0) <= this.maxAppearances ) {
                     Path p = new Path("", currentPath.getEdgeSequence());
                     p.insertEdge(e);
                     Map<String, Integer> visitCountMap = new HashMap<>(currentVisitCount);
@@ -125,32 +110,13 @@ public class BFSAutomaton implements Algorithm {
         }
     }
 
-    @Override
-    public void Trail() {
-        checkZeroPaths();
-        
-        if (ns.equals("")) {
-            Iterator<Node> nodes = this.nodes.iterator();
-            while ( nodes.hasNext()) {
-                Node node = nodes.next();
-                TrailUtils(node);
-            }
-        }
-        else {
-            this.nodes.stream().filter(node -> node.getId().equals(ns)).findFirst().ifPresent(node -> {
-                TrailUtils(node);
-            });
-        }
-    }
-
-    private void TrailUtils(Node node) {
+    private void trail(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
-        Iterator<Edge> edgeIt = Graph.getGraph().getNeighbours(node.getId()).iterator();
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (edgeIt.hasNext()) {
-            Edge e = edgeIt.next();
-
+        while (neighbours.hasNext()) {
+            Edge e = neighbours.next();
             Path p = new Path("", e);
             Map<String, Integer> visitCountMap = new HashMap<>();
             visitCountMap.put(e.getId(), 1);
@@ -163,36 +129,17 @@ public class BFSAutomaton implements Algorithm {
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
 
             if (this.matcher.match(currentPath.getStringEdgeSequenceAscii()) == "Accepted") {
-                if (this.ne.equals("")) {
-                    if (isExperimental) {
-                        this.printPath(currentPath);
-                        // this.writePath(currentPath);
-                    }
-                    else {
-                        this.printPath(currentPath);
-                    }
-                }
-                else {
-                    if (currentPath.last().getId().equals(this.ne)) {
-                        if (isExperimental) {
-                            this.printPath(currentPath);
-                            // this.writePath(currentPath);
-                        }
-                        else {
-                            this.printPath(currentPath);
-                        }
-                    }
-                }
+                this.printPath(currentPath);
             }
 
             else if (this.matcher.match(currentPath.getStringEdgeSequenceAscii()) == "Rejected") {
                 continue;
             }
 
-            edgeIt = Graph.getGraph().getNeighbours(currentPath.last().getId()).iterator();
+            neighbours = Graph.getGraph().getNeighbours(currentPath.last().getId()).iterator();
 
-            while (edgeIt.hasNext()) {
-                Edge e = edgeIt.next();
+            while (neighbours.hasNext()) {
+                Edge e = neighbours.next();
 
                 if ( currentVisitCount.getOrDefault(e.getId(), 0) < 1 ) {
                     Path p = new Path("", currentPath.getEdgeSequence());
@@ -205,30 +152,17 @@ public class BFSAutomaton implements Algorithm {
         }
     }
 
-    @Override
-    public void Simple() {
-        Iterator<Node> nodes = this.nodes.iterator();
-
-        while (nodes.hasNext()) {
-            Node node = nodes.next();
-            SimpleUtils(node);
-        }
-    }
-
-    private void SimpleUtils(Node node) {
+    private void simple(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
-        Iterator<Edge> edgeIt = edges.iterator();
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (edgeIt.hasNext()) {
-            Edge e = edgeIt.next();
-
-            if (e.getSource().getId().equals(node.getId()) && !e.getSource().getId().equals(e.getTarget().getId())) {
-                Path p = new Path("", e);
-                Map<String, Integer> visitCountMap = new HashMap<>();
-                visitCountMap.put(e.getId(), 1);
-                queue.add(new PathWithGOCount(p, visitCountMap));
-            }
+        while (neighbours.hasNext()) {
+            Edge e = neighbours.next();
+            Path p = new Path("", e);
+            Map<String, Integer> visitCountMap = new HashMap<>();
+            visitCountMap.put(e.getTarget().getId(), 1);
+            queue.add(new PathWithGOCount(p, visitCountMap));
         }
 
         while (!queue.isEmpty()) {
@@ -244,12 +178,54 @@ public class BFSAutomaton implements Algorithm {
                 continue;
             }
 
-            edgeIt = edges.iterator();
+            neighbours = Graph.getGraph().getNeighbours(currentPath.last().getId()).iterator();
 
-            while (edgeIt.hasNext()) {
-                Edge e = edgeIt.next();
+            while (neighbours.hasNext()) {
+                Edge e = neighbours.next();
 
-                if ( currentPath.last().getId().equals(e.getSource().getId()) && currentVisitCount.getOrDefault(e.getId(), 0) < 1 ) {
+                if ( currentVisitCount.getOrDefault(e.getTarget().getId(), 0) < 1 ) {
+                    Path p = new Path("", currentPath.getEdgeSequence());
+                    p.insertEdge(e);
+                    Map<String, Integer> visitCountMap = new HashMap<>(currentVisitCount);
+                    visitCountMap.put(e.getId(), visitCountMap.getOrDefault(e.getId(), 0) + 1);
+                    queue.add(new PathWithGOCount(p, visitCountMap));
+                }
+            }
+        }
+    }
+
+    private void acyclic(Node node) {
+        Queue<PathWithGOCount> queue = new LinkedList<>();
+
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
+
+        while (neighbours.hasNext()) {
+            Edge e = neighbours.next();
+            Path p = new Path("", e);
+            Map<String, Integer> visitCountMap = new HashMap<>();
+            visitCountMap.put(e.getTarget().getId(), 1);
+            queue.add(new PathWithGOCount(p, visitCountMap));
+        }
+
+        while (!queue.isEmpty()) {
+            PathWithGOCount current = queue.poll();
+            Path currentPath = current.getPath();
+            Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
+
+            if (this.matcher.match(currentPath.getStringEdgeSequence()) == "Accepted" && !currentPath.first().equals(currentPath.last())) {
+                printPath(currentPath);
+            }
+
+            else if (this.matcher.match(currentPath.getStringEdgeSequence()) == "Rejected") {
+                continue;
+            }
+
+            neighbours = Graph.getGraph().getNeighbours(currentPath.last().getId()).iterator();
+
+            while (neighbours.hasNext()) {
+                Edge e = neighbours.next();
+
+                if ( currentVisitCount.getOrDefault(e.getTarget().getId(), 0) < 1 ) {
                     Path p = new Path("", currentPath.getEdgeSequence());
                     p.insertEdge(e);
                     Map<String, Integer> visitCountMap = new HashMap<>(currentVisitCount);
@@ -263,31 +239,13 @@ public class BFSAutomaton implements Algorithm {
     @Override
     public void checkZeroPaths() {
         if (this.matcher.match("") == "Accepted") {
-            Iterator<Node> it = nodes.iterator();
+            Iterator<Node> it = Graph.getGraph().getNodeIterator();
 
             while (it.hasNext()) {
                 Node node = it.next();
-
-                if (!Context.getInstance().getStartNodeID().equals("") &&
-                    !Context.getInstance().getStartNodeID().equals(node.getId())) {
-                    continue;
-                }
-
-                if (!Context.getInstance().getEndNodeID().equals("") &&
-                    !Context.getInstance().getEndNodeID().equals(node.getId())) {
-                    continue;
-                }
-
                 Path path = new Path("");
                 path.insertNode(node);
-                
-                if (isExperimental) {
-                    // this.writePath(path);
-                    this.printPath(path);
-                }
-                else {
-                    this.printPath(path);
-                }
+                this.printPath(path);
             }
         }
     }
@@ -295,8 +253,8 @@ public class BFSAutomaton implements Algorithm {
     @Override
     public void printPath(Path p) {
 
-        if (this.counter <= 100) {
-            System.out.print("Path #" + counter + " - ");
+        if (this.counter < this.limit) {
+            System.out.print("Path #" + counter + 1 + " - ");
             for (GraphObject go : p.getSequence()) {
                 if (go instanceof Edge) {
                     System.out.print(go.getId() + "(" + go.getLabel() + ") ");
@@ -306,39 +264,14 @@ public class BFSAutomaton implements Algorithm {
                 }
             }
             System.out.println();
-        }
-        
-        // if (this.counter == 11) {
-        //     System.out.println("...");
-
-        // }
+        }    
 
         counter++;
     }
 
     @Override
-    public void writePath(Path p) {
-        try {
-            this.writer.write("Path #" + counter + " - ");
-            for (GraphObject go : p.getSequence()) {
-                if (go instanceof Edge) {
-                    this.writer.write(go.getId() + "(" + go.getLabel() + ") ");
-                }
-                else {
-                    this.writer.write(go.getId() + " ");
-                }
-            }
-            this.writer.write("\n");
-
-        } catch (Exception e) {
-        } finally {
-            counter++;
-        }
-    }
-
-    @Override
     public int getTotalPaths() {
-        return counter - 1;
+        return counter;
     }
     
 }

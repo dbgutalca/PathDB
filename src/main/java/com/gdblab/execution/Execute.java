@@ -14,18 +14,8 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
-import com.gdblab.algebra.condition.First;
-import com.gdblab.algebra.condition.Last;
-import com.gdblab.algebra.parser.RPQExpression;
-import com.gdblab.algebra.parser.RPQGrammarListener;
-import com.gdblab.algebra.parser.impl.RPQtoAlgebraVisitor;
-import com.gdblab.algebra.queryplan.logical.LogicalOperator;
-import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
-import com.gdblab.algebra.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
-import com.gdblab.algebra.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
-import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
-import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.algorithm.translator.RPQtoER;
+import com.gdblab.algorithm.utils.Time;
 import com.gdblab.algorithm.versions.v1.BFSRegex;
 import com.gdblab.algorithm.versions.v1.DFSRegex;
 import com.gdblab.algorithm.versions.v2.BFSAutomaton;
@@ -39,216 +29,22 @@ public final class Execute {
 
     private static final String prefix = "/";
 
-    public static void EvalRPQWithAlgebra(){
-
-        boolean isExperimental = Context.getInstance().isExperimental();
-
-        long start = System.nanoTime();
-
-        int counter = 1;        
-
-        RPQGrammarLexer lexer = new RPQGrammarLexer(CharStreams.fromString(Context.getInstance().getRPQ()));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        RPQGrammarParser parser = new RPQGrammarParser(tokens);
-        ParseTreeWalker walker = new ParseTreeWalker();
-        RPQGrammarListener listener = new RPQGrammarListener();
-        walker.walk(listener, parser.query());
-
-        RPQExpression rpqExp = listener.getRoot();
-        RPQtoAlgebraVisitor visitor = new RPQtoAlgebraVisitor();
-        rpqExp.acceptVisit(visitor);
-
-        LogicalOperator lo = visitor.getRoot();
-
-        if ( !Context.getInstance().getStartNodeProp().equalsIgnoreCase("") ) {
-            lo = filterOnTopLeft(lo);
-
-            if (Context.getInstance().isOptimize()) {
-                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-                lo.acceptVisitor(v);
-                lo = v.getRoot();
-            }
-        }
-
-        if ( !Context.getInstance().getEndNodeProp().equalsIgnoreCase("") ) {
-            lo = filterOnTopRight(lo);
-
-            if (Context.getInstance().isOptimize() && Context.getInstance().getStartNodeProp().equalsIgnoreCase("")) {
-                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-                lo.acceptVisitor(v);
-                lo = v.getRoot();
-            }
-        }
-
-        LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
-        lo.acceptVisitor(visitor2);
-        PhysicalOperator po = visitor2.getPhysicalPlan().getRootOperator();
-
-        if (isExperimental) {
-            Context.getInstance().setResultFilename("results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt");
-            Utils.writeAndCountPaths(po);
-            long end = System.nanoTime();
-            String time = Utils.getTime(start, end);
-            System.out.println("RPQ:" + Context.getInstance().getRPQ() + "##" + "Time:" + time + "##" + "Total:" + Context.getInstance().getTotalPaths());
-            // Utils.writeTotalAndTime();
-            // Utils.writeOnSummary();
-        }
-        else {
-            counter = Utils.printAndCountPaths(po);
-            long end = System.nanoTime();
-            System.out.println("\nTotal paths: " + (counter - 1) + " paths");
-            System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
-            System.out.println("");
-        }
-    }
-
+    
     public static void EvalRPQWithRegexDFS() {
         long start = System.nanoTime();
 
         String er = RPQtoER.Translate(Context.getInstance().getRPQ());
 
-        if (Context.getInstance().isExperimental()) {
-            // String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
-            // Context.getInstance().setResultFilename(filename);
-
-            // Writer writer = null;
-            
-            try {
-                // writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Context.getInstance().getResultFilename()), "utf-8"));
-                // Utils.writeConfig(writer);
-
-                DFSRegex dfsRegex = new DFSRegex(er);
-                dfsRegex.Trail();
-                // Context.getInstance().setTotalPaths(dfsRegex.getTotalPaths());
-
-                // writer.close();
-
-                long end = System.nanoTime();
-                String time = Utils.getTime(start, end);
-                System.out.println("RPQ:" + Context.getInstance().getRPQ() + "##" + "Time:" + time);
-                // Context.getInstance().setTime(Utils.getTime(start, end));
-                // Utils.writeTotalAndTime();
-            } catch (Exception e) {
-            }
-        }
-        else {
-            DFSRegex dfsRegex = new DFSRegex(er);
-            dfsRegex.Trail();
-            long end = System.nanoTime();
-            System.out.println("\nTotal paths: " + dfsRegex.getTotalPaths() + " paths");
-            System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
-            System.out.println("");
-        }
-    }
-
-    public static void EvalRPQWithRegexBFS() {
-        long start = System.nanoTime();
-
-        String er = RPQtoER.Translate(Context.getInstance().getRPQ());
-
-        if (Context.getInstance().isExperimental()) {
-            // String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
-            // Context.getInstance().setResultFilename(filename);
-
-            // Writer writer = null;
-
-            try {
-                // writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(Context.getInstance().getResultFilename()), "utf-8"));
-                // Utils.writeConfig(writer);
-
-                BFSRegex bfsRegex = new BFSRegex(er);
-                bfsRegex.Trail();
-                // Context.getInstance().setTotalPaths(bfsRegex.getTotalPaths());
-
-                // writer.close();
-
-                long end = System.nanoTime();
-                String time = Utils.getTime(start, end);
-                System.out.println("RPQ:" + Context.getInstance().getRPQ() + "##" + "Time:" + time);
-                // Context.getInstance().setTime(Utils.getTime(start, end));
-                // Utils.writeTotalAndTime();
-            } catch (Exception e) {}
-
-            
-        }
-        else {
-            BFSRegex bfsRegex = new BFSRegex(er);
-            bfsRegex.Trail();
-            long end = System.nanoTime();
-            System.out.println("\nTotal paths: " + bfsRegex.getTotalPaths() + " paths");
-            System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
-            System.out.println("");
-        }
-    }
-
-    public static void EvalRPQWithAutomatonDFS() {
-        // String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
-        // Context.getInstance().setResultFilename(filename);
-        
-        long start = System.nanoTime();
-        String er = RPQtoER.Translate(Context.getInstance().getRPQ());
-
-        DFSAutomaton dfsAutomaton = new DFSAutomaton(er);
-        dfsAutomaton.Trail();
-
-        long end = System.nanoTime();
-        String time = Utils.getTime(start, end);
-        System.out.println("RPQ:" + Context.getInstance().getRPQ() + "##" + "Time:" + time);
-
-
-
-        // try (FileWriter fw = new FileWriter("summary.txt", true)){
-        //     System.out.println("hola");
-        //     BufferedWriter bw = new BufferedWriter(fw);
-        //     bw.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
-        //     bw.write("Total: " + dfsAutomaton.getTotalPaths() + "\n");
-        //     bw.write("Time: " + total + " s\n");
-        //     bw.write("=====================================");
-        //     bw.close();
-        //     fw.close();
-            
-        // } catch (Exception e) {
-            
-        // }
-    }
-
-    public static void EvalRPQWithAutomatonBFS() {
-        String filename = "results_" + Context.getInstance().getRPQFileName() + "_" + Context.getInstance().getNumber() + ".txt";
-        Context.getInstance().setResultFilename(filename);
-
-        long start = System.nanoTime();
-        String er = RPQtoER.Translate(Context.getInstance().getRPQ());
-
-        BFSAutomaton bfsAutomaton = new BFSAutomaton(er);
-        bfsAutomaton.Trail();
-
+        DFSRegex dfsRegex = new DFSRegex(er);
+        dfsRegex.execute();
         
         long end = System.nanoTime();
-        String time = Utils.getTime(start, end);
-        System.out.println("RPQ:" + Context.getInstance().getRPQ() + "##" + "Time:" + time);
-
-        // try (FileWriter fw = new FileWriter("summary.txt", true)){
-        //     BufferedWriter bw = new BufferedWriter(fw);
-        //     bw.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
-        //     bw.write("Total: " + bfsAutomaton.getTotalPaths() + "\n");
-        //     bw.write("Time: " + total + " s\n");
-        //     bw.write("=====================================");
-        //     bw.close();
-        //     fw.close();
-            
-        // } catch (Exception e) {
-            
-        // }
-
+        System.out.println("\nTotal paths: " + dfsRegex.getTotalPaths() + " paths");
+        System.out.println("Execution time: " + Time.getTimeBetween(start, end) + " seconds");
+        System.out.println("");
     }
 
-    private static LogicalOperator filterOnTopLeft(LogicalOperator lo) {
-        return new LogicalOpSelection(lo, new First(Context.getInstance().getStartNodeProp(), Context.getInstance().getStartNodeValue()));
-    }
-
-    private static LogicalOperator filterOnTopRight(LogicalOperator lo) {
-        return new LogicalOpSelection(lo, new Last(Context.getInstance().getEndNodeProp(), Context.getInstance().getEndNodeValue()));
-    }
+    
 
     public static void interactive(String[] args) {
 

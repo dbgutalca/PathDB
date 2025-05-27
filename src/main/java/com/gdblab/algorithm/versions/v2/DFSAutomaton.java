@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.algorithm.automata.RegexMatcher;
 import com.gdblab.algorithm.versions.utils.Algorithm;
 import com.gdblab.execution.Context;
@@ -22,117 +21,88 @@ import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 
 public class DFSAutomaton implements Algorithm {
-    private List<Node> nodes;
-    private List<Edge> edges;
-
-    private String ns;
-    private String ne;
-
     private RegexMatcher matcher;
-
-    final private Integer fixPoint;
-
-    private int counter = 1;
-
-    private boolean isExperimental;
-
-    private Writer writer;
-
-    public DFSAutomaton(String regex, Writer writer) {
-        this.matcher = new RegexMatcher(regex);
-        this.fixPoint = 3;
-
-        this.ns = Context.getInstance().getStartNodeID();
-        this.ne = Context.getInstance().getEndNodeID();
-
-        this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
-        this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
-
-        this.isExperimental = Context.getInstance().isExperimental();
-        this.writer = writer;
-    }
+    private int limit;
+    private int maxAppearances;
+    private int counter;
 
     public DFSAutomaton(String regex) {
         this.matcher = new RegexMatcher(regex);
-        this.fixPoint = 10;
-
-        this.ns = Context.getInstance().getStartNodeID();
-        this.ne = Context.getInstance().getEndNodeID();
-
-        this.nodes = Utils.nodesIterToList(Graph.getGraph().getNodeIterator());
-        this.edges = Utils.edgesIterToList(Graph.getGraph().getEdgeIterator());
-
-        this.isExperimental = Context.getInstance().isExperimental();
-        this.writer = null;
+        this.limit = Context.getInstance().getLimit();
+        this.maxAppearances = Context.getInstance().getMaxRecursion();
+        this.counter = 0;
     }
 
     @Override
-    public void Arbitrary() {
-        Iterator<Node> nodes = this.nodes.iterator();
-
-        while (nodes.hasNext()) {
-            Map <String, Integer> visitCount = new HashMap<>();
-            Path iterPath = new Path("");
-            Node node = nodes.next();
-            ArbitraryUtils(node, visitCount, iterPath);
-        }
-        
+    public void execute() {
         checkZeroPaths();
+        Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
+        Path iterPath = new Path("");
+        Integer semantic = Context.getInstance().getSemantic();
+
+        switch (semantic) {
+            case 1:
+                Map<String, Integer> visitCount = new HashMap<>();
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    walk(node, visitCount, iterPath);
+                }
+                break;
+            case 2:
+                Set<String> visitedEdges = new HashSet<>();
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    trail(node, visitedEdges, iterPath);
+                }
+                break;
+            case 3:
+                Set<String> simpleVisitedNodes = new HashSet<>();
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    simple(node, simpleVisitedNodes, iterPath);
+                }
+                break;
+            case 4:
+                Set<String> acyclicVisitedNodes = new HashSet<>();
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    acyclicVisitedNodes.add(node.getId());
+                    // acyclic(node, acyclicVisitedNodes, iterPath);
+                    acyclicVisitedNodes.remove(node.getId());
+                }
+                break;
+        }
     }
 
-    private void ArbitraryUtils(Node node, Map<String, Integer> visitCount, Path iterPath) {
-        
-        visitCount.put(node.getId(), visitCount.getOrDefault(node.getId(), 0) + 1);
+    private void walk(Node node, Map<String, Integer> visitCount, Path iterPath) {
 
-        Iterator<Edge> edgeIt = edges.iterator();
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (edgeIt.hasNext()) {
-            Edge edge = edgeIt.next();
+        while (neighbours.hasNext()) {
+            Edge edge = neighbours.next();
 
-            if (edge.getSource().getId().equals(node.getId()) && visitCount.getOrDefault(edge.getTarget().getId(), 0) <= this.fixPoint) {
+            if (visitCount.getOrDefault(edge.getId(), 0) <= this.maxAppearances) {
                 iterPath.insertEdge(edge);
 
                 if ( this.matcher.match(iterPath.getStringEdgeSequence()) == "Accepted" ) {
                     Path newPath = new Path("");
                     newPath.setSequence(iterPath.getSequence());
                     printPath(newPath);
-                    ArbitraryUtils(edge.getTarget(), visitCount, iterPath);
+                    walk(edge.getTarget(), visitCount, iterPath);
                 }
 
                 else if ( this.matcher.match(iterPath.getStringEdgeSequence()) == "Substring") {
-                    ArbitraryUtils(edge.getTarget(), visitCount, iterPath);
+                    walk(edge.getTarget(), visitCount, iterPath);
                 }
                 
                 iterPath.pop();
             }
         }
 
-        visitCount.put(node.getId(), visitCount.getOrDefault(node.getId(), 0) - 1);
+        return;
     }
 
-    @Override
-    public void Trail() {
-        checkZeroPaths();
-        
-        if (ns.equals("")) {
-            Iterator<Node> nodes = this.nodes.iterator();
-            while (nodes.hasNext()) {
-                Node node = nodes.next();
-                Set<String> visitedEdges = new HashSet<>();
-                Path iterPath = new Path("");
-                TrailUtils(node, visitedEdges, iterPath);
-            }
-        }
-        else {
-            this.nodes.stream().filter(node -> node.getId().equals(ns)).findFirst().ifPresent(node -> {
-                Set<String> visitedEdges = new HashSet<>();
-                Path iterPath = new Path("");
-                TrailUtils(node, visitedEdges, iterPath);
-            });
-        }
-    }
-
-    private void TrailUtils(Node node, Set<String> visitedEdges, Path iterPath) {
+    private void trail(Node node, Set<String> visitedEdges, Path iterPath) {
 
         Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
@@ -146,31 +116,12 @@ public class DFSAutomaton implements Algorithm {
                 if ( this.matcher.match(iterPath.getStringEdgeSequenceAscii()) == "Accepted" ) {
                     Path newPath = new Path("");
                     newPath.setSequence(iterPath.getSequence());
-                    if (this.ne.equals("")) {
-                        if (isExperimental) {
-                            // this.writePath(newPath);
-                            this.printPath(newPath);
-                        }
-                        else {
-                            this.printPath(newPath);
-                        }
-                    }
-                    else {
-                        if (newPath.last().getId().equals(ne)) {
-                            if (isExperimental) {
-                                // this.writePath(newPath);    
-                                this.printPath(newPath);
-                            }
-                            else {
-                                this.printPath(newPath);
-                            }
-                        }
-                    }
-                    TrailUtils(edge.getTarget(), visitedEdges, iterPath);
+                    printPath(newPath);
+                    trail(edge.getTarget(), visitedEdges, iterPath);
                 }
                 
                 else if ( this.matcher.match(iterPath.getStringEdgeSequenceAscii()) == "Substring" ) {
-                    TrailUtils(edge.getTarget(), visitedEdges, iterPath);
+                    trail(edge.getTarget(), visitedEdges, iterPath);
                 }
 
                 iterPath.pop();
@@ -181,27 +132,13 @@ public class DFSAutomaton implements Algorithm {
         return;
     }
 
-    @Override
-    public void Simple() {
-        Iterator<Node> nodes = this.nodes.iterator();
-
-        while (nodes.hasNext()) {
-            Path iterPath = new Path("");
-            Node node = nodes.next();
-            Set<String> visitedNodes = new HashSet<>();
-            SimpleUtils(node, visitedNodes, iterPath);
-        }
-
-        checkZeroPaths();
-    }
-
-    private void SimpleUtils(Node node, Set<String> visitedNodes, Path iterPath) {
+    private void simple(Node node, Set<String> visitedNodes, Path iterPath) {
         visitedNodes.add(node.getId());
 
-        Iterator<Edge> edgeIt = edges.iterator();
+        Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (edgeIt.hasNext()) {
-            Edge edge = edgeIt.next();
+        while (neighbours.hasNext()) {
+            Edge edge = neighbours.next();
 
             if (edge.getSource().getId().equals(node.getId()) && !visitedNodes.contains(edge.getTarget().getId())) {
                 iterPath.insertEdge(edge);
@@ -210,11 +147,11 @@ public class DFSAutomaton implements Algorithm {
                     Path newPath = new Path("");
                     newPath.setSequence(iterPath.getSequence());
                     printPath(newPath);
-                    SimpleUtils(edge.getTarget(), visitedNodes, iterPath);
+                    simple(edge.getTarget(), visitedNodes, iterPath);
                 }
                 
                 else if ( this.matcher.match(iterPath.getStringEdgeSequence()) == "Substring" ) {
-                    SimpleUtils(edge.getTarget(), visitedNodes, iterPath);
+                    simple(edge.getTarget(), visitedNodes, iterPath);
                 }
 
                 iterPath.pop();
@@ -227,30 +164,13 @@ public class DFSAutomaton implements Algorithm {
     @Override
     public void checkZeroPaths() {
         if (this.matcher.match("") == "Accepted") {
-            Iterator<Node> it = nodes.iterator();
+            Iterator<Node> it = Graph.getGraph().getNodeIterator();
 
             while (it.hasNext()) {
                 Node node = it.next();
-
-                if (!Context.getInstance().getStartNodeID().equals("") &&
-                    !Context.getInstance().getStartNodeID().equals(node.getId())) {
-                    continue;
-                }
-
-                if (!Context.getInstance().getEndNodeID().equals("") &&
-                    !Context.getInstance().getEndNodeID().equals(node.getId())) {
-                    continue;
-                }
-
                 Path path = new Path("");
                 path.insertNode(node);
-                
-                if (isExperimental) {
-                    this.writePath(path);
-                }
-                else {
-                    this.printPath(path);
-                }
+                this.printPath(path);
             }
         }
     }
@@ -258,7 +178,7 @@ public class DFSAutomaton implements Algorithm {
     @Override
     public void printPath(Path p) {
 
-        if (this.counter <= 100) {
+        if (this.counter < this.limit) {
             System.out.print("Path #" + counter + " - ");
             for (GraphObject go : p.getSequence()) {
                 if (go instanceof Edge) {
@@ -271,23 +191,11 @@ public class DFSAutomaton implements Algorithm {
             System.out.println();
         }    
 
-        // if (this.counter == 11) {
-        //     System.out.println("...");
-
-        // }
-
         counter++;
     }
-
-     @Override
-    public void writePath(Path p) {
-        counter++;
-    }
-
     
     @Override
     public int getTotalPaths() {
-        return counter - 1;
+        return counter;
     }
-    
 }

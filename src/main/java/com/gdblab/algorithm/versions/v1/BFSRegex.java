@@ -30,17 +30,40 @@ public class BFSRegex implements Algorithm {
     }
 
     @Override
-    public void Arbitrary() {
+    public void execute() {
         checkZeroPaths();
         Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
 
-        while (nodes.hasNext()) {
-            Node node = nodes.next();
-            ArbitraryUtils(node);
+        Integer semantic = Context.getInstance().getSemantic();
+        switch (semantic) {
+            case 1:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    walk(node);
+                }
+                break;
+            case 2:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    trail(node);
+                }
+                break;
+            case 3:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    simple(node);
+                }
+                break;
+            case 4:
+                while (nodes.hasNext()) {
+                    Node node = nodes.next();
+                    acyclic(node);
+                }
+                break;
         }
     }
 
-    private void ArbitraryUtils(Node node) {
+    private void walk(Node node) {
 
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
@@ -67,11 +90,12 @@ public class BFSRegex implements Algorithm {
 
             while (neighIterator.hasNext()) { 
                 Edge e = neighIterator.next();
-                Path p = new Path("", currentPath.getEdgeSequence());
-                p.insertEdge(e);
-                Map<String, Integer> visitCountMap = new HashMap<>(currentVisitCount);
-                visitCountMap.put(e.getId(), visitCountMap.getOrDefault(e.getId(), 0) + 1);
-                if (visitCountMap.get(e.getId()) <= this.maxAppearances) {
+                
+                if ( currentVisitCount.getOrDefault(e.getId(), 0) <= this.maxAppearances) {
+                    Path p = new Path("", currentPath.getEdgeSequence());
+                    p.insertEdge(e);
+                    Map<String, Integer> visitCountMap = new HashMap<>(currentVisitCount);
+                    visitCountMap.put(e.getId(), visitCountMap.getOrDefault(e.getId(), 0) + 1);
                     queue.add(new PathWithGOCount(p, visitCountMap));
                 }
             }
@@ -79,18 +103,7 @@ public class BFSRegex implements Algorithm {
 
     }
 
-    @Override
-    public void Trail() {
-        checkZeroPaths();
-        Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
-
-        while (nodes.hasNext()) {
-            Node node = nodes.next();
-            TrailUtils(node);
-        }
-    }
-
-    private void TrailUtils(Node node) {
+    private void trail(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
 
         Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
@@ -122,9 +135,7 @@ public class BFSRegex implements Algorithm {
                     p.insertEdge(e);
                     Map<String, Integer> visitCountMap = new HashMap<>(currentVisitCount);
                     visitCountMap.put(e.getId(), visitCountMap.getOrDefault(e.getId(), 0) + 1);
-                    if (visitCountMap.get(e.getId()) <= this.maxAppearances) {
-                        queue.add(new PathWithGOCount(p, visitCountMap));
-                    }
+                    queue.add(new PathWithGOCount(p, visitCountMap));
                 }
                 
             }
@@ -133,17 +144,7 @@ public class BFSRegex implements Algorithm {
         return;
     }
 
-    @Override
-    public void Simple() {
-        Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
-
-        while (nodes.hasNext()) {
-            Node node = nodes.next();
-            SimpleUtils(node);
-        }
-    }
-
-    private void SimpleUtils(Node node) {
+    private void simple(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
         
         Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
@@ -181,17 +182,7 @@ public class BFSRegex implements Algorithm {
         }
     }
 
-    @Override
-    public void Acyclic() {
-        Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
-
-        while (nodes.hasNext()) {
-            Node node = nodes.next();
-            AcyclicUtils(node);
-        }
-    }
-
-    private void AcyclicUtils(Node node) {
+    private void acyclic(Node node) {
         Queue<PathWithGOCount> queue = new LinkedList<>();
         
         Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
@@ -259,17 +250,12 @@ public class BFSRegex implements Algorithm {
             System.out.println();
         }    
 
-        // if (this.counter == 11) {
-        //     System.out.println("...");
-
-        // }
-
         counter++;
     }
 
     @Override
     public int getTotalPaths() {
-        return counter - 1;
+        return counter;
     }
     
 }
