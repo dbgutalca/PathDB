@@ -116,7 +116,7 @@ public class DFSAutomaton implements Algorithm {
         
         if (ns.equals("")) {
             Iterator<Node> nodes = this.nodes.iterator();
-            while (this.counter <= 100 && nodes.hasNext()) {
+            while (nodes.hasNext()) {
                 Node node = nodes.next();
                 Set<String> visitedEdges = new HashSet<>();
                 Path iterPath = new Path("");
@@ -136,7 +136,7 @@ public class DFSAutomaton implements Algorithm {
 
         Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (this.counter <= 100 && neighbours.hasNext()) {
+        while (neighbours.hasNext()) {
             Edge edge = neighbours.next();
 
             if (!visitedEdges.contains(edge.getId())) {

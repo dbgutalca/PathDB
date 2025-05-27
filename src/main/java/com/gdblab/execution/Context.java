@@ -8,6 +8,7 @@ public final class Context {
     private Integer method;
     private Integer fixPoint;
     private Integer maxRecursion;
+    private Integer limit;
     
     private String startNodeID;
     private String startNodeProp;
@@ -35,8 +36,8 @@ public final class Context {
 
     private Context() {
         method = 2;
-        fixPoint = 10;
-        maxRecursion = 6;
+        fixPoint = 1000000;
+        maxRecursion = 4;
 
         startNodeID = "";
         startNodeProp = "";
@@ -93,6 +94,14 @@ public final class Context {
 
     public Integer getMaxRecursion() {
         return maxRecursion;
+    }
+
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
+    public Integer getLimit() {
+        return limit;
     }
 
     public void setStartNodeID(String startNodeID) {

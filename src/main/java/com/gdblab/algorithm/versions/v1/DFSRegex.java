@@ -132,7 +132,7 @@ public class DFSRegex implements Algorithm {
 
         Iterator<Edge> neighbours = Graph.getGraph().getNeighbours(node.getId()).iterator();
 
-        while (this.counter <= 100 && neighbours.hasNext()) {
+        while (neighbours.hasNext()) {
             Edge edge = neighbours.next();
 
             if (!visitedEdges.contains(edge.getId())) {

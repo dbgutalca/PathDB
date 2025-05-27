@@ -6,9 +6,9 @@ public interface Algorithm {
     public void Arbitrary();
     public void Trail();
     public void Simple();
+    public void Acyclic();
 
     public void printPath(Path p);
-    public void writePath(Path p);
     public void checkZeroPaths();
 
     public int getTotalPaths();

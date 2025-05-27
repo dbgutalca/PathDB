@@ -96,7 +96,7 @@ public class BFSAutomaton implements Algorithm {
             }
         }
 
-        while (this.counter <= 100 && !queue.isEmpty()) {
+        while (!queue.isEmpty()) {
             PathWithGOCount current = queue.poll();
             Path currentPath = current.getPath();
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
@@ -131,7 +131,7 @@ public class BFSAutomaton implements Algorithm {
         
         if (ns.equals("")) {
             Iterator<Node> nodes = this.nodes.iterator();
-            while (this.counter <= 100 && nodes.hasNext()) {
+            while ( nodes.hasNext()) {
                 Node node = nodes.next();
                 TrailUtils(node);
             }
@@ -157,7 +157,7 @@ public class BFSAutomaton implements Algorithm {
             queue.add(new PathWithGOCount(p, visitCountMap));
         }
 
-        while (this.counter <= 100 && !queue.isEmpty()) {
+        while ( !queue.isEmpty()) {
             PathWithGOCount current = queue.poll();
             Path currentPath = current.getPath();
             Map<String, Integer> currentVisitCount = current.getVisitedGOCount();
