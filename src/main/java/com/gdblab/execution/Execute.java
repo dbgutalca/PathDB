@@ -1,14 +1,9 @@
 package com.gdblab.execution;
 
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
@@ -16,35 +11,36 @@ import org.jline.terminal.TerminalBuilder;
 
 import com.gdblab.algorithm.translator.RPQtoER;
 import com.gdblab.algorithm.utils.Time;
-import com.gdblab.algorithm.versions.v1.BFSRegex;
-import com.gdblab.algorithm.versions.v1.DFSRegex;
-import com.gdblab.algorithm.versions.v2.BFSAutomaton;
+import com.gdblab.algorithm.versions.utils.Algorithm;
 import com.gdblab.algorithm.versions.v2.DFSAutomaton;
 import com.gdblab.graph.Graph;
 import com.gdblab.graph.schema.Edge;
-import com.gdlab.parser.RPQGrammarLexer;
-import com.gdlab.parser.RPQGrammarParser;
 
 public final class Execute {
 
     private static final String prefix = "/";
 
-    
-    public static void EvalRPQWithRegexDFS() {
+    public static void evalRPQ() {
         long start = System.nanoTime();
 
         String er = RPQtoER.Translate(Context.getInstance().getRPQ());
 
-        DFSRegex dfsRegex = new DFSRegex(er);
-        dfsRegex.execute();
-        
+        Algorithm algorithm = new DFSAutomaton(er);
+
+        // switch (method) {
+        //     case 1: algorithm = new BFSRegex(er); break;
+        //     case 2: algorithm = new DFSRegex(er); break;
+        //     case 3: algorithm = new BFSAutomaton(er); break;
+        //     case 4: algorithm = new DFSAutomaton(er); break;
+        // }
+
+        algorithm.execute();
+
         long end = System.nanoTime();
-        System.out.println("\nTotal paths: " + dfsRegex.getTotalPaths() + " paths");
+        System.out.println("\nTotal paths: " + algorithm.getTotalPaths() + " paths");
         System.out.println("Execution time: " + Time.getTimeBetween(start, end) + " seconds");
         System.out.println("");
     }
-
-    
 
     public static void interactive(String[] args) {
 
@@ -238,42 +234,6 @@ public final class Execute {
                     continue;
                 }
 
-                // else if (line.startsWith(prefix + "to ") || line.startsWith(prefix + "timeout ")) {
-                //     String[] parts = line.split(" ");
-                //     if (parts.length != 2) {
-                //         System.out.println("Invalid command. Use /t <#><U> to set a timeout.\n");
-                //         continue;
-                //     }
-                //     String number = parts[1].substring(0, parts[1].length() - 1);
-                //     String unit = parts[1].substring(parts[1].length() - 1).toUpperCase();
-                //     try { Integer.parseInt(number); }
-                //     catch (Exception e) {
-                //         System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be a number.\n");
-                //         continue;
-                //     }
-                //     if ( Integer.parseInt(number) < 1)  {
-                //         System.out.println("Invalid command. Use /t <#><U> to set a timeout. # must be greater than 0.\n");
-                //         continue;
-                //     }
-                //     switch (unit) {
-                //         case "S": 
-                //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.SECONDS);
-                //             System.out.println("Timeout set to: " + number + " seconds.\n");
-                //             break;
-                //         case "M": 
-                //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
-                //             System.out.println("Timeout set to: " + number + " minutes.\n");
-                //             break;
-                //         case "H": 
-                //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.HOURS);
-                //             System.out.println("Timeout set to: " + number + " hours.\n");
-                //             break;
-                //         default:
-                //             System.out.println("Invalid command. Use /t " + number + "<U> to set a timeout. U must be S, M or H.\n");
-                //             continue;
-                //     }
-                // }
-
                 else if (line.startsWith(prefix + "opt ") || line.startsWith(prefix + "optimize ")) {
                     String[] parts = line.split(" ");
 
@@ -334,28 +294,7 @@ public final class Execute {
 
                     Context.getInstance().setRPQ(parts[1].substring(1, parts[1].length() - 1));
 
-                    try {
-                        switch (Context.getInstance().getMethod  ()) {
-                            case 1:
-                                Execute.EvalRPQWithAlgebra();
-                                break;
-                            case 2:
-                                Execute.EvalRPQWithRegexDFS();
-                                break;
-                            case 3:
-                                Execute.EvalRPQWithRegexBFS();
-                                break;
-                            case 4:
-                                Execute.EvalRPQWithAutomatonDFS();
-                                break;
-                            case 5:
-                                Execute.EvalRPQWithAutomatonBFS();
-                                break;
-                        }
-                    } catch (Exception e) {
-                        System.out.println("An unexpected error occurred. Check syntax and try again.\n");
-                    }
-
+                    evalRPQ();
                 }
 
                 else if (line.equals(prefix + "i") || line.equals(prefix + "information")) {
@@ -390,313 +329,4 @@ public final class Execute {
         }
     }
 
-    @SuppressWarnings("removal")
-    public static void experimental(String[] args) {
-        // Context.getInstance().setExperimental(true);
-        // String nodes_file = args[0];
-        // String edges_file = args[1];
-        // String rpqs_file = args[2];
-        // Integer lineNumber;         // 1st column
-        // Integer method;             // 2nd column
-        // Integer fixpoint;           // 3rd column MAX LENGTH
-        // Integer maxRecursion;       // 4th column
-        // Integer semantic;           // 5th column
-        // Integer pathsToShow;        // 6th column
-        // Integer limit;              // 7th column
-        // String timeOut;             // 8th column
-        // boolean isOptimized;        // 9th column
-        // String sn;                  // 10th column
-        // String rpq;                 // 11th column
-        // String en;                  // 12th column
-        // Tools.loadCustomGraphFiles(nodes_file, edges_file);
-        // ArrayList<String> rpqs = Tools.readRPQsFromFile(rpqs_file);
-        // Context.getInstance().setRPQFileName(rpqs_file);
-        // for (String line : rpqs) {
-        //     // #region Check if line is valid
-        //     if (!line.endsWith(";")) {
-        //         System.out.println("Error in line: '" + line + "'. Missing semicolon. Must end with ';'. Skipping line.\n");
-        //         continue;
-        //     }
-        //     String[] data = line.split(",");
-        //     if (data.length != 12) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid number of arguments (10 expected). Skipping line.\n");
-        //     }
-        //     // #endregion
-        //     // #region 1st column - Line Number - Mandatory
-        //     try {
-        //         lineNumber = Integer.parseInt(data[0]);
-        //         if (lineNumber < 0) {
-        //             System.out.println("Error in line: '" + line + "'. Invalid line number. Must be a positive number. Skipping line.\n");
-        //             continue;
-        //         }
-        //         Context.getInstance().setNumber(lineNumber);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid line number. Must be a positive number. Skipping line.\n");
-        //         continue;
-        //     }
-        //     //#endregion
-        //     // #region 2nd column - Method - Optional (Default is 1 - Algebra)
-        //     try {
-        //         if (data[1].isEmpty()) {
-        //             method = 1;
-        //         }
-        //         else{
-        //             method = Integer.parseInt(data[1]);
-        //             if (method < 1 || method > 5) {
-        //                 System.out.println("Error in line: '" + line + "'. Invalid method. Skipping line.\n");
-        //                 continue;
-        //             }
-        //         }
-        //         Context.getInstance().setMethod(method);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid method. Must be a number between 1 and 5. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region 3rd column - Fixpoint - Optional (Default is 10)
-        //     try {
-        //         if (data[2].isEmpty()) {
-        //             fixpoint = 10;
-        //         }
-        //         else {
-        //             fixpoint = Integer.parseInt(data[2]);
-        //             if (fixpoint <= 0) {
-        //                 System.out.println("Error in line: '" + line + "'. Invalid fixpoint. Must be a positive number. Skipping line.\n");
-        //                 continue;
-        //             }
-        //         }
-        //         Context.getInstance().setFixPoint(fixpoint);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid fixpoint. Must be a number. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region 4th column - Max Recursion - Optional (Default is 4)
-        //     try {
-        //         if (data[3].isEmpty()) {
-        //             maxRecursion = 4;
-        //         }
-        //         else {
-        //             maxRecursion = Integer.parseInt(data[3]);
-        //             if (maxRecursion < 1) {
-        //                 System.out.println("Error in line: '" + line + "'. Invalid max recursion. Must be a positive number. Skipping line.\n");
-        //                 continue;
-        //             }
-        //         }
-        //         Context.getInstance().setMaxRecursion(maxRecursion);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid max recursion. Must be a number. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region 5th column - Semantic - Optional (Default is 2 - Trail)
-        //     try {
-        //         if (data[4].equals("")) {
-        //             semantic = 2;
-        //         }
-        //         else {
-        //             semantic = Integer.parseInt(data[4]);
-        //             if (semantic < 1 || semantic > 3) {
-        //                 System.out.println("Error in line: '" + line + "'. Invalid semantic. Must be a number between 1 and 3. Skipping line.\n");
-        //                 continue;
-        //             }
-        //         }
-        //         Context.getInstance().setSemantic(semantic);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid semantic. Must be a number. Skipping line.\n");
-        //         continue;
-        //     }
-        //     //#endregion
-        //     // #region 6th column - Paths to Show - Optional (Default is 10)
-        //     try {
-        //         if (data[5].isEmpty()) {
-        //             pathsToShow = 10;
-        //         }
-        //         else {
-        //             pathsToShow = Integer.parseInt(data[5]);
-        //             if (pathsToShow < 1) {
-        //                 System.out.println("Error in line: '" + line + "'. Invalid paths to show. Must be a positive number. Skipping line.\n");
-        //                 continue;
-        //             }
-        //         }
-        //         Context.getInstance().setShowPaths(pathsToShow);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid paths to show. Must be a number. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region 7th column - Limit - Optional (Default is all)
-        //     try {
-        //         if (data[6].isEmpty()) {
-        //             limit = Integer.MAX_VALUE;
-        //         }
-        //         else {
-        //             if (data[6].equals("all")) {
-        //                 limit = Integer.MAX_VALUE;
-        //             }
-        //             else {
-        //                 limit = Integer.parseInt(data[6]);
-        //                 if (limit < 1) {
-        //                     System.out.println("Error in line: '" + line + "'. Invalid limit. Must be a positive number. Skipping line.\n");
-        //                     continue;
-        //                 }
-        //             }
-        //         }
-        //         Context.getInstance().setMaxPaths(limit);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid limit. Must be a number. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region 8th column - Timeout - Optional (Default is 2 Minutes)
-        //     try {
-        //         timeOut = data[7];
-        //         if (timeOut.isEmpty()) {
-        //             Context.getInstance().setTimeoutDuration(2);
-        //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
-        //         }
-        //         else if (timeOut.equals("0")) {
-        //             Context.getInstance().setTimeoutDuration(Integer.MAX_VALUE);
-        //             Context.getInstance().setTimeoutTimeUnit(TimeUnit.DAYS);
-        //         }
-        //         else {
-        //             String number = timeOut.substring(0, timeOut.length() - 1);
-        //             String unit = timeOut.substring(timeOut.length() - 1);
-        //             try {
-        //                 Integer numberInt = Integer.parseInt(number);
-        //                 if (numberInt < 1) {
-        //                     System.out.println("Error in line: '" + line + "'. Invalid timeout. Must be a positive number. Skipping line.\n");
-        //                     continue;
-        //                 }
-        //                 Context.getInstance().setTimeoutDuration(numberInt);
-        //             } catch (Exception e) {
-        //                 System.out.println("Error in line: '" + line + "'. Invalid timeout. Must be a number. Skipping line.\n");
-        //                 continue;
-        //             }
-        //             if (!unit.equals("S") && !unit.equals("M") && !unit.equals("H")) {
-        //                 System.out.println("Error in line: '" + line + "'. Invalid timeout unit. Must be S (seconds), M (minutes) or H (hours). Skipping line.\n");
-        //                 continue;
-        //             }
-        //             switch (unit) {
-        //                 case "S":
-        //                     Context.getInstance().setTimeoutTimeUnit(TimeUnit.SECONDS);
-        //                     break;
-        //                 case "M":
-        //                     Context.getInstance().setTimeoutTimeUnit(TimeUnit.MINUTES);
-        //                     break;
-        //                 case "H":
-        //                     Context.getInstance().setTimeoutTimeUnit(TimeUnit.HOURS);
-        //                     break;
-        //                 default:
-        //                     System.out.println("Error in line: '" + line + "'. Invalid timeout unit. Must be S (seconds), M (minutes) or H (hours). Skipping line.\n");
-        //                     continue;
-        //             }
-        //         }
-        //     } catch (Exception e) {}
-        //     //#endregion
-        //     // #region 9th column - Optimized - Optional (Default is true)
-        //     try {
-        //         if (data[8].isEmpty()) {
-        //             isOptimized = true;
-        //         }
-        //         else {
-        //             isOptimized = Boolean.parseBoolean(data[8]);
-        //         }
-        //         Context.getInstance().setOptimize(isOptimized);
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid optimized option. Must be true or false. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region 10th column - Start Node - Optional (Default is empty)
-        //     try {
-        //         sn = data[9];
-        //         if (!sn.isEmpty()) Context.getInstance().setStartNode(sn);
-        //         else Context.getInstance().setStartNode("");
-        //     } catch (Exception e) {}
-        //     // #endregion
-        //     // #region 11th column - RPQ - Mandatory
-        //     try {
-        //         rpq = data[10];
-        //         if (!rpq.isEmpty()) {
-        //             Context.getInstance().setRPQ(rpq);
-        //         }
-        //         else {
-        //             System.out.println("Error in line: '" + line + "'. Invalid RPQ. RPQ is mandatory. Skipping line.\n");
-        //             continue;
-        //         }
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid RPQ. Must be a string. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region 12th column - End Node - Optional (Default is empty)
-        //     try {
-        //         en = data[11].replaceAll(";", "");
-        //         if (!en.isEmpty()) Context.getInstance().setEndNode(en);
-        //         else Context.getInstance().setEndNode("");
-        //     } catch (Exception e) {
-        //         System.out.println("Error in line: '" + line + "'. Invalid end node. Must be a string. Skipping line.\n");
-        //         continue;
-        //     }
-        //     // #endregion
-        //     // #region Execution of the RPQ without Threads
-        //     Thread tt = new Thread( () -> {
-        //         switch (Context.getInstance().getMethod()) {
-        //             case 1:
-        //                 Execute.EvalRPQWithAlgebra();
-        //                 break;
-        //             case 2:
-        //                 Execute.EvalRPQWithRegexDFS();
-        //                 break;
-        //             case 3:
-        //                 Execute.EvalRPQWithRegexBFS();
-        //                 break;
-        //             case 4:
-        //                 Execute.EvalRPQWithAutomatonDFS();
-        //                 break;
-        //             case 5:
-        //                 Execute.EvalRPQWithAutomatonBFS();
-        //                 break;
-        //         }
-        //     });
-        //     tt.start();
-        //     try {
-        //         tt.join(Context.getInstance().getTimeoutTimeUnit().toMillis(Context.getInstance().getTimeoutDuration()));
-        //         if (tt.isAlive()) {
-        //             System.out.println("RPQ:" + Context.getInstance().getRPQ() + "##" + "Time:-999,999");
-        //             tt.stop();
-        //         }
-        //     } catch (Exception e) {}
-        //     // #endregion
-        // }
-    }
-
-}
-
-class runExecution implements Callable<Void> {
-
-    @Override
-    public Void call() throws Exception {
-        
-        switch (Context.getInstance().getMethod()) {
-            case 1:
-                Execute.EvalRPQWithAlgebra();
-                break;
-            case 2:
-                Execute.EvalRPQWithRegexDFS();
-                break;
-            case 3:
-                Execute.EvalRPQWithRegexBFS();
-                break;
-            case 4:
-                Execute.EvalRPQWithAutomatonDFS();
-                break;
-            case 5:
-                Execute.EvalRPQWithAutomatonBFS();
-                break;
-        }
-
-        return null;
-    }
 }

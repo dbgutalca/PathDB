@@ -1,0 +1,86 @@
+p1 e5 m1 e9 p3
+p3 e6 m2 e10 p4
+p4 e7 m3 e11 p1
+p2 e8 m3 e11 p1
+p1 e1 p2
+p2 e2 p3
+p3 e3 p2
+p2 e4 p4
+p1 e5 m1 e9 p3 e6 m2 e10 p4
+p1 e5 m1 e9 p3 e3 p2
+p3 e6 m2 e10 p4 e7 m3 e11 p1
+p4 e7 m3 e11 p1 e5 m1 e9 p3
+p4 e7 m3 e11 p1 e1 p2
+p2 e8 m3 e11 p1 e5 m1 e9 p3
+p2 e8 m3 e11 p1 e1 p2
+p1 e1 p2 e8 m3 e11 p1
+p1 e1 p2 e2 p3
+p1 e1 p2 e4 p4
+p2 e2 p3 e6 m2 e10 p4
+p2 e2 p3 e3 p2
+p3 e3 p2 e8 m3 e11 p1
+p3 e3 p2 e2 p3
+p3 e3 p2 e4 p4
+p2 e4 p4 e7 m3 e11 p1
+p1 e5 m1 e9 p3 e6 m2 e10 p4 e7 m3 e11 p1
+p1 e5 m1 e9 p3 e3 p2 e8 m3 e11 p1
+p1 e5 m1 e9 p3 e3 p2 e2 p3
+p1 e5 m1 e9 p3 e3 p2 e4 p4
+p3 e6 m2 e10 p4 e7 m3 e11 p1 e5 m1 e9 p3
+p3 e6 m2 e10 p4 e7 m3 e11 p1 e1 p2
+p4 e7 m3 e11 p1 e5 m1 e9 p3 e6 m2 e10 p4
+p4 e7 m3 e11 p1 e5 m1 e9 p3 e3 p2
+p4 e7 m3 e11 p1 e1 p2 e2 p3
+p4 e7 m3 e11 p1 e1 p2 e4 p4
+p2 e8 m3 e11 p1 e5 m1 e9 p3 e6 m2 e10 p4
+p2 e8 m3 e11 p1 e5 m1 e9 p3 e3 p2
+p2 e8 m3 e11 p1 e1 p2 e2 p3
+p2 e8 m3 e11 p1 e1 p2 e4 p4
+p1 e1 p2 e8 m3 e11 p1 e5 m1 e9 p3
+p1 e1 p2 e2 p3 e6 m2 e10 p4
+p1 e1 p2 e2 p3 e3 p2
+p1 e1 p2 e4 p4 e7 m3 e11 p1
+p2 e2 p3 e6 m2 e10 p4 e7 m3 e11 p1
+p2 e2 p3 e3 p2 e8 m3 e11 p1
+p2 e2 p3 e3 p2 e4 p4
+p3 e3 p2 e8 m3 e11 p1 e5 m1 e9 p3
+p3 e3 p2 e8 m3 e11 p1 e1 p2
+p3 e3 p2 e2 p3 e6 m2 e10 p4
+p3 e3 p2 e4 p4 e7 m3 e11 p1
+p2 e4 p4 e7 m3 e11 p1 e5 m1 e9 p3
+p2 e4 p4 e7 m3 e11 p1 e1 p2
+p1 e5 m1 e9 p3 e6 m2 e10 p4 e7 m3 e11 p1 e1 p2
+p1 e5 m1 e9 p3 e3 p2 e8 m3 e11 p1 e1 p2
+p1 e5 m1 e9 p3 e3 p2 e2 p3 e6 m2 e10 p4
+p1 e5 m1 e9 p3 e3 p2 e4 p4 e7 m3 e11 p1
+p3 e6 m2 e10 p4 e7 m3 e11 p1 e5 m1 e9 p3 e3 p2
+p3 e6 m2 e10 p4 e7 m3 e11 p1 e1 p2 e2 p3
+p3 e6 m2 e10 p4 e7 m3 e11 p1 e1 p2 e4 p4
+p4 e7 m3 e11 p1 e5 m1 e9 p3 e3 p2 e2 p3
+p4 e7 m3 e11 p1 e5 m1 e9 p3 e3 p2 e4 p4
+p4 e7 m3 e11 p1 e1 p2 e2 p3 e6 m2 e10 p4
+p4 e7 m3 e11 p1 e1 p2 e2 p3 e3 p2
+p2 e8 m3 e11 p1 e5 m1 e9 p3 e3 p2 e2 p3
+p2 e8 m3 e11 p1 e5 m1 e9 p3 e3 p2 e4 p4
+p2 e8 m3 e11 p1 e1 p2 e2 p3 e6 m2 e10 p4
+p2 e8 m3 e11 p1 e1 p2 e2 p3 e3 p2
+p1 e1 p2 e8 m3 e11 p1 e5 m1 e9 p3 e6 m2 e10 p4
+p1 e1 p2 e8 m3 e11 p1 e5 m1 e9 p3 e3 p2
+p1 e1 p2 e2 p3 e6 m2 e10 p4 e7 m3 e11 p1
+p1 e1 p2 e2 p3 e3 p2 e8 m3 e11 p1
+p1 e1 p2 e2 p3 e3 p2 e4 p4
+p1 e1 p2 e4 p4 e7 m3 e11 p1 e5 m1 e9 p3
+p2 e2 p3 e6 m2 e10 p4 e7 m3 e11 p1 e5 m1 e9 p3
+p2 e2 p3 e6 m2 e10 p4 e7 m3 e11 p1 e1 p2
+p2 e2 p3 e3 p2 e8 m3 e11 p1 e5 m1 e9 p3
+p2 e2 p3 e3 p2 e8 m3 e11 p1 e1 p2
+p2 e2 p3 e3 p2 e4 p4 e7 m3 e11 p1
+p3 e3 p2 e8 m3 e11 p1 e5 m1 e9 p3 e6 m2 e10 p4
+p3 e3 p2 e8 m3 e11 p1 e1 p2 e2 p3
+p3 e3 p2 e8 m3 e11 p1 e1 p2 e4 p4
+p3 e3 p2 e2 p3 e6 m2 e10 p4 e7 m3 e11 p1
+p3 e3 p2 e4 p4 e7 m3 e11 p1 e5 m1 e9 p3
+p3 e3 p2 e4 p4 e7 m3 e11 p1 e1 p2
+p2 e4 p4 e7 m3 e11 p1 e5 m1 e9 p3 e6 m2 e10 p4
+p2 e4 p4 e7 m3 e11 p1 e5 m1 e9 p3 e3 p2
+p2 e4 p4 e7 m3 e11 p1 e1 p2 e2 p3

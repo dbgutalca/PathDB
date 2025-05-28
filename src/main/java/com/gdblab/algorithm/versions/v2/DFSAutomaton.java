@@ -1,13 +1,7 @@
 package com.gdblab.algorithm.versions.v2;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,40 +32,47 @@ public class DFSAutomaton implements Algorithm {
         checkZeroPaths();
         Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
         Path iterPath = new Path("");
-        Integer semantic = Context.getInstance().getSemantic();
 
-        switch (semantic) {
-            case 1:
-                Map<String, Integer> visitCount = new HashMap<>();
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    walk(node, visitCount, iterPath);
-                }
-                break;
-            case 2:
-                Set<String> visitedEdges = new HashSet<>();
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    trail(node, visitedEdges, iterPath);
-                }
-                break;
-            case 3:
-                Set<String> simpleVisitedNodes = new HashSet<>();
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    simple(node, simpleVisitedNodes, iterPath);
-                }
-                break;
-            case 4:
-                Set<String> acyclicVisitedNodes = new HashSet<>();
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    acyclicVisitedNodes.add(node.getId());
-                    // acyclic(node, acyclicVisitedNodes, iterPath);
-                    acyclicVisitedNodes.remove(node.getId());
-                }
-                break;
+        Set<String> visitedEdges = new HashSet<>();
+        while (nodes.hasNext()) {
+            Node node = nodes.next();
+            trail(node, visitedEdges, iterPath);
         }
+
+
+        // Integer semantic = Context.getInstance().getSemantic();
+        // switch (semantic) {
+        //     case 1:
+        //         Map<String, Integer> visitCount = new HashMap<>();
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             walk(node, visitCount, iterPath);
+        //         }
+        //         break;
+        //     case 2:
+        //         Set<String> visitedEdges = new HashSet<>();
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             trail(node, visitedEdges, iterPath);
+        //         }
+        //         break;
+        //     case 3:
+        //         Set<String> simpleVisitedNodes = new HashSet<>();
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             simple(node, simpleVisitedNodes, iterPath);
+        //         }
+        //         break;
+        //     case 4:
+        //         Set<String> acyclicVisitedNodes = new HashSet<>();
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             acyclicVisitedNodes.add(node.getId());
+        //             // acyclic(node, acyclicVisitedNodes, iterPath);
+        //             acyclicVisitedNodes.remove(node.getId());
+        //         }
+        //         break;
+        // }
     }
 
     private void walk(Node node, Map<String, Integer> visitCount, Path iterPath) {
@@ -109,9 +110,8 @@ public class DFSAutomaton implements Algorithm {
         while (neighbours.hasNext()) {
             Edge edge = neighbours.next();
 
-            if (!visitedEdges.contains(edge.getId())) {
+            if (visitedEdges.add(edge.getId())) {
                 iterPath.insertEdge(edge);
-                visitedEdges.add(edge.getId());
 
                 if ( this.matcher.match(iterPath.getStringEdgeSequenceAscii()) == "Accepted" ) {
                     Path newPath = new Path("");

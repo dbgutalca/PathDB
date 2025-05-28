@@ -38,6 +38,7 @@ public final class Context {
         method = 2;
         fixPoint = 1000000;
         maxRecursion = 4;
+        limit = 1000000;
 
         startNodeID = "";
         startNodeProp = "";

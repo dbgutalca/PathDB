@@ -1,13 +1,8 @@
 package com.gdblab.algorithm.versions.v2;
 
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -38,34 +33,38 @@ public class BFSAutomaton implements Algorithm {
     public void execute() {
         checkZeroPaths();
         Iterator<Node> nodes = Graph.getGraph().getNodeIterator();
-
-        Integer semantic = Context.getInstance().getSemantic();
-        switch (semantic) {
-            case 1:
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    walk(node);
-                }
-                break;
-            case 2:
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    trail(node);
-                }
-                break;
-            case 3:
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    simple(node);
-                }
-                break;
-            case 4:
-                while (nodes.hasNext()) {
-                    Node node = nodes.next();
-                    acyclic(node);
-                }
-                break;
+        while (nodes.hasNext()) {
+            Node node = nodes.next();
+            trail(node);
         }
+
+        // Integer semantic = Context.getInstance().getSemantic();
+        // switch (semantic) {
+        //     case 1:
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             walk(node);
+        //         }
+        //         break;
+        //     case 2:
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             trail(node);
+        //         }
+        //         break;
+        //     case 3:
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             simple(node);
+        //         }
+        //         break;
+        //     case 4:
+        //         while (nodes.hasNext()) {
+        //             Node node = nodes.next();
+        //             acyclic(node);
+        //         }
+        //         break;
+        // }
     }
 
     private void walk(Node node) {
