@@ -50,13 +50,13 @@ public final class DefaultGraph2 {
         edges[1] = new Edge("E2", "Knows", graph.getNode("p2"), graph.getNode("p3"));
         edges[2] = new Edge("E3", "Knows", graph.getNode("p3"), graph.getNode("p2"));
         edges[3] = new Edge("E4", "Knows", graph.getNode("p2"), graph.getNode("p4"));
-        edges[4] = new Edge("E5", "Likes", graph.getNode("p1"), graph.getNode("m1"));
-        edges[5] = new Edge("E6", "Likes", graph.getNode("p3"), graph.getNode("m2"));
-        edges[6] = new Edge("E7", "Likes", graph.getNode("p4"), graph.getNode("m3"));
-        edges[7] = new Edge("E8", "Likes", graph.getNode("p2"), graph.getNode("m3"));
-        edges[8] = new Edge("E9", "HasCreator", graph.getNode("m1"), graph.getNode("p3"));
+        edges[4] = new Edge("E5", "Likes", graph.getNode("p2"), graph.getNode("m3"));
+        edges[5] = new Edge("E6", "Likes", graph.getNode("p4"), graph.getNode("m3"));
+        edges[6] = new Edge("E7", "Likes", graph.getNode("p3"), graph.getNode("m2"));
+        edges[7] = new Edge("E8", "Likes", graph.getNode("p1"), graph.getNode("m1"));
+        edges[8] = new Edge("E9", "HasCreator", graph.getNode("m3"), graph.getNode("p1"));
         edges[9] = new Edge("E10", "HasCreator", graph.getNode("m2"), graph.getNode("p4"));
-        edges[10] = new Edge("E11", "HasCreator", graph.getNode("m3"), graph.getNode("p1"));
+        edges[10] = new Edge("E11", "HasCreator", graph.getNode("m1"), graph.getNode("p3"));
         return edges;
     }
 }
