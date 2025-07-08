@@ -29,7 +29,7 @@ public final class Context {
         maxRecursion = 4;
         totalPathsObtained = 0;
         semantic = 2;
-        limit = Integer.MAX_VALUE;
+        limit = 100;
         totalPathsToShow = Integer.MAX_VALUE;
 
         leftVarName = "";

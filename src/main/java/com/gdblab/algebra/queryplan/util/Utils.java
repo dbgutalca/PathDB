@@ -82,45 +82,46 @@ public class Utils {
     public static int printAndCountPaths(PhysicalOperator po){
         Integer counterLP = 1;
 
-        ArrayList<ReturnContent> returnContentList = Context.getInstance().getReturnedVariables();
+        // ArrayList<ReturnContent> returnContentList = Context.getInstance().getReturnedVariables();
         Integer limitCalculatePaths = Context.getInstance().getLimit();
+        // Integer pathsToShow = Context.getInstance().getTotalPathsToShow();
 
-        AsciiTable table = new AsciiTable();
+        // AsciiTable table = new AsciiTable();
 
-        List<String> columnNames = returnContentList.stream()
-                .map(ReturnContent::getReturnName)
-                .toList();
+        // List<String> columnNames = returnContentList.stream()
+        //         .map(ReturnContent::getReturnName)
+        //         .toList();
         
-        ArrayList<String> columnNamesWithLength = new ArrayList<>(columnNames);
-        columnNamesWithLength.add(0, "#");
+        // ArrayList<String> columnNamesWithLength = new ArrayList<>(columnNames);
+        // columnNamesWithLength.add(0, "#");
 
-        CWC_FixedWidth cwc = new CWC_FixedWidth();
-        cwc.add(10);
+        // CWC_FixedWidth cwc = new CWC_FixedWidth();
+        // cwc.add(10);
 
-        for (int i = 0; i < columnNames.size(); i++) {
-            cwc.add(30);
-        }
+        // for (int i = 0; i < columnNames.size(); i++) {
+        //     cwc.add(30);
+        // }
 
-        table.getRenderer().setCWC(cwc);
+        // table.getRenderer().setCWC(cwc);
 
-        table.addRule();
-        table.addRow(columnNamesWithLength).setTextAlignment(TextAlignment.CENTER);
-        table.addRule();
+        // table.addRule();
+        // table.addRow(columnNamesWithLength).setTextAlignment(TextAlignment.CENTER);
+        // table.addRule();
 
-        while (counterLP <= limitCalculatePaths && po.hasNext() ) {
+        while (counterLP <= limitCalculatePaths && po.hasNext()) {
+            
             Path p = po.next();
 
-            List<String> row = new ArrayList<>();
-
-            row.add(String.valueOf(counterLP));
-            
-            for (ReturnContent returnContent : returnContentList) {
-                String content = returnContent.getContent(p);
-                row.add(content);
-            }
-
-            table.addRow(row).setTextAlignment(TextAlignment.CENTER);;
-            table.addRule();
+            // if (pathsToShow > 0 && counterLP <= pathsToShow) {
+            //     List<String> row = new ArrayList<>();
+            //     row.add(String.valueOf(counterLP));
+            //     for (ReturnContent returnContent : returnContentList) {
+            //         String content = returnContent.getContent(p);
+            //         row.add(content);
+            //     }
+            //     table.addRow(row).setTextAlignment(TextAlignment.CENTER);;
+            //     table.addRule();
+            // }
             
             counterLP++;
         }
@@ -128,8 +129,8 @@ public class Utils {
         // Set center alignment for all columns
         
 
-        System.out.println();
-        System.out.println(table.render());
+        // System.out.println();
+        // System.out.println(table.render());
 
         return counterLP;
     }

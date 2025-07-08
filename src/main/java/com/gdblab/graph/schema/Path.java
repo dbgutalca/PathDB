@@ -290,8 +290,15 @@ public class Path extends GraphObject {
     }
 
     public boolean isSimplePath (Path pathB) {
-        List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size() - 1);
-        return this.getListIDNodeSequence().stream().noneMatch(res::contains);
+        ArrayList<String> pathBNodeSequence = pathB.getListIDNodeSequence();
+
+        if (pathBNodeSequence.size() > 1) {
+            List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size() - 1);
+            return this.getListIDNodeSequence().stream().noneMatch(res::contains);
+        }
+        else {
+            return this.isSelfSimplePath();
+        }
     }
 
     public boolean isSelfSimplePath() {

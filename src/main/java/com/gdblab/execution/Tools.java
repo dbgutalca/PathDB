@@ -110,7 +110,7 @@ public final class Tools {
                     ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
                     HashMap<String, String> properties = new HashMap<>();
 
-                    for (int j = 4; j < data.size() && j < schemaEdge.size(); j++) {
+                    for (int j = 5; j < data.size() && j < schemaEdge.size(); j++) {
                         properties.put(schemaEdge.get(j), data.get(j));
                     }
 
@@ -264,7 +264,7 @@ public final class Tools {
         Context.getInstance().setTotalPathsObtained(0);
         Context.getInstance().setSemantic(2);
         Context.getInstance().setLimit(Integer.MAX_VALUE);
-        Context.getInstance().setTotalPathsToShow(Integer.MAX_VALUE);
+        // Context.getInstance().setTotalPathsToShow(Integer.MAX_VALUE);
 
         Context.getInstance().setLeftVarName("");
         Context.getInstance().setRightVarName("");

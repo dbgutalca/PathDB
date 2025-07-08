@@ -68,7 +68,6 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     }
 
     protected Path getNextRightPath() {
-        System.out.println("Right");
         while (true) {
             while (this.rightChild.hasNext()) {
                 final Path path = this.rightChild.next();
