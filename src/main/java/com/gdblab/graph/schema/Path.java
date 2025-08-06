@@ -1,336 +1,286 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.gdblab.graph.schema;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+
+import com.gdblab.graph.Graph;
 
 /**
  *
- * @author ramhg
+ * @author Vicente Rojas Aranda
+ * 
+ *         This is a re-implementation of the Path class from the original code.
+ *         It represents a path in a graph with a source ID, target ID, and an
+ *         array of graph objects.
+ *         This implementations has been simplified to optimize memory usage and
+ *         performance.
+ *         The original code had a more complex structure with additional fields
+ *         and methods.
+ * 
+ *         For more information check "GQLLikeGrammar" branch of the repository.
  */
-public class Path extends GraphObject {
+public class Path {
 
-    // Si se transformase a solamente una lista de edges
-    // seria imposible almacenar paths de largo 0
-    // ya que el Edge como objeto debe si o si tener un source y un target
-    // Podria ser el target null pero traería problemas con los joins
-    // y habría que modificar demasiado codigo para implementar solo
-    // la lista de Edges en vez de una lista de Nodes y Edges.
-    private List<GraphObject> sequence;
+    private final LinkedList<String> edges;
+    private final ArrayDeque<String> nodes;
 
-    public Path(final String id, final String label, final Integer length) {
-        super(id, label, length);
-        this.sequence = new ArrayList<>();
+    // #region Constructors
+    public Path() {
+        this.edges = new LinkedList<>();
+        this.nodes = new ArrayDeque<>();
     }
 
-    public Path(final String id) {
-        super(id, 0);
-        this.sequence = new ArrayList<>();
+    public Path(String nodeId) {
+        this.edges = new LinkedList<>();
+        this.nodes = new ArrayDeque<>();
+        this.nodes.add(nodeId);
     }
 
-    public Path(final String id, Integer length) {
-        super(id, length);
-        this.sequence = new ArrayList<>();
-    }
-    
-    public Path (final String id, final Edge edge) {
-        super(id, 1); 
-        this.sequence = new ArrayList<>();
-        this.insertEdge(edge);
-    }
-    
-    public Path(final String id, final Node node) {
-        super(id, 0);
-        this.sequence = new ArrayList<>();
-        this.insertNode(node);
+    public Path(String sourceNode, String edge, String targetNode) {
+        this.edges = new LinkedList<>();
+        this.nodes = new ArrayDeque<>();
+        this.nodes.add(sourceNode);
+        this.edges.add(edge);
+        this.nodes.add(targetNode);
     }
 
-    public Path(final String id, final List<Edge> edges) {
-        super(id, edges.size());
-        this.sequence = new ArrayList<>();
-        for (final Edge e : edges) {
-            this.insertEdge(e);
-        }
-    }
-    
-    public Path(final String id, final boolean reverse, final List<GraphObject> sequence, final Integer length) {
-         super(id, length);
-         this.sequence = new ArrayList<GraphObject>(sequence);
-         Collections.reverse(this.sequence);
-     }
-
-    public List<GraphObject> getSequence() {
-        return sequence;
+    public Path(Path otherPath) {
+        this.edges = new LinkedList<>(otherPath.getEdges());
+        this.nodes = new ArrayDeque<>(otherPath.getNodes());
     }
 
-    public void insertEdge(final Edge edge) {
-        if (sequence.isEmpty()) {
-            sequence.add(edge.getSource());
-            sequence.add(edge);
-            sequence.add(edge.getTarget());
-        } else if (Objects.equals(this.last().getId(), edge.getSource().getId())) {
-            sequence.add(edge);
-            sequence.add(edge.getTarget());
-        }
+    public Path(Path pathA, Path pathB) {
+        this.nodes = new ArrayDeque<>(pathA.getNodes());
+        pathB.getNodes().removeFirst();
+        this.nodes.addAll(pathB.getNodes());
+        this.edges = new LinkedList<>(pathA.getEdges());
+        this.edges.addAll(pathB.getEdges());
+    }
+    // #endregion
+
+    // #region PathUtils
+    public String getFirst() {
+        return this.nodes.getFirst();
     }
 
-    public void insertNode(final Node node) {
-        if (sequence.isEmpty()) {
-            sequence.add(node);
-        }
+    public String getLast() {
+        return this.nodes.getLast();
     }
 
-    public List<Node> getNodeSequence() {
-        final ArrayList<Node> nodes = new ArrayList<>();
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Node node) {
-                nodes.add(node);
-            }
-        }
-        return nodes;
+    public Integer getPathLength() {
+        return this.getQuantityOfEdges();
     }
 
-    public String getStringNodeSequence() {
-        String nodes = "";
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Node node) {
-                nodes += node.getId() + " ";
-            }
-        }
-        return nodes;
+    public boolean isLinkeableByNodeWith(Path otherPath) {
+        return this.nodes.getLast().equals(otherPath.nodes.getFirst());
     }
 
-    public ArrayList<Edge> getEdgeSequence() {
-        final ArrayList<Edge> edges = new ArrayList<>();
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Edge edge) {
-                edges.add(edge);
-            }
-        }
-        return edges;
+    public Integer getSumOfEdgesWith(Path otherPath) {
+        return this.getQuantityOfEdges() + otherPath.getQuantityOfEdges();
     }
 
-    public String getStringEdgeSequence() {
-        String edges = "";
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Edge edge) {
-                edges += edge.getLabel();
-            }
-        }
-        return edges;
-    }
-    public String getStringSequence() {
-        String seq = "";
-        for (int i = 0; i < sequence.size(); i++) {
-            seq += sequence.get(i).getLabel() + " ";
-        }
-        return seq;
+    public Integer getQuantityOfNodes() {
+        if (this.nodes.isEmpty() || this.nodes == null)
+            return 0;
+        return this.nodes.size();
     }
 
-    public int getNodesAmount() {
-        return getNodeSequence().size();
+    public Integer getQuantityOfEdges() {
+        if (this.edges.isEmpty() || this.edges == null)
+            return 0;
+        return this.edges.size();
     }
+    // #endregion
 
-    public Node first() {
-        return (Node) this.sequence.get(0);
-    }
-
-    public Node last() {
-        return (Node) this.sequence.get( this.sequence.size() - 1 );
-    }
-
-    public Node getNodeAt(final int pos) {
-        final List<Node> seq = this.getNodeSequence();
-        if (pos >= 0 && pos < seq.size()) {
-            return seq.get(pos);
-        }
-        return null;
-    }
-
-    public Edge getEdgeAt(final int pos) {
-        final ArrayList<Edge> seq = this.getEdgeSequence();
-        if (seq.size() >= pos) {
-            return seq.get(pos);
-        }
-        return null;
-    }
-
-    public Path subPath(final int i, final int j) {
-        final Node first = getNodeAt(i);
-        final Node last = getNodeAt(j);
-        final ArrayList<Edge> seq = this.getEdgeSequence();
-        final Path new_path = new Path(UUID.randomUUID().toString(), "path", seq.size());
-
-        boolean last_reached = false;
-        boolean first_reached = false;
-
-        if (i == j) {
-            new_path.insertNode(first);
-        }
-
-        for (int k = 0; k < seq.size() && !last_reached; k++) {
-            if (seq.get(k).getSource().getId().equals(first.getId()) && !first_reached) {
-                first_reached = true;
-            }
-            if (seq.get(k).getTarget().getId().equals(last.getId())) {
-                last_reached = true;
-            }
-
-            if (first_reached) {
-                new_path.insertEdge(seq.get(k));
-            }
-        }
-        return new_path;
-    }
-
-    public Path leftSubPath(final int i) {
-        return subPath(0, i);
-    }
-
-    public Path rightSubPath(final int j) {
-        return subPath(j, this.getNodesAmount() - 1);
-    }
-
-    public boolean isNodeLinkable(final Path path2) {
-        return last().getId().equals(path2.first().getId());
-    }
-
-    public int lenght() {
-        return sequence.size();
-    }
-    
-    public void setSequence(List<GraphObject> sequence) {
-        this.sequence = new ArrayList<GraphObject>(sequence);
-    }
-    
-    public void appendSequence(List<GraphObject> sequence) {
-        for (int i = 1; i < sequence.size(); i++) {
-            this.sequence.add(sequence.get(i));
-        }
-    }
-
-    @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof Path p2) {
-
-            final List<GraphObject> sequence1 = this.getSequence();
-            final List<GraphObject> sequence2 = p2.getSequence();
-
-            if (sequence1.size() != sequence2.size()) {
+    // #region Semantic Checks
+    public boolean isTrailWith(Path otherPath) {
+        Set<String> edgeSet = new HashSet<>(this.edges);
+        for (String edge : otherPath.edges) {
+            if (!edgeSet.add(edge))
                 return false;
-            }
-
-            for (int i = 0; i < sequence1.size(); i++) {
-                if (!sequence1.get(i).getId().equals(sequence2.get(i).getId())) {
-                    return false;
-                }
-            }
-
-            return true;
         }
-
-        return false;
+        edgeSet = null;
+        return true;
     }
 
-    public GraphObject pop() {
-        if (sequence.size() == 1) {
-            return sequence.remove(0);
+    public boolean isSimplePathWith(Path otherPath) {
+        Set<String> nodeSet = new HashSet<>(this.nodes);
+        for (String node : otherPath.nodes) {
+            if (!nodeSet.add(node))
+                return false;
         }
-        else if (sequence.size() == 3) {
-            sequence.remove(sequence.size() - 1);
-            GraphObject r = sequence.remove(sequence.size() - 1);
-            sequence.remove(sequence.size() - 1);
-            return r;
-        }
-        else {
-            sequence.remove(sequence.size() - 1);
-            GraphObject r = sequence.remove(sequence.size() - 1);
-            return r;
-        }
+        nodeSet = null;
+        return true;
     }
 
-    public ArrayList<String> getListIDEdgeSequence() {
-        ArrayList<String> ids = new ArrayList<>();
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Edge edge) {
-                ids.add(edge.getId());
-            }
+    public boolean isAcyclicWith(Path otherPath) {
+        Set<String> nodeSet = new HashSet<>(this.nodes);
+        nodeSet.remove(this.nodes.getFirst());
+        for (String node : otherPath.nodes) {
+            if (!nodeSet.add(node))
+                return false;
         }
-        return ids;
-    }
-
-    public ArrayList<String> getListIDNodeSequence() {
-        ArrayList<String> ids = new ArrayList<>();
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Node node) {
-                ids.add(node.getId());
-            }
-        }
-        return ids;
-    }
-
-    public boolean isTrail(Path pathB) {
-        return this.getListIDEdgeSequence().stream().noneMatch(pathB.getListIDEdgeSequence()::contains);
-    }
-
-    public boolean isAcyclic (Path pathB) {
-        List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size());
-        return this.getListIDNodeSequence().stream().noneMatch(res::contains);
-    }
-
-    public boolean isSelfAcyclic() {
-        return this.getListIDNodeSequence().stream().distinct().count() == this.getListIDNodeSequence().size();
-    }
-
-    public boolean isSimplePath (Path pathB) {
-        ArrayList<String> pathBNodeSequence = pathB.getListIDNodeSequence();
-
-        if (pathBNodeSequence.size() > 1) {
-            List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size() - 1);
-            return this.getListIDNodeSequence().stream().noneMatch(res::contains);
-        }
-        else {
-            return this.isSelfSimplePath();
-        }
+        nodeSet = null;
+        return true;
     }
 
     public boolean isSelfSimplePath() {
-        return this.getListIDNodeSequence().stream().distinct().count() == (this.getListIDNodeSequence().size() - 1);
+        if (this.nodes.isEmpty() || this.nodes.size() < 2)
+            return false;
+        Set<String> nodeSet = new HashSet<>(this.nodes);
+        return nodeSet.size() == this.nodes.size();
     }
 
+    public boolean isSelfAcyclic() {
+        if (this.nodes.isEmpty() || this.nodes.size() < 2)
+            return false;
+        Set<String> nodeSet = new HashSet<>(this.nodes);
+        nodeSet.remove(this.nodes.getFirst());
+        return nodeSet.size() == this.nodes.size() - 1;
+    }
+    // #endregion
 
-    public Integer getSumEdges(Path pathB) {
-        return this.getEdgeLength() + pathB.getEdgeLength();
+    // #region Path Components Crud
+    public LinkedList<String> getEdges() {
+        return this.edges;
     }
 
-    public Integer getEdgeLength() {
-        return this.getLength();
+    public ArrayDeque<String> getNodes() {
+        return this.nodes;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"sequence\": [");
+    public void insertNode(String node) {
+        this.nodes.add(node);
+    }
 
-        List<GraphObject> seq = this.getSequence();
-        for (int i = 0; i < seq.size(); i++) {
-            sb.append("    ").append(seq.get(i).toString());
-            if (i < seq.size() - 1) {
-                sb.append(",");
-            }
-            sb.append("");
+    public void insertEdge(String sourceNode, String edge, String targetNode) {
+        if (this.nodes.isEmpty()) {
+            this.nodes.add(sourceNode);
+            this.edges.add(edge);
+            this.nodes.add(targetNode);
+        } else {
+            this.edges.add(edge);
+            this.nodes.add(targetNode);
         }
 
-        sb.append("]");
-        sb.append("}");
-        return sb.toString();
     }
+    // #endregion
+
+    // #region Path Return Methods
+    public String getEdge(int position) {
+        if (this.edges.isEmpty() || this.edges.size() <= position)
+            return "";
+
+        String edgeIDToSearch = ((String[]) this.edges.toArray())[position];
+
+        String edge = Graph.getGraph().getEdge(edgeIDToSearch);
+
+        return edge == null ? "" : edge;
+    }
+
+    public String getNode(int position) {
+        if (this.nodes.isEmpty() || this.nodes.size() <= position)
+            return "";
+
+        String nodeIDToSearch = ((String[]) this.nodes.toArray())[position];
+
+        String node = Graph.getGraph().getNode(nodeIDToSearch);
+
+        return node == null ? "" : node;
+    }
+
+    public String getPropertyValueOfNodeAtPosition(int position, String propertyToSearch) {
+        if (this.nodes.isEmpty() || this.nodes.size() <= position)
+            return null;
+
+        String[] nodeArray = (String[]) this.nodes.toArray();
+
+        if (position == -1)
+            position = nodeArray.length - 1;
+
+        if (position < 0 || position >= nodeArray.length)
+            return null;
+
+        String nodeID = nodeArray[position];
+
+        String nodeData = Graph.getGraph().getNode(nodeID);
+        if (nodeData == null)
+            return null;
+
+        String[] nodeProperties = nodeData.split("\\|");
+        for (String property : nodeProperties) {
+            if (property.startsWith(propertyToSearch + ":")) {
+                return property.split(":")[1];
+            }
+        }
+
+        return null;
+    }
+
+    public String getPropertyValueOfEdgeAtPosition(int position, String propertyToSearch) {
+        if (this.edges.isEmpty() || this.edges.size() <= position)
+            return null;
+
+        String[] edgeArray = (String[]) this.edges.toArray();
+
+        if (position < 0 || position >= edgeArray.length)
+            return null;
+
+        String edgeID = edgeArray[position];
+
+        String edgeData = Graph.getGraph().getEdge(edgeID);
+        if (edgeData == null)
+            return null;
+
+        String[] edgeProperties = edgeData.split("\\|");
+        for (String property : edgeProperties) {
+            if (property.startsWith(propertyToSearch + ":")) {
+                return property.split(":")[1];
+            }
+        }
+
+        return null;
+
+    }
+
+    public String getLabelOfNodeAtPosition(int position) {
+        return this.getPropertyValueOfNodeAtPosition(position, "label");
+    }
+
+    public String getLabelOfEdgeAtPosition(int position) {
+        return this.getPropertyValueOfEdgeAtPosition(position, "label");
+    }
+
+    public String getStringPath() {
+        ArrayList<String> nodesData = new ArrayList<>();
+        ArrayList<String> edgesData = new ArrayList<>();
+
+        for (String string : this.getNodes()) {
+            String nodeData = Graph.getGraph().getNode(string);
+            if (nodeData != null)
+                nodesData.add(nodeData);
+        }
+
+        for (String string : this.getEdges()) {
+            String edgeData = Graph.getGraph().getEdge(string);
+            if (edgeData != null)
+                edgesData.add(edgeData);
+        }
+
+        StringBuilder pathString = new StringBuilder();
+
+        for (int i = 0; i < edgesData.size(); i++) {
+            pathString.append(nodesData.get(i)).append(", ");
+            pathString.append(edgesData.get(i)).append(", ");
+        }
+
+        pathString.append(nodesData.get(nodesData.size() - 1));
+
+        return pathString.toString();
+    }
+    // #endregion
+
 }

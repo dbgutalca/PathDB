@@ -1,7 +1,6 @@
 package com.gdblab.algebra.parser.impl;
 
 import com.gdblab.algebra.condition.Label;
-import com.gdblab.algebra.condition.Negated;
 import com.gdblab.algebra.parser.RPQExpressionVisitor;
 import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.logical.impl.*;
@@ -9,7 +8,8 @@ import com.gdblab.algebra.queryplan.logical.impl.*;
 import java.util.Stack;
 
 /**
- * Traverses the results of the parsing of the RPQ and produces the tree of logical
+ * Traverses the results of the parsing of the RPQ and produces the tree of
+ * logical
  * operators that resolve the RPQ according to García et al.
  */
 public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
@@ -56,17 +56,12 @@ public class RPQtoAlgebraVisitor implements RPQExpressionVisitor {
 
     @Override
     public void visit(final LabelExpression labelExpression) {
-        stack.push(new LogicalOpSelectionByLabel(new Label( labelExpression.getLabel(), "edge", 0)));
+        stack.push(new LogicalOpSelectionByLabel(new Label(labelExpression.getLabel(), "edge", 0)));
     }
-    
+
     @Override
     public void visit(final NegatedLabelExpression negatedLabelExpression) {
-        stack.push(new LogicalOpSelection(new LogicalOpAllEdges(), new Negated(new Label(negatedLabelExpression.getLabel(), "edge", 0))));
-    }
-    
-    @Override
-    public void visit(final ReverseLabelExpression reverseLabelExpression) {
-        stack.push(new LogicalOpReverse(new LogicalOpSelection(new LogicalOpAllEdges(), new Label( reverseLabelExpression.getLabel(), "edge", 0))));
+        stack.push(new LogicalOpSelectionByNegatedLabel(new Label(negatedLabelExpression.getLabel(), "edge", 0)));
     }
 
     public LogicalOperator getRoot() {

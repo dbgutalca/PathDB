@@ -13,9 +13,12 @@ public class ReturnNode extends ReturnContent {
 
     @Override
     public String getContent(Path p) {
-        if (this.nodePos == -2) return p.last().toString();
-        if (nodePos < p.getNodesAmount() && nodePos >= 0) return p.getNodeAt(nodePos).toString();
+        if (this.nodePos == -2)
+            this.nodePos = p.getQuantityOfNodes() - 1;
+
+        if (nodePos < p.getQuantityOfNodes() && nodePos >= 0)
+            return p.getNode(nodePos).toString();
         return "";
     }
-    
+
 }

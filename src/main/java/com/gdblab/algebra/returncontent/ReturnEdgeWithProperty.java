@@ -15,10 +15,10 @@ public class ReturnEdgeWithProperty extends ReturnContent {
 
     @Override
     public String getContent(Path p) {
-        if (this.edgePos < p.getEdgeLength() && this.edgePos >= 0) {
-            return p.getEdgeAt(edgePos).getProperty(propertyName).toString();
+        if (this.edgePos < p.getQuantityOfEdges() && this.edgePos >= 0) {
+            return p.getPropertyValueOfEdgeAtPosition(edgePos, propertyName);
         }
         return "";
     }
-    
+
 }

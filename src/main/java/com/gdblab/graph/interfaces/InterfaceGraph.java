@@ -1,41 +1,23 @@
 package com.gdblab.graph.interfaces;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-
-import com.gdblab.graph.schema.*;
 
 public interface InterfaceGraph {
 
-    public Node getNode(final String id);
+    public void insertNode(final String id, final String nodeObject);
 
-    public Iterator<Node> getNodeIterator();
+    public void insertEdge(final String label, final String edgeObject);
 
-    public Iterator<Edge> getEdgeIterator();
+    public String getNode(final String id);
 
-    public Iterator<Edge> getEdgeIteratorByLabel(final String label);
+    public String getEdge(final String id);
 
-    public Node insertNode(final Node node);
+    public Iterator<String> getNodeIterator();
 
-    public Edge insertEdge(final Edge edge);
+    public Iterator<String> getEdgeIteratorByLabel(final String label);
 
-    public HashSet<Edge> getNeighbours(final String nodeID);
-
-    // Statistics methods
-
-    public Integer getNodesQuantity();
-
-    public Integer getEdgesQuantity();
-
-    public Integer getDifferetEdgesQuantity();
-    
-    public HashMap<String, Integer> getEdgesByLabelQuantity();
-
-    public ArrayList<Edge> getSampleOfEachlabel();
+    public Iterator<String> getEdgeIteratorByNegatedLabel(final String label);
 
     public void cleanNodes();
 
-    public void cleanEdges();
 }

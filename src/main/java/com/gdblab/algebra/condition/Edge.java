@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.gdblab.algebra.condition;
 
 import com.gdblab.graph.schema.Path;
@@ -10,7 +6,7 @@ import com.gdblab.graph.schema.Path;
  *
  * @author ramhg
  */
-public class Edge  extends Condition{
+public class Edge  extends Condition {
     
     public String prop;
     public String condition;
@@ -29,34 +25,33 @@ public class Edge  extends Condition{
     public boolean eval(Path p) {
         if (p != null) {
 
-            com.gdblab.graph.schema.Edge edge = p.getEdgeAt(this.pos);
+            String propertyValue = p.getPropertyValueOfEdgeAtPosition(this.pos, this.prop);
 
-            if (edge == null) return false;
-            if (edge.getProperties().containsKey(this.prop)) return false;
+            if (propertyValue == null) return false;
 
             Float value_1 = null;
             Float value_2 = null;
 
             switch (this.condition) {
                 case "=":
-                    return edge.getProperty(this.prop).equals(this.value);
+                    return propertyValue.equals(this.value);
                 case "!=":
-                    return !edge.getProperty(this.prop).equals(this.value);
+                    return !propertyValue.equals(this.value);
                 case "<":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(edge.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue);
                     return value_2 < value_1;
                 case "<=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(edge.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue);
                     return value_2 <= value_1;
                 case ">":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(edge.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue);
                     return value_2 > value_1;
                 case ">=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(edge.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue);
                     return value_2 >= value_1;
                 default:
                     return false;

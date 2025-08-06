@@ -16,7 +16,7 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
     protected final List<Path> leftRows = new LinkedList<>();
 
     public PhysicalOpBinaryUnion(final PhysicalOperator leftChild, final PhysicalOperator rightChild,
-                                        final LogicalOpUnion lop) {
+            final LogicalOpUnion lop) {
         super(leftChild, rightChild);
         this.lop = lop;
     }
@@ -28,7 +28,7 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
 
     @Override
     public boolean hasNext() {
-        if ( slot == null ) {
+        if (slot == null) {
             slot = moveToNextPathOrNull();
             return slot != null;
         }
@@ -41,7 +41,7 @@ public class PhysicalOpBinaryUnion extends BinaryPhysicalOp {
         slot = null;
         return r;
     }
-    
+
     protected Path moveToNextPathOrNull() {
         while (this.leftChild.hasNext()) {
             final Path p = this.leftChild.next();

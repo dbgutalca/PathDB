@@ -28,7 +28,7 @@ public final class Context {
         maxPathLength = 10;
         maxRecursion = 4;
         totalPathsObtained = 0;
-        semantic = 2;
+        semantic = 2; // 1 -> Walk, 2 -> Trail, 3 -> Simple Path, 4 -> Acyclic
         limit = 100;
         totalPathsToShow = Integer.MAX_VALUE;
 

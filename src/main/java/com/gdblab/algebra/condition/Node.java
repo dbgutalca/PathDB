@@ -29,34 +29,33 @@ public class Node  extends Condition {
     public boolean eval(Path p) {
         if (p != null) {
 
-            com.gdblab.graph.schema.Node node = p.getNodeAt(this.pos);
+            String propertyValue = p.getPropertyValueOfNodeAtPosition(this.pos, this.prop);
 
-            if (node == null) return false;
-            if (!node.getProperties().containsKey(this.prop)) return false;
+            if (propertyValue == null) return false;
 
             Float value_1 = null;
             Float value_2 = null;
 
             switch (this.condition) {
                 case "=":
-                    return node.getProperty(this.prop).equals(this.value);
+                    return propertyValue.equals(this.value);
                 case "!=":
-                    return !node.getProperty(this.prop).equals(this.value);
+                    return !propertyValue.equals(this.value);
                 case "<":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(node.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue.toString());
                     return value_2 < value_1;
                 case "<=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(node.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue.toString());
                     return value_2 <= value_1;
                 case ">":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(node.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue.toString());
                     return value_2 > value_1;
                 case ">=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(node.getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(propertyValue.toString());
                     return value_2 >= value_1;
                 default:
                     return false;

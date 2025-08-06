@@ -13,8 +13,9 @@ public class ReturnLabelEdge extends ReturnContent {
 
     @Override
     public String getContent(Path p) {
-        if (edgePos < p.getEdgeLength() && edgePos >= 0) return p.getEdgeAt(edgePos).getLabel();
+        if (edgePos < p.getQuantityOfEdges() && edgePos >= 0)
+            return p.getLabelOfEdgeAtPosition(edgePos);
         return "";
     }
-    
+
 }

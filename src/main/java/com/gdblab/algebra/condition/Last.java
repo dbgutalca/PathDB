@@ -25,32 +25,34 @@ public class Last extends Condition{
     @Override
     public boolean eval(Path p) {
         if(p != null){
-            Boolean propExists = p.last().getProperties().containsKey(this.prop);
-            if(!propExists) return false;
+            
+            String property_value = p.getPropertyValueOfNodeAtPosition(-1, prop);
+
+            if (property_value == null) return false;
 
             Float value_1 = null;
             Float value_2 = null;
 
             switch (this.condition) {
                 case "=":
-                    return p.last().getProperty(this.prop).equals(this.value);
+                    return property_value.equals(this.value);
                 case "!=":
-                    return !p.last().getProperty(this.prop).equals(this.value);
+                    return !property_value.equals(this.value);
                 case "<":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.last().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 < value_1;
                 case "<=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.last().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 <= value_1;
                 case ">":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.last().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 > value_1;
                 case ">=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.last().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 >= value_1;
                 default:
                     return false;

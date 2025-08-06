@@ -3,22 +3,22 @@ package com.gdblab.algebra.queryplan.physical.impl;
 import java.util.Iterator;
 
 import com.gdblab.algebra.condition.Label;
-import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelectionByLabel;
+import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelectionByNegatedLabel;
 import com.gdblab.algebra.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.graph.schema.Path;
 import com.gdblab.graph.Graph;
+import com.gdblab.graph.schema.Path;
 
-public class PhysicalOpSelectionByLabel implements NullaryPhysicalOperator {
+public class PhysicalOpSelectionByNegatedLabel implements NullaryPhysicalOperator {
 
-    protected final LogicalOpSelectionByLabel lop;
+    protected final LogicalOpSelectionByNegatedLabel lop;
     protected Path slot;
 
     private final Iterator<String> edges;
 
-    public PhysicalOpSelectionByLabel(LogicalOpSelectionByLabel lop) {
+    public PhysicalOpSelectionByNegatedLabel(LogicalOpSelectionByNegatedLabel lop) {
         this.lop = lop;
-        this.edges = Graph.getGraph().getEdgeIteratorByLabel(((Label) lop.getCondition()).getLabel());
+        this.edges = Graph.getGraph().getEdgeIteratorByNegatedLabel(((Label) lop.getCondition()).getLabel());
     }
 
     @Override
@@ -28,15 +28,16 @@ public class PhysicalOpSelectionByLabel implements NullaryPhysicalOperator {
 
     @Override
     public boolean hasNext() {
-        
-        if (slot != null) return true;
+
+        if (slot != null)
+            return true;
 
         while (edges.hasNext()) {
             String[] edgeData = edges.next().split("\\|");
             slot = new Path(edgeData[0], edgeData[1], edgeData[2]);
             return true;
         }
-        
+
         return false;
     }
 
@@ -50,5 +51,5 @@ public class PhysicalOpSelectionByLabel implements NullaryPhysicalOperator {
 
         return null;
     }
-    
+
 }

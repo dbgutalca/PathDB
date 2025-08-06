@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.gdblab.algebra.condition;
 
 import com.gdblab.graph.schema.Path;
@@ -10,7 +6,7 @@ import com.gdblab.graph.schema.Path;
  *
  * @author ramhg
  */
-public class First extends Condition{
+public class First extends Condition {
     
     public String prop;
     public String condition;
@@ -25,32 +21,34 @@ public class First extends Condition{
     @Override
     public boolean eval(Path p) {
         if(p != null){
-            Boolean propExists = p.first().getProperties().containsKey(this.prop);
-            if(!propExists) return false;
+
+            String property_value = p.getPropertyValueOfNodeAtPosition(0, prop);
+
+            if (property_value == null) return false;
 
             Float value_1 = null;
             Float value_2 = null;
 
             switch (this.condition) {
                 case "=":
-                    return p.first().getProperty(this.prop).equals(this.value);
+                    return property_value.equals(this.value);
                 case "!=":
-                    return !p.first().getProperty(this.prop).equals(this.value);
+                    return !property_value.equals(this.value);
                 case "<":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 < value_1;
                 case "<=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 <= value_1;
                 case ">":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 > value_1;
                 case ">=":
                     value_1 = Float.parseFloat(this.value);
-                    value_2 = Float.parseFloat(p.first().getProperty(this.prop).toString());
+                    value_2 = Float.parseFloat(property_value);
                     return value_2 >= value_1;
                 default:
                     return false;

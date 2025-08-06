@@ -25,16 +25,12 @@ public interface LogicalPlanVisitor {
 
     void visit(final LogicalOpDifference logicalOpDifference);
 
-    void visit(final LogicalOpAllPathsStartingFromNode logicalOpAllPathsStartingFromNode);
-
     void visit(final LogicalOpRecursive logicalOpRecursive);
 
     void visit(final LogicalOpAllNodes logicalOpAllNodes);
 
-    void visit(final LogicalOpAllEdges logicalOpAllEdges);
-
-    void visit(final LogicalOpReverse logicalOpReverse);
-
     void visit(final LogicalOpSelectionByLabel logicalOpSelectionByLabel);
+
+    void visit(final LogicalOpSelectionByNegatedLabel logicalOpSelectionByNegatedLabel);
 
 }

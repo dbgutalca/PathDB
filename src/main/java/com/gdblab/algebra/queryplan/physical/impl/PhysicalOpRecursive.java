@@ -71,8 +71,8 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
         while (true) {
             while (this.rightChild.hasNext()) {
                 final Path path = this.rightChild.next();
-    
-                if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
+
+                if (path.getPathLength() <= Context.getInstance().getMaxPathsLength()) {
                     this.rightList.add(path);
                     return path;
                 }
@@ -92,7 +92,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
                 }
 
                 if (this.leftIterator == null) { 
-                    this.leftIterator = this.HashTable.get(this.nextRight.first().getId()).iterator();
+                    this.leftIterator = this.HashTable.get(this.nextRight.getFirst()).iterator();
                 }
     
                 while (this.leftIterator.hasNext()) {
@@ -126,7 +126,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
             while (this.leftChild.hasNext()) {
                 final Path path = this.leftChild.next();
     
-                if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
+                if (path.getPathLength() <= Context.getInstance().getMaxPathsLength()) {
                     this.leftList.add(path);
                     return path;
                 }
@@ -146,7 +146,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
                 }
 
                 if (this.rightIterator == null) {
-                    List<Path> r = this.HashTable.get(this.nextLeft.last().getId());
+                    List<Path> r = this.HashTable.get(this.nextLeft.getLast());
                     if (r != null) {
                         this.rightIterator = r.iterator();
                     }
@@ -180,8 +180,8 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     private void saveLeftListAsHashMap(PhysicalOperator op) {
         while (op.hasNext()) {
             final Path path = op.next();
-            if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
-                final String key = path.first().getId();
+            if (path.getPathLength() <= Context.getInstance().getMaxPathsLength()) {
+                final String key = path.getFirst();
                 if (!this.HashTable.containsKey(key)) {
                     this.HashTable.put(key, new ArrayList<>());
                 }
@@ -195,8 +195,8 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     private void saveRightListAsHashMap(PhysicalOperator op) {
         while (op.hasNext()) {
             final Path path = op.next();
-            if (path.getEdgeLength() <= Context.getInstance().getMaxPathsLength()) {
-                final String key = path.last().getId();
+            if (path.getPathLength() <= Context.getInstance().getMaxPathsLength()) {
+                final String key = path.getLast();
                 if (!this.HashTable.containsKey(key)) {
                     this.HashTable.put(key, new ArrayList<>());
                 }

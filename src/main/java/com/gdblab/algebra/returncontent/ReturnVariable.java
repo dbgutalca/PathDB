@@ -19,17 +19,14 @@ public class ReturnVariable extends ReturnContent {
         String rightVariableName = Context.getInstance().getRightVarName();
 
         if (!pathName.equals("") && pathName.equals(this.variableName)) {
-            return p.toString();
-        }
-        else if (!leftVariableName.equals("") && leftVariableName.equals(this.variableName)) {
-            return p.first().toString();
-        }
-        else if (!rightVariableName.equals("") && rightVariableName.equals(this.variableName)) {
-            return p.last().toString();
-        }
-        else {
+            return p.getStringPath();
+        } else if (!leftVariableName.equals("") && leftVariableName.equals(this.variableName)) {
+            return p.getNode(0);
+        } else if (!rightVariableName.equals("") && rightVariableName.equals(this.variableName)) {
+            return p.getNode(-1);
+        } else {
             return "";
         }
     }
-    
+
 }

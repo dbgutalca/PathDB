@@ -13,8 +13,9 @@ public class ReturnEdge extends ReturnContent {
 
     @Override
     public String getContent(Path p) {
-        if (this.edgePos < p.getEdgeLength() && this.edgePos >= 0) return p.getEdgeAt(edgePos).toString();
+        if (this.edgePos < p.getQuantityOfEdges() && this.edgePos >= 0)
+            return p.getEdge(edgePos);
         return "";
     }
-    
+
 }

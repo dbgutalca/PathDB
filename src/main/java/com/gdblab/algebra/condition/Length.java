@@ -24,7 +24,7 @@ public class Length  extends Condition{
     @Override
     public boolean eval(Path p) {
         if (p != null) {
-            int pathLength = p.getLength();
+            int pathLength = p.getPathLength();
             switch (this.condition) {
                 case "=":
                     return pathLength == this.length;

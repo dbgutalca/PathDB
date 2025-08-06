@@ -1,22 +1,17 @@
 package com.gdblab.graph.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 
 import com.gdblab.graph.interfaces.InterfaceGraph;
-import com.gdblab.graph.schema.Edge;
-import com.gdblab.graph.schema.Node;
 
 public class CSRVPMin implements InterfaceGraph {
 
     private static CSRVPMin instance = null;
 
-    private final HashMap<String, Node> nodes; // El string es el ID del Node
-    private final HashMap<String, LinkedList<Edge>> edges; // El string es el label de los edges que estan en la LinkedList
+    private final HashMap<String, String> nodes; // Formar: <NodeID, NodeObjectString>
+    private final HashMap<String, LinkedList<String>> edges; // Formar: <EdgeLabel, List of EdgeObjectStrings>
 
     public static InterfaceGraph getInstance() {
         if (instance == null) {
@@ -31,153 +26,98 @@ public class CSRVPMin implements InterfaceGraph {
     }
 
     @Override
-    public Node getNode(final String id) {
-        return nodes.get(id);
+    public String getNode(String id) {
+        return this.nodes.get(id);
     }
 
     @Override
-    public Iterator<Node> getNodeIterator() {
-        return nodes.values().iterator();
-    }
-
-    @Override
-    public Iterator<Edge> getEdgeIterator() {
-        return new Iterator<Edge>() {
-
-            Edge slot = null;
-
-            Iterator<LinkedList<Edge>> valuesIt = edges.values().iterator();
-            Iterator<Edge> currentIt = null;
-            
-            @Override
-            public boolean hasNext() {
-                for(;;){
-
-                    if (currentIt == null) {
-
-                        if (valuesIt.hasNext()) {
-                            currentIt = valuesIt.next().iterator();
-                        }
-
-                        else {
-                            return false;
-                        }
-                    }
-    
-                    if (currentIt.hasNext()) {
-                        slot = currentIt.next();
-                        return true;
-                    }
-    
-                    else currentIt = null;
+    public String getEdge(String id) {
+        for (LinkedList<String> edgeList : this.edges.values()) {
+            for (String edge : edgeList) {
+                if (edge.split("\\|")[0].equals(id)) {
+                    System.out.println("Edge found: " + edge);
+                    return edge;
                 }
             }
-
-            @Override
-            public Edge next() {
-                Edge e = slot;
-                slot = null;
-                return e;
-            }
-        };
-    }
-
-    @Override
-    public Iterator<Edge> getEdgeIteratorByLabel(final String label) {
-        LinkedList<Edge> list = edges.get(label);
-        if (list == null) return new LinkedList<Edge>().iterator();
-        return edges.get(label).iterator();
-    }
-
-    @Override
-    public Node insertNode(Node node) {
-        if (! nodes.containsKey(node.getId())){
-            nodes.put(node.getId(), node);
-            return node;
         }
         return null;
     }
 
     @Override
-    public Edge insertEdge(Edge edge) {
-        if (!edges.containsKey(edge.getLabel())){
-            final LinkedList<Edge> edgesByLabel = new LinkedList<>();
-            edges.put(edge.getLabel(), edgesByLabel);
-            edgesByLabel.add(edge);
-            return edge;
-        }
-        else{
-            final LinkedList<Edge> edgesByLabel = edges.get(edge.getLabel());
-            edgesByLabel.add(edge);
-            return edge;
-        }
+    public Iterator<String> getNodeIterator() {
+        return this.nodes.keySet().iterator();
     }
 
     @Override
-    public Integer getNodesQuantity() {
-        return nodes.size();
+    public Iterator<String> getEdgeIteratorByLabel(String label) {
+        LinkedList<String> labeledEdges = this.edges.get(label);
+        if (labeledEdges == null)
+            return new LinkedList<String>().iterator();
+
+        return new Iterator<String>() {
+            private final Iterator<String> it = labeledEdges.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public String next() {
+                String[] edge = it.next().split("\\|");
+
+                return edge[3].split(":")[1] + "|" +
+                        edge[0].split(":")[1] + "|" +
+                        edge[4].split(":")[1] + "|";
+            }
+        };
     }
 
     @Override
-    public Integer getEdgesQuantity() {
-        Integer i = 0;
-
-        for (LinkedList<Edge> list : edges.values()) {
-            i += list.size();
+    public Iterator<String> getEdgeIteratorByNegatedLabel(String label) {
+        LinkedList<String> negatedEdges = new LinkedList<>();
+        for (String key : this.edges.keySet()) {
+            if (!key.equals(label)) {
+                negatedEdges.addAll(this.edges.get(key));
+            }
         }
+        if (negatedEdges.isEmpty())
+            return new LinkedList<String>().iterator();
 
-        return i;
+        return new Iterator<String>() {
+            private final Iterator<String> it = negatedEdges.iterator();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public String next() {
+                String[] edge = it.next().split("\\|");
+                return edge[3].split(":")[1] + "|" +
+                        edge[0].split(":")[1] + "|" +
+                        edge[4].split(":")[1] + "|";
+            }
+        };
     }
 
     @Override
-    public Integer getDifferetEdgesQuantity() {
-        return edges.size();
+    public void insertNode(String id, String nodeObject) {
+        this.nodes.put(id, nodeObject);
     }
-    
+
     @Override
-    public HashMap<String, Integer> getEdgesByLabelQuantity() {
-        HashMap<String, Integer> edgesByLabel = new HashMap<>();
-
-        for (Map.Entry<String, LinkedList<Edge>> entry : edges.entrySet()) {
-            String label = entry.getKey();
-            LinkedList<Edge> edgesList = entry.getValue();
-
-            edgesByLabel.put(label, edgesList.size());
+    public void insertEdge(String label, String edgeObject) {
+        if (!this.edges.containsKey(label)) {
+            this.edges.put(label, new LinkedList<>());
         }
-
-        return edgesByLabel;
-    }
-
-    @Override
-    public ArrayList<Edge> getSampleOfEachlabel() {
-        ArrayList<Edge> sample = new ArrayList<>();
-        
-        for (LinkedList<Edge> list : edges.values()) {
-            sample.add(list.get((int) (Math.random() * (list.size() - 1))));
-        }
-
-        return sample;
-    }
-
-    @Override
-    public HashSet<Edge> getNeighbours(final String id) {
-        final HashSet<Edge> nodesTemp = new HashSet<>();
-        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
-            final Edge edge = edgeIt.next(); 
-            if (edge.getSource().getId().equals(id))
-                nodesTemp.add(edge);
-        }
-        return nodesTemp;
+        this.edges.get(label).add(edgeObject);
     }
 
     @Override
     public void cleanNodes() {
-        nodes.clear();
-    }
-
-    @Override
-    public void cleanEdges() {
-        edges.clear();
+        this.nodes.clear();
     }
 
 }

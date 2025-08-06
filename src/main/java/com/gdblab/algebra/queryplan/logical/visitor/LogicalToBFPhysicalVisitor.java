@@ -6,14 +6,12 @@ import com.gdblab.algebra.queryplan.logical.LogicalPlanVisitor;
 import com.gdblab.algebra.queryplan.logical.impl.*;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlan;
-import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpAllEdges;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpAllNodes;
-import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBFSAllPathsFromNode;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpBinaryUnion;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpHashNodeJoin;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpRecursive;
-import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpReverse;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSelectionByLabel;
+import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSelectionByNegatedLabel;
 import com.gdblab.algebra.queryplan.physical.impl.PhysicalOpSequentialScan;
 
 public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
@@ -22,7 +20,8 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
 
     @Override
     public void visit(final LogicalOpSelection logicalOpSelection) {
-        //we first visit the children, to keep the structure of the tree with the recursive calls
+        // we first visit the children, to keep the structure of the tree with the
+        // recursive calls
         logicalOpSelection.getChild().acceptVisitor(this);
         stack.push(new PhysicalOpSequentialScan(stack.pop(), logicalOpSelection));
     }
@@ -32,10 +31,11 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
 
     }
 
-    //JOIN(SELECT(CONJUNTO1), SELECT(Conjunto2))  SeqScan(conjunto1),
+    // JOIN(SELECT(CONJUNTO1), SELECT(Conjunto2)) SeqScan(conjunto1),
     @Override
     public void visit(final LogicalOpNodeJoin logicalOpNodeJoin) {
-        //we visit both children, to get the two *push* operations, and thus we can do two *pop*s in the end
+        // we visit both children, to get the two *push* operations, and thus we can do
+        // two *pop*s in the end
         logicalOpNodeJoin.getRightChild().acceptVisitor(this);
         logicalOpNodeJoin.getLeftChild().acceptVisitor(this);
         stack.push(new PhysicalOpHashNodeJoin(stack.pop(), stack.pop(), logicalOpNodeJoin));
@@ -74,12 +74,6 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
     }
 
     @Override
-    public void visit(final LogicalOpAllPathsStartingFromNode logicalOpAllPathsStartingFromNode) {
-        //since nullary operators don't have children (are leaves of the plan tree), we just push to the stack
-        stack.push(new PhysicalOpBFSAllPathsFromNode(logicalOpAllPathsStartingFromNode));
-    }
-
-    @Override
     public void visit(final LogicalOpRecursive logicalOpRecursive) {
         if (logicalOpRecursive.hasFirstFilter()) {
             logicalOpRecursive.getLeftChild().acceptVisitor(this);
@@ -93,25 +87,19 @@ public class LogicalToBFPhysicalVisitor implements LogicalPlanVisitor {
 
     @Override
     public void visit(final LogicalOpAllNodes logicalOpAllNodes) {
-        //since nullary operators don't have children (are leaves of the plan tree), we just push to the stack
+        // since nullary operators don't have children (are leaves of the plan tree), we
+        // just push to the stack
         stack.push(new PhysicalOpAllNodes(logicalOpAllNodes));
-    }
-
-    @Override
-    public void visit(final LogicalOpAllEdges logicalOpAllEdges) {
-        //since nullary operators don't have children (are leaves of the plan tree), we just push to the stack
-        stack.push(new PhysicalOpAllEdges(logicalOpAllEdges));
-    }
-
-    @Override
-    public void visit(final LogicalOpReverse logicalOpReverse) {
-        logicalOpReverse.getChild().acceptVisitor(this);
-        stack.push(new PhysicalOpReverse(stack.pop(), logicalOpReverse));
     }
 
     @Override
     public void visit(LogicalOpSelectionByLabel logicalOpSelectionByLabel) {
         stack.push(new PhysicalOpSelectionByLabel(logicalOpSelectionByLabel));
+    }
+
+    @Override
+    public void visit(LogicalOpSelectionByNegatedLabel logicalOpSelectionByNegatedLabel) {
+        stack.push(new PhysicalOpSelectionByNegatedLabel(logicalOpSelectionByNegatedLabel));
     }
 
     public PhysicalPlan getPhysicalPlan() {

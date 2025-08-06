@@ -4,28 +4,19 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import java.util.regex.Pattern;
-
-import org.json.simple.JSONObject;
-
 import java.util.regex.Matcher;
 
-import com.gdblab.graph.DefaultGraph2;
+import com.gdblab.graph.DefaultGraph;
 import com.gdblab.graph.Graph;
 import com.gdblab.graph.interfaces.InterfaceGraph;
-import com.gdblab.graph.schema.Edge;
-import com.gdblab.graph.schema.GraphObject;
-import com.gdblab.graph.schema.Node;
-import com.gdblab.graph.schema.Path;
 
 public final class Tools {
 
     public static void clearConsole() {
         try {
             String os = System.getProperty("os.name");
-    
+
             if (os.contains("Windows")) {
                 // Ejecutar comando cls en Windows
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -35,21 +26,22 @@ public final class Tools {
                 System.out.flush();
             }
             initMessage();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
     public static void initMessage() {
         System.out.println();
         String[] logo = {
-        "       ╔═════════════════════════════════════════════════════╗",
-        "       ║    _____            _     _       _____    ____     ║",
-        "       ║   |  __ \\          | |   | |     |  __ \\  |  _ \\    ║",
-        "       ║   | |__) |   __ _  | |_  | |__   | |  | | | |_) |   ║",
-        "       ║   |  ___/   / _` | | __| | '_ \\  | |  | | |  _ <    ║",
-        "       ║   | |      | (_| | | |_  | | | | | |__| | | |_) |   ║",
-        "       ║   |_|       \\__,_|  \\__| |_| |_| |_____/  |____/    ║",
-        "       ║                                                v1.0 ║",
-        "       ╚═════════════════════════════════════════════════════╝"
+                "       ╔═════════════════════════════════════════════════════╗",
+                "       ║    _____            _     _       _____    ____     ║",
+                "       ║   |  __ \\          | |   | |     |  __ \\  |  _ \\    ║",
+                "       ║   | |__) |   __ _  | |_  | |__   | |  | | | |_) |   ║",
+                "       ║   |  ___/   / _` | | __| | '_ \\  | |  | | |  _ <    ║",
+                "       ║   | |      | (_| | | |_  | | | | | |__| | | |_) |   ║",
+                "       ║   |_|       \\__,_|  \\__| |_| |_| |_____/  |____/    ║",
+                "       ║                                                v1.0 ║",
+                "       ╚═════════════════════════════════════════════════════╝"
         };
 
         for (String u : logo) {
@@ -65,27 +57,25 @@ public final class Tools {
 
             ArrayList<String> schemaNode = new ArrayList<>();
             while ((line = br.readLine()) != null) {
-                
+
                 if (line.startsWith("@")) {
                     schemaNode = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                    schemaNode.get(0).replaceAll("@", "");
+                    schemaNode.get(1).replaceAll("@", "");
                 }
 
                 else {
                     ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                    
-                    HashMap<String, String> properties = new HashMap<>();
 
-                    for (int i = 2; i < data.size() && i < schemaNode.size(); i++) {
-                        properties.put(schemaNode.get(i), data.get(i));
+                    String id = data.get(0);
+                    String node = "";
+
+                    for (int i = 0; i < schemaNode.size(); i++) {
+                        node = node + schemaNode.get(i) + ":" + data.get(i) + "|";
                     }
 
-                    Node node = new Node(
-                        data.get(0),
-                        data.get(1),
-                        properties
-                    );
-
-                    Graph.getGraph().insertNode(node);
+                    node.substring(0, node.length() - 1);
+                    Graph.getGraph().insertNode(id, node);
                 }
 
             }
@@ -105,24 +95,21 @@ public final class Tools {
 
                 if (line.startsWith("@")) {
                     schemaEdge = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                }
-                else {
+                    schemaEdge.get(0).replaceAll("@", "");
+                    schemaEdge.get(1).replaceAll("@", "");
+                    schemaEdge.get(2).replaceAll("@", "");
+                    schemaEdge.get(3).replaceAll("@", "");
+                    schemaEdge.get(4).replaceAll("@", "");
+                } else {
                     ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                    HashMap<String, String> properties = new HashMap<>();
+                    String edgeLabel = data.get(1);
+                    String edge = "";
 
-                    for (int j = 5; j < data.size() && j < schemaEdge.size(); j++) {
-                        properties.put(schemaEdge.get(j), data.get(j));
+                    for (int j = 0; j < data.size() && j < schemaEdge.size(); j++) {
+                        edge += schemaEdge.get(j) + ":" + data.get(j) + "|";
                     }
 
-                    Edge e = new Edge(
-                        data.get(0),
-                        data.get(1),
-                        Graph.getGraph().getNode(data.get(3)),
-                        Graph.getGraph().getNode(data.get(4)),
-                        properties
-                    );
-
-                    Graph.getGraph().insertEdge(e);
+                    Graph.getGraph().insertEdge(edgeLabel, edge);
                 }
             }
 
@@ -136,33 +123,34 @@ public final class Tools {
             return;
         }
 
-
-
-
     }
 
     public static void loadDefaultGraph() {
         InterfaceGraph graph = Graph.getGraph();
 
-        Node[] nodes = DefaultGraph2.getDefaultNodes();
-        for (Node n : nodes) { graph.insertNode(n); }
+        String[] nodes = DefaultGraph.getDefaultStringNodes();
+        for (String n : nodes) {
+            String[] nodeData = n.split("\\|");
+            graph.insertNode(nodeData[0].split(":")[1], n);
+        }
 
-        Edge[] edges = DefaultGraph2.getDefaultEdges();
-        for (Edge e : edges) {
-            graph.insertEdge(e);
+        String[] edges = DefaultGraph.getDefaultStringEdges();
+        for (String e : edges) {
+            String[] edgeData = e.split("\\|");
+            graph.insertEdge(edgeData[1].split(":")[1], e);
         }
     }
 
     public static void showUsageNoArgs() {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
-            "",
-            "No graph loaded. Using default graph.",
-            "If you want to use a custom graph, run the program with the following arguments: ",
-            "java -jar PathDB.jar -n nodes_file.txt -e edges_file.txt",
-            "",
-            "For help, type /h.",
-            ""
+                "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
+                "",
+                "No graph loaded. Using default graph.",
+                "If you want to use a custom graph, run the program with the following arguments: ",
+                "java -jar PathDB.jar -n nodes_file.txt -e edges_file.txt",
+                "",
+                "For help, type /h.",
+                ""
         };
 
         for (String u : usage) {
@@ -172,12 +160,12 @@ public final class Tools {
 
     public static void showUsageArgsLoadingCustomGraph(String nf, String ef) {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
-            "",
-            "Uploading custom graph to PathDB...",
-            "",
-            "Using " + nf + " and " + ef + " files.",
-            ""
+                "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
+                "",
+                "Uploading custom graph to PathDB...",
+                "",
+                "Using " + nf + " and " + ef + " files.",
+                ""
         };
 
         for (String u : usage) {
@@ -187,12 +175,12 @@ public final class Tools {
 
     public static void showUsageArgsLoadedCustomGraph(String nf, String ef) {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
-            "",
-            "Graph loaded successfully. Using " + nf + " and " + ef + " files.",
-            "",
-            "For help, type /h.",
-            ""
+                "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
+                "",
+                "Graph loaded successfully. Using " + nf + " and " + ef + " files.",
+                "",
+                "For help, type /h.",
+                ""
         };
 
         for (String u : usage) {
@@ -202,12 +190,12 @@ public final class Tools {
 
     public static void showUsageArgsErrorLoadingGraph(String nf, String ef) {
         String[] usage = {
-            "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
-            "",
-            "An error occurred while trying to load the database. Loading default graph instead.",
-            "",
-            "For help, type /h.",
-            ""
+                "Welcome to PathDB! A tool to evaluate Regular Path Queries in Property Graphs.",
+                "",
+                "An error occurred while trying to load the database. Loading default graph instead.",
+                "",
+                "For help, type /h.",
+                ""
         };
 
         for (String u : usage) {
@@ -217,14 +205,14 @@ public final class Tools {
 
     public static void showHelp() {
         String[] help = {
-            "List of available commands:",
-            "   /h, /help                           Show this help.",
-            "   /ml <#>, /max_length <#>            Set the fix point of max path length (Default is 10).",
-            "   /mr, /max_recursion <#>             Set the max recursion depth (Default is 6).",
-            "   /pts <#>, </paths_to_show> <#>      Set the number of paths to show (Default is 10).",
-            "   /in, /information                   Show the information of the graph.",
-            "   /la, /labels                        Show a sample of each label in the graph.",
-            "   /q, /quit                           Quit the program."
+                "List of available commands:",
+                "   /h, /help                           Show this help.",
+                "   /ml <#>, /max_length <#>            Set the fix point of max path length (Default is 10).",
+                "   /mr, /max_recursion <#>             Set the max recursion depth (Default is 6).",
+                "   /pts <#>, </paths_to_show> <#>      Set the number of paths to show (Default is 10).",
+                "   /in, /information                   Show the information of the graph.",
+                "   /la, /labels                        Show a sample of each label in the graph.",
+                "   /q, /quit                           Quit the program."
         };
         for (String u : help) {
             System.out.println(u);
@@ -238,7 +226,8 @@ public final class Tools {
         try (BufferedReader br = new BufferedReader(new FileReader(rpqs_file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.startsWith("#")) continue;
+                if (line.startsWith("#"))
+                    continue;
                 rpqs.add(line);
             }
         } catch (Exception e) {
@@ -247,14 +236,15 @@ public final class Tools {
 
         return rpqs;
     }
- 
+
     public static String getConditional(String evaluation) {
-        if (evaluation == null) return "null";
-    
+        if (evaluation == null)
+            return "null";
+
         String regex = "!=|<=|>=|<|>|=";
         Pattern pattern = java.util.regex.Pattern.compile(regex);
         Matcher matcher = pattern.matcher(evaluation);
-    
+
         return matcher.find() ? matcher.group() : "null";
     }
 
@@ -275,44 +265,34 @@ public final class Tools {
         Context.getInstance().setReturnedVariables(new ArrayList<>());
     }
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject nodeToJson(Node node) {
-        JSONObject json = new JSONObject();
-        json.put("id", node.getId());
-        json.put("label", node.getLabel());
-        JSONObject propertiesJson = new JSONObject();
-        node.getProperties().forEach(propertiesJson::put);
-
-        json.put("properties", propertiesJson);
-        return json;
+    public static String getIdOfNode(String node) {
+        String[] nodeDataParts = node.split("\\|");
+        return nodeDataParts[0].split(":")[1];
     }
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject edgeToJson(Edge edge) {
-        JSONObject json = new JSONObject();
-        json.put("id", edge.getId());
-        json.put("label", edge.getLabel());
-        json.put("start", nodeToJson(edge.getSource()));
-        json.put("end", nodeToJson(edge.getTarget()));
-        return json;
+    public static String getLabelOfNode(String node) {
+        String[] nodeDataParts = node.split("\\|");
+        return nodeDataParts[1].split(":")[1];
     }
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject pathToJson(Path path) {
-        JSONObject json = new JSONObject();
-        json.put("id", path.getId());
-        json.put("label", path.getLabel());
-
-        List<GraphObject> goList = path.getSequence();
-
-        for (GraphObject go : goList) {
-            if (go instanceof Node) {
-                json.put("start", nodeToJson((Node) go));
-            } else if (go instanceof Edge) {
-                json.put("end", edgeToJson((Edge) go));
-            }
-        }
-
-        return json;
+    public static String getIdOfEdge(String edge) {
+        String[] edgeDataParts = edge.split("\\|");
+        return edgeDataParts[0].split(":")[1];
     }
+
+    public static String getLabelOfEdge(String edge) {
+        String[] edgeDataParts = edge.split("\\|");
+        return edgeDataParts[1].split(":")[1];
+    }
+
+    public static String getSourceIdOfEdge(String edge) {
+        String[] edgeDataParts = edge.split("\\|");
+        return edgeDataParts[2].split(":")[1];
+    }
+
+    public static String getTargetIdOfEdge(String edge) {
+        String[] edgeDataParts = edge.split("\\|");
+        return edgeDataParts[3].split(":")[1];
+    }
+
 }

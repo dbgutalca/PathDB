@@ -10,7 +10,6 @@ import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllNodes;
 import com.gdblab.algebra.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.graph.Graph;
-import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 
 /**
@@ -20,7 +19,7 @@ import com.gdblab.graph.schema.Path;
 public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
     
     protected final LogicalOpAllNodes lop;
-    private final Iterator<Node> nodes;
+    private final Iterator<String> nodes;
 
     protected Path slot;
 
@@ -38,9 +37,7 @@ public class PhysicalOpAllNodes implements NullaryPhysicalOperator{
     public boolean hasNext() {
         if (slot != null) return true;
         while (nodes.hasNext()){
-            final Node node = nodes.next();
-            final Path p = new Path(node.getId(), node);
-            slot = p;
+            slot = new Path(nodes.next());
             return true;
         }
         return false;
