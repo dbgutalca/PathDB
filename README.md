@@ -23,7 +23,7 @@ If you have a database that follows the structure mentioned in the [preliminarie
 $ java -jar PathDB.jar -n NodesFile -e EdgesFile
 ```
 
-PathDB contains several options that can be observed by using the command `/help`.
+PathDB posee un lenguaje de consultas propio. para poder ver todas las opciones disponibles se recomienda correr el comando `/help`.
 
 ```plaintext
 PathDB> /help
@@ -42,7 +42,7 @@ A simple example of recursive property graph query is the following:
 
 ***Query:***
 ```plaintext
-PathDB> (x{name:Moe})-[knows+]->(y);
+PathDB> MATCH TRAIL p = (x)-[knows*]{..4}->(y) WHERE x.id = "p1" RETURN p LIMIT 3;
 ```
 
 ***Results:***
@@ -56,7 +56,7 @@ A more complex example is the following:
 
 ***Query:***
 ```plaintext
-PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
+PathDB> MATCH WALK path = (source)-[(likes.hasCreator)*]{..3}->(target) WHERE source.id="p1" RETURN p LIMIT 2;
 ```
 
 ***Results:***
@@ -65,7 +65,7 @@ PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
 - Path #3: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4 E7(likes) m3 E11(hasCreator) p1  
 
 
-## Demo 2: Co-author network (DBLP)
+<!-- ## Demo 2: Co-author network (DBLP)
 
 The graph represents a co-authorship network created with data obtained from [DBLP](https://dblp.org). Specifically, the nodes are **authors** and the edges represent the **co-authorship** relation. Two authors are connected by an edge if they co-authored the same article. The schema of the graph is shown in the following figure:
 
@@ -98,7 +98,7 @@ Path #1 - 1970866537 E486243(COAUTHOR) 2106576185 E14464(COAUTHOR)
           1969282344 E7069515(COAUTHOR) 2289364316 E2339853(COAUTHOR)  
           2156312790 E1662154(COAUTHOR) 1337865506
 ```
-The result is a path between "Renzo Angles" and "Paul Erdős" with a length of 5.
+The result is a path between "Renzo Angles" and "Paul Erdős" with a length of 5. -->
 
 ## Contributors
 * Renzo Angles.

@@ -34,8 +34,7 @@ public class CSRVPMin implements InterfaceGraph {
     public String getEdge(String id) {
         for (LinkedList<String> edgeList : this.edges.values()) {
             for (String edge : edgeList) {
-                if (edge.split("\\|")[0].equals(id)) {
-                    System.out.println("Edge found: " + edge);
+                if (edge.split("\\|")[0].split(":")[1].equals(id)) {
                     return edge;
                 }
             }

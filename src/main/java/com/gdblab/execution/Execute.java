@@ -1,15 +1,12 @@
 package com.gdblab.execution;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
@@ -41,7 +38,7 @@ public final class Execute {
 
         byte[] emergencyMemory = new byte[1024 * 1024];
 
-        PhysicalOperator po = null;
+        PhysicalOperator po;
 
         try {
             RPQGrammarLexer lexer = new RPQGrammarLexer(
@@ -82,16 +79,16 @@ public final class Execute {
             counter = Utils.printAndCountPaths(po);
 
             long end = System.nanoTime();
-            System.out.println("\nTotal paths: " + (counter - 1) + " paths");
+
+            System.out.println("\nTotal paths: " + counter + " paths");
             System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
             System.out.println("");
             Tools.resetContext();
-
+            
             po = null;
 
-        } catch (Exception see) {
+        } catch (RecognitionException see) {
             Tools.resetContext();
-            see.printStackTrace();
         } catch (OutOfMemoryError e) {
             emergencyMemory = null;
             System.gc();
@@ -118,23 +115,23 @@ public final class Execute {
 
             String prompt = "PathDB> ";
 
+            //#region Server
             // ServerSocket ss = new ServerSocket(12000);
-            // System.out.println("Server started on port 12000. Waiting for client
-            // connections...");
+            // System.out.println("Server started on port 12000. Waiting for client connections...");
+
             // while (true) {
-            // try (Socket clientSocket = ss.accept();
-            // BufferedReader in = new BufferedReader(new
-            // InputStreamReader(clientSocket.getInputStream()));
-            // PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-            // String input = in.readLine();
-            // System.out.println("Received: " + input);
-            // Context.getInstance().setCompleteQuery(input);
-            // String time = EvalRPQWithAlgebra();
-            // out.println(String.format("%s_%s\n",
-            // Context.getInstance().getRegularExpression(), time));
-            // out.flush();
+            //     try (Socket clientSocket = ss.accept();
+            //         BufferedReader in = new BufferedReader(new
+            //         InputStreamReader(clientSocket.getInputStream()));
+            //         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+            //         String input = in.readLine();
+            //         System.out.println("Received: " + input);
+            //         Context.getInstance().setCompleteQuery(input);
+            //         String res = EvalRPQWithAlgebra();
+            //         out.println(res);
+            //     }
             // }
-            // }
+            //#endregion
 
             while (true) {
 
@@ -150,7 +147,6 @@ public final class Execute {
                 if (line.equals(prefix + "h") || line.equals(prefix + "help")) {
                     Tools.showHelp();
                     System.out.println();
-                    continue;
                 }
 
                 else if (line.startsWith(prefix + "ml ") || line.startsWith(prefix + "max_length ")) {
@@ -158,22 +154,20 @@ public final class Execute {
 
                     if (parts.length != 2) {
                         // clearConsole();
-                        System.out.println(
-                                "Invalid command. Use /ml <#> or /max_length <#> to set max the length of generated paths.\n");
+                        System.out.println("Invalid command. Use /ml <#> or /max_length <#> to set max the length of generated paths.\n");
                         continue;
                     }
 
                     try {
-                        Integer.parseInt(parts[1]);
+                        Integer.valueOf(parts[1]);
                     } catch (NumberFormatException e) {
                         // clearConsole();
                         System.out.println("Invalid command. # must be a positive number greater than 0.\n");
                         continue;
                     }
 
-                    Context.getInstance().setMaxPathsLength(Integer.parseInt(parts[1]));
+                    Context.getInstance().setMaxPathsLength(Integer.valueOf(parts[1]));
                     System.out.println("Set max length of paths to: " + parts[1] + "\n");
-                    continue;
                 }
 
                 else if (line.startsWith(prefix + "mr ") || line.startsWith(prefix + "max_recursion ")) {
@@ -187,7 +181,7 @@ public final class Execute {
                     }
 
                     try {
-                        Integer.parseInt(parts[1]);
+                        Integer.valueOf(parts[1]);
                     } catch (NumberFormatException e) {
                         // clearConsole();
                         System.out.println("Invalid command. # must be a positive number greater or equals to 0.\n");
@@ -200,9 +194,8 @@ public final class Execute {
                         continue;
                     }
 
-                    Context.getInstance().setMaxRecursion(Integer.parseInt(parts[1]));
+                    Context.getInstance().setMaxRecursion(Integer.valueOf(parts[1]));
                     System.out.println("Set max recursion to: " + parts[1] + "\n");
-                    continue;
                 }
 
                 else if (line.startsWith(prefix + "pts ") || line.startsWith(prefix + "paths_to_show ")) {
@@ -215,10 +208,9 @@ public final class Execute {
                     }
 
                     try {
-                        Integer.parseInt(parts[1]);
-                    } catch (Exception e) {
-                        System.out.println(
-                                "Invalid command. Use /p <#> or /paths_to_show <#> to set the number of paths to show.\n");
+                        Integer.valueOf(parts[1]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid command. Use /p <#> or /paths_to_show <#> to set the number of paths to show.\n");
                         continue;
                     }
 
@@ -227,9 +219,8 @@ public final class Execute {
                         continue;
                     }
 
-                    Context.getInstance().setTotalPathsToShow(Integer.parseInt(parts[1]));
+                    Context.getInstance().setTotalPathsToShow(Integer.valueOf(parts[1]));
                     System.out.println("Set show paths configuration to: " + parts[1] + "\n");
-                    continue;
                 }
 
                 else if (line.endsWith(";")) {
@@ -277,12 +268,10 @@ public final class Execute {
 
             }
 
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException | EndOfFileException e) {
             System.out.println("An error occurred.");
         } catch (UserInterruptException e) {
             System.out.println("User interrupted the process.");
-        } catch (Exception e) {
-            System.out.println("An error occurred.");
         }
     }
 

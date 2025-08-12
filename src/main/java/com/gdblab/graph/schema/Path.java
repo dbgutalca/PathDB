@@ -102,7 +102,6 @@ public class Path {
             if (!edgeSet.add(edge))
                 return false;
         }
-        edgeSet = null;
         return true;
     }
 
@@ -112,7 +111,6 @@ public class Path {
             if (!nodeSet.add(node))
                 return false;
         }
-        nodeSet = null;
         return true;
     }
 
@@ -123,7 +121,6 @@ public class Path {
             if (!nodeSet.add(node))
                 return false;
         }
-        nodeSet = null;
         return true;
     }
 
@@ -171,10 +168,13 @@ public class Path {
 
     // #region Path Return Methods
     public String getEdge(int position) {
-        if (this.edges.isEmpty() || this.edges.size() <= position)
-            return "";
+        if (this.edges.isEmpty() || this.edges.size() <= position) return "";
 
-        String edgeIDToSearch = ((String[]) this.edges.toArray())[position];
+        Object[] edgesArray = this.edges.toArray();
+
+        if (position < 0 || position >= edgesArray.length) return null;
+
+        String edgeIDToSearch = (String) edgesArray[position];
 
         String edge = Graph.getGraph().getEdge(edgeIDToSearch);
 
@@ -182,10 +182,14 @@ public class Path {
     }
 
     public String getNode(int position) {
-        if (this.nodes.isEmpty() || this.nodes.size() <= position)
-            return "";
+        if (this.nodes.isEmpty() || this.nodes.size() <= position) return "";
+        if (position == -1) position = this.nodes.size() - 1;
 
-        String nodeIDToSearch = ((String[]) this.nodes.toArray())[position];
+        Object[] nodeArray = this.nodes.toArray();
+        
+        if (position < 0 || position >= nodeArray.length) return null;
+
+        String nodeIDToSearch = (String) nodeArray[position];
 
         String node = Graph.getGraph().getNode(nodeIDToSearch);
 
@@ -193,18 +197,14 @@ public class Path {
     }
 
     public String getPropertyValueOfNodeAtPosition(int position, String propertyToSearch) {
-        if (this.nodes.isEmpty() || this.nodes.size() <= position)
-            return null;
+        if (this.nodes.isEmpty() || this.nodes.size() <= position) return null;
+        if (position == -1) position = this.nodes.size() - 1;
 
-        String[] nodeArray = (String[]) this.nodes.toArray();
+        Object[] nodeArray = this.nodes.toArray();
 
-        if (position == -1)
-            position = nodeArray.length - 1;
+        if (position < 0 || position >= nodeArray.length) return null;
 
-        if (position < 0 || position >= nodeArray.length)
-            return null;
-
-        String nodeID = nodeArray[position];
+        String nodeID = (String) nodeArray[position];
 
         String nodeData = Graph.getGraph().getNode(nodeID);
         if (nodeData == null)
@@ -217,19 +217,18 @@ public class Path {
             }
         }
 
-        return null;
+        return "";
     }
 
     public String getPropertyValueOfEdgeAtPosition(int position, String propertyToSearch) {
-        if (this.edges.isEmpty() || this.edges.size() <= position)
-            return null;
+        if (this.edges.isEmpty() || this.edges.size() <= position) return null;
 
-        String[] edgeArray = (String[]) this.edges.toArray();
+        Object[] edgeArray = this.edges.toArray();
 
         if (position < 0 || position >= edgeArray.length)
             return null;
 
-        String edgeID = edgeArray[position];
+        String edgeID = (String) edgeArray[position];
 
         String edgeData = Graph.getGraph().getEdge(edgeID);
         if (edgeData == null)
@@ -242,7 +241,7 @@ public class Path {
             }
         }
 
-        return null;
+        return "";
 
     }
 
@@ -270,16 +269,16 @@ public class Path {
                 edgesData.add(edgeData);
         }
 
-        StringBuilder pathString = new StringBuilder();
+        String res = "";
 
         for (int i = 0; i < edgesData.size(); i++) {
-            pathString.append(nodesData.get(i)).append(", ");
-            pathString.append(edgesData.get(i)).append(", ");
+            res = res + nodesData.get(i) + ", ";
+            res = res + edgesData.get(i) + ", ";
         }
 
-        pathString.append(nodesData.get(nodesData.size() - 1));
+        res = res + nodesData.get(nodesData.size() - 1);
 
-        return pathString.toString();
+        return res;
     }
     // #endregion
 

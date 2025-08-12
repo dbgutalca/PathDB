@@ -1,5 +1,8 @@
 package com.gdblab.algebra.queryplan.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.returncontent.ReturnContent;
 import com.gdblab.execution.Context;
@@ -8,9 +11,6 @@ import com.gdblab.graph.schema.Path;
 import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_FixedWidth;
 import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Utils {
 
@@ -62,6 +62,20 @@ public class Utils {
         return null;
     }
 
+    public static int printAndCountPathsExperimental(PhysicalOperator po) {
+        Integer counterLP = 0;
+
+        Integer limitCalculatePaths = Context.getInstance().getLimit();
+
+        while (counterLP <= limitCalculatePaths && po.hasNext()) {
+            Path p = po.next();
+            counterLP++;
+        }
+
+        return counterLP;
+
+    }
+
     public static int printAndCountPaths(PhysicalOperator po) {
         Integer counterLP = 1;
 
@@ -89,7 +103,6 @@ public class Utils {
         table.addRule();
 
         while (counterLP <= limitCalculatePaths && po.hasNext()) {
-
             Path p = po.next();
 
             List<String> row = new ArrayList<>();
@@ -109,7 +122,7 @@ public class Utils {
         System.out.println();
         System.out.println(table.render());
 
-        return counterLP;
+        return counterLP - 1;
     }
 
 }
