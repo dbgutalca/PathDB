@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import com.gdblab.graph.schema.*;
+import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.Node;
 
 public interface InterfaceGraph {
 
@@ -35,7 +36,9 @@ public interface InterfaceGraph {
 
     public ArrayList<Edge> getSampleOfEachlabel();
 
-    public void cleanNodes();
+    public void cleanDatabase();
 
-    public void cleanEdges();
+    public boolean isDatabaseLoaded();
+    
+    public void setDatabaseLoaded(boolean flag);
 }

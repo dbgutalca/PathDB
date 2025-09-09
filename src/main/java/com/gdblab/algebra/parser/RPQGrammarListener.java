@@ -1,5 +1,9 @@
 package com.gdblab.algebra.parser;
 
+import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.Stack;
+
 import com.gdblab.algebra.condition.And;
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.algebra.condition.Edge;
@@ -12,16 +16,27 @@ import com.gdblab.algebra.condition.Or;
 import com.gdblab.algebra.parser.error.ErrorDetails;
 import com.gdblab.algebra.parser.error.PropertyNotFoundException;
 import com.gdblab.algebra.parser.error.VariableNotFoundException;
-import com.gdblab.algebra.parser.impl.*;
-import com.gdblab.algebra.returncontent.*;
+import com.gdblab.algebra.parser.impl.AlternativePathExpression;
+import com.gdblab.algebra.parser.impl.ConcatenationExpression;
+import com.gdblab.algebra.parser.impl.LabelExpression;
+import com.gdblab.algebra.parser.impl.NegatedLabelExpression;
+import com.gdblab.algebra.parser.impl.OneOrMoreExpression;
+import com.gdblab.algebra.parser.impl.ReverseLabelExpression;
+import com.gdblab.algebra.parser.impl.ZeroOrMoreExpression;
+import com.gdblab.algebra.parser.impl.ZeroOrOneExpression;
 import com.gdblab.execution.Context;
 import com.gdblab.execution.Tools;
+import com.gdblab.response.content.Content;
+import com.gdblab.response.content.impl.ConentNodeWithProperty;
+import com.gdblab.response.content.impl.ContentEdge;
+import com.gdblab.response.content.impl.ContentEdgeWithProperty;
+import com.gdblab.response.content.impl.ContentLabelEdge;
+import com.gdblab.response.content.impl.ContentLabelNode;
+import com.gdblab.response.content.impl.ContentNode;
+import com.gdblab.response.content.impl.ContentVariable;
+import com.gdblab.response.content.impl.ContentVariableWithProperty;
 import com.gdlab.parser.RPQGrammarBaseListener;
 import com.gdlab.parser.RPQGrammarParser;
-
-import java.util.ArrayList;
-import java.util.EmptyStackException;
-import java.util.Stack;
 
 public class RPQGrammarListener extends RPQGrammarBaseListener {
 
@@ -31,7 +46,7 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     Condition conditionRoot = null;
     final Stack<Condition> conditionalStack = new Stack<>();
 
-    final ArrayList<ReturnContent> returnContent = new ArrayList<>();
+    final ArrayList<Content> returnContent = new ArrayList<>();
     
     boolean finished = false;
 
@@ -107,76 +122,76 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     }
 
     @Override public void exitReturnVariable(final RPQGrammarParser.ReturnVariableContext ctx) {
-        this.returnContent.add(new ReturnVariable(ctx.getText(), ctx.getText()));
+        this.returnContent.add(new ContentVariable(ctx.getText(), ctx.getText()));
     }
     
     @Override public void exitReturnVariableWithProperty(final RPQGrammarParser.ReturnVariableWithPropertyContext ctx) {
         String[] data = ctx.getText().split("\\.");
         String variableName = data[0];
         String propertyName = data[1];
-        this.returnContent.add(new ReturnVariableWithProperty(variableName, propertyName, ctx.getText()));
+        this.returnContent.add(new ContentVariableWithProperty(variableName, propertyName, ctx.getText()));
     }
     
     @Override public void exitReturnFirst(final RPQGrammarParser.ReturnFirstContext ctx) {
-        this.returnContent.add(new ReturnNode(1, ctx.getText()));
+        this.returnContent.add(new ContentNode(1, ctx.getText()));
     }
 
     @Override public void exitReturnFirstWithProperty(final RPQGrammarParser.ReturnFirstWithPropertyContext ctx) {
         String[] data = ctx.getText().split("\\.");
         String propertyName = data[1];
-        this.returnContent.add(new ReturnNodeWithProperty(1, propertyName, ctx.getText()));
+        this.returnContent.add(new ConentNodeWithProperty(1, propertyName, ctx.getText()));
     }
 
     @Override public void exitReturnLast(final RPQGrammarParser.ReturnLastContext ctx) {
-        this.returnContent.add(new ReturnNode(-1, ctx.getText()));
+        this.returnContent.add(new ContentNode(-1, ctx.getText()));
     }
 
     @Override public void exitReturnLastWithProperty(final RPQGrammarParser.ReturnLastWithPropertyContext ctx) {
         String[] data = ctx.getText().split("\\.");
         String propertyName = data[1];
-        this.returnContent.add(new ReturnNodeWithProperty(-1, propertyName, ctx.getText()));
+        this.returnContent.add(new ConentNodeWithProperty(-1, propertyName, ctx.getText()));
     }
 
     @Override public void exitReturnNode(final RPQGrammarParser.ReturnNodeContext ctx) {
         int pos = Integer.parseInt(ctx.getText().substring(5, ctx.getText().length() - 1));
-        this.returnContent.add(new ReturnNode(pos, ctx.getText()));
+        this.returnContent.add(new ContentNode(pos, ctx.getText()));
     }
 
     @Override public void exitReturnNodeWithProperty(final RPQGrammarParser.ReturnNodeWithPropertyContext ctx) {
         String[] data = ctx.getText().split("\\.");
         String propertyName = data[1];
         int pos = Integer.parseInt(data[0].substring(5, data[0].length() - 1));
-        this.returnContent.add(new ReturnNodeWithProperty(pos, propertyName, ctx.getText()));
+        this.returnContent.add(new ConentNodeWithProperty(pos, propertyName, ctx.getText()));
     }
 
     @Override public void exitReturnEdge(final RPQGrammarParser.ReturnEdgeContext ctx) {
         int pos = Integer.parseInt(ctx.getText().substring(5, ctx.getText().length() - 1));
-        this.returnContent.add(new ReturnEdge(pos, ctx.getText()));
+        this.returnContent.add(new ContentEdge(pos, ctx.getText()));
     }
 
     @Override public void exitReturnEdgeWithProperty(final RPQGrammarParser.ReturnEdgeWithPropertyContext ctx) {
         String[] data = ctx.getText().split("\\.");
         String propertyName = data[1];
         int pos = Integer.parseInt(data[0].substring(5, data[0].length() - 1));
-        this.returnContent.add(new ReturnEdgeWithProperty(pos, propertyName, ctx.getText()));
+        this.returnContent.add(new ContentEdgeWithProperty(pos, propertyName, ctx.getText()));
     }
 
     @Override public void exitReturnLabelNode(final RPQGrammarParser.ReturnLabelNodeContext ctx) {
         int pos = Integer.parseInt(ctx.getText().substring(11, ctx.getText().length() - 2));
-        this.returnContent.add(new ReturnLabelNode(pos, ctx.getText()));
+        this.returnContent.add(new ContentLabelNode(pos, ctx.getText()));
     }
 
     @Override public void exitReturnLabelEdge(final RPQGrammarParser.ReturnLabelEdgeContext ctx) {
         int pos = Integer.parseInt(ctx.getText().substring(11, ctx.getText().length() - 2));
-        this.returnContent.add(new ReturnLabelEdge(pos, ctx.getText()));
+        this.returnContent.add(new ContentLabelEdge(pos, ctx.getText()));
     }
 
     @Override public void exitReturnLabelFirst(final RPQGrammarParser.ReturnLabelFirstContext ctx) {
-        this.returnContent.add(new ReturnLabelNode(1, ctx.getText()));
+        this.returnContent.add(new ContentLabelNode(1, ctx.getText()));
     }
 
     @Override public void exitReturnLabelLast(final RPQGrammarParser.ReturnLabelLastContext ctx) {
-        this.returnContent.add(new ReturnLabelNode(-1, ctx.getText()));
+        this.returnContent.add(new ContentLabelNode(-1, ctx.getText()));
     }
     //#endregion Returns
 

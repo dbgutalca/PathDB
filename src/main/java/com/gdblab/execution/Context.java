@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.algebra.parser.RPQExpression;
-import com.gdblab.algebra.returncontent.ReturnContent;
+import com.gdblab.response.content.Content;
 
 public final class Context {
     private static Context INSTANCE;
@@ -22,7 +22,7 @@ public final class Context {
     private Condition condition;
     private RPQExpression regularExpression;
     private String completeQuery;
-    private ArrayList<ReturnContent> returnedVariables;
+    private ArrayList<Content> returnedVariables;
 
     private Context() {
         maxPathLength = 10;
@@ -145,15 +145,16 @@ public final class Context {
         return completeQuery;
     }
 
-    public void setReturnedVariables(ArrayList<ReturnContent> returnedVariables) {
+    public void setReturnedVariables(ArrayList<Content> returnedVariables) {
         this.returnedVariables = returnedVariables;
     }
 
-    public ArrayList<ReturnContent> getReturnedVariables() {
+    public ArrayList<Content> getReturnedVariables() {
         return returnedVariables;
     }
     
     public void clearReturnedVariables() {
         this.returnedVariables.clear();
     }
+
 }

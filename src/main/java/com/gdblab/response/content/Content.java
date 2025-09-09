@@ -1,12 +1,12 @@
-package com.gdblab.algebra.returncontent;
+package com.gdblab.response.content;
 
 import com.gdblab.graph.schema.Path;
 
-public abstract class ReturnContent {
+public abstract class Content {
 
     public String returnName = null;
     
-    public ReturnContent(String returnName) {
+    public Content(String returnName) {
         this.returnName = returnName;
     }
 

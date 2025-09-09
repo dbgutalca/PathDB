@@ -9,7 +9,7 @@ import java.util.Iterator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpAllNodes;
 import com.gdblab.algebra.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.graph.Graph;
+import com.gdblab.graph.impl.Graph;
 import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 

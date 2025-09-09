@@ -1,12 +1,13 @@
-package com.gdblab.algebra.returncontent;
+package com.gdblab.response.content.impl;
 
 import com.gdblab.graph.schema.Path;
+import com.gdblab.response.content.Content;
 
-public class ReturnEdge extends ReturnContent {
+public class ContentEdge extends Content {
 
     int edgePos;
 
-    public ReturnEdge(int edgePos, String returnName) {
+    public ContentEdge(int edgePos, String returnName) {
         super(returnName);
         this.edgePos = edgePos - 1;
     }

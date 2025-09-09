@@ -1,12 +1,13 @@
-package com.gdblab.algebra.returncontent;
+package com.gdblab.response.content.impl;
 
 import com.gdblab.graph.schema.Path;
+import com.gdblab.response.content.Content;
 
-public class ReturnNode extends ReturnContent {
+public class ContentNode extends Content {
 
     int nodePos;
 
-    public ReturnNode(int nodePos, String returnName) {
+    public ContentNode(int nodePos, String returnName) {
         super(returnName);
         this.nodePos = nodePos - 1;
     }

@@ -15,6 +15,8 @@ public class CSRVPMin implements InterfaceGraph {
 
     private static CSRVPMin instance = null;
 
+    private boolean loadedDatabase;
+
     private final HashMap<String, Node> nodes; // El string es el ID del Node
     private final HashMap<String, LinkedList<Edge>> edges; // El string es el label de los edges que estan en la LinkedList
 
@@ -26,6 +28,7 @@ public class CSRVPMin implements InterfaceGraph {
     }
 
     private CSRVPMin() {
+        this.loadedDatabase = false;
         this.nodes = new HashMap<>();
         this.edges = new HashMap<>();
     }
@@ -171,13 +174,19 @@ public class CSRVPMin implements InterfaceGraph {
     }
 
     @Override
-    public void cleanNodes() {
-        nodes.clear();
+    public void cleanDatabase() {
+        this.nodes.clear();
+        this.edges.clear();
     }
 
     @Override
-    public void cleanEdges() {
-        edges.clear();
+    public boolean isDatabaseLoaded() {
+        return this.loadedDatabase;
+    }
+
+    @Override
+    public void setDatabaseLoaded(boolean flag) {
+        this.loadedDatabase = flag;
     }
 
 }

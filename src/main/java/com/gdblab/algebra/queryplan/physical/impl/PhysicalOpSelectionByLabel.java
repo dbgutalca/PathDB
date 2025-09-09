@@ -6,9 +6,9 @@ import com.gdblab.algebra.condition.Label;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelectionByLabel;
 import com.gdblab.algebra.queryplan.physical.NullaryPhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
-import com.gdblab.graph.schema.Path;
-import com.gdblab.graph.Graph;
+import com.gdblab.graph.impl.Graph;
 import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.Path;
 
 public class PhysicalOpSelectionByLabel implements NullaryPhysicalOperator{
 

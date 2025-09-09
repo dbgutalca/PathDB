@@ -1,41 +1,35 @@
 package com.gdblab.execution;
 
-import java.io.IOException;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.jline.reader.LineReader;
-import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.UserInterruptException;
-import org.jline.terminal.Terminal;
-import org.jline.terminal.TerminalBuilder;
 
 import com.gdblab.algebra.parser.RPQErrorListener;
 import com.gdblab.algebra.parser.RPQExpression;
 import com.gdblab.algebra.parser.RPQGrammarListener;
 import com.gdblab.algebra.parser.error.SyntaxErrorException;
-import com.gdblab.algebra.parser.error.VariableNotFoundException;
 import com.gdblab.algebra.parser.impl.RPQtoAlgebraVisitor;
 import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.algebra.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.util.Utils;
+import com.gdblab.response.ResponseQuery;
 import com.gdlab.parser.RPQGrammarLexer;
 import com.gdlab.parser.RPQGrammarParser;
 
 public final class Execute {
 
-    public static void EvalRPQWithAlgebra(){
-        long start = System.nanoTime();
-        int counter = 1;
-
+    public static ResponseQuery EvalRPQWithAlgebra(){
+        
         byte[] emergencyMemory = new byte[1024 * 1024];
-        PhysicalOperator po = null;
-
+        
         try {
+            long start = System.nanoTime();
+    
+            PhysicalOperator po = null;
+
             RPQGrammarLexer lexer = new RPQGrammarLexer(CharStreams.fromString(Context.getInstance().getCompleteQuery()));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             RPQGrammarParser parser = new RPQGrammarParser(tokens);
@@ -53,98 +47,45 @@ public final class Execute {
 
             LogicalOperator lo = visitor.getRoot();
 
-            
             if (Context.getInstance().getCondition() != null) {
-                lo = addFilter(lo);
+                lo = new LogicalOpSelection(lo, Context.getInstance().getCondition());
             }
 
             LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
             lo.acceptVisitor(visitor2);
             po = visitor2.getPhysicalPlan().getRootOperator();
             
-            counter = Utils.printAndCountPaths(po);
+            ResponseQuery response = Utils.calculatePaths(po);
                 
             long end = System.nanoTime();
-            System.out.println("\nTotal paths: " + (counter - 1) + " paths");
-            System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
-            System.out.println("");
+
+            response.setTime(Utils.getTime(start, end));
+            response.setSuccess(true);
+            response.setMessage("Paths calculated successfully");
+            
             Tools.resetContext();
+            return response;
         }
         catch (SyntaxErrorException syntaxError) {
-            System.out.println(syntaxError.toString());
+            ResponseQuery response = new ResponseQuery();
+            response.setMessage("Error: Syntax Error.");
             Tools.resetContext();
+            return response;
         }
         catch (OutOfMemoryError e) {
+            ResponseQuery response = new ResponseQuery();
+            response.setMessage("Error: Out of Memory Error.");
             emergencyMemory = null;
             System.gc();
             Tools.resetContext();
+            return response;
         }
         catch (RecognitionException e) {
+            ResponseQuery response = new ResponseQuery();
+            response.setMessage("Error: Generic Error.");
             Tools.resetContext();
+            return response;
         }
-    }
-
-    public static void interactive(String[] args) {
-
-        try {
-            Terminal terminal = TerminalBuilder.terminal();
-            LineReader reader = LineReaderBuilder.builder().terminal(terminal).build();
-
-            reader.getHistory().add("");
-
-            Tools.clearConsole();
-
-            if (args.length == 0) {
-                Tools.showUsageNoArgs();
-                Tools.loadDefaultGraph();
-            }
-            else {
-                Tools.showUsageArgsLoadingCustomGraph(args[0], args[1]);
-                Tools.loadCustomGraphFiles(args[0], args[1]);
-            }
-
-            String prompt = "PathDB> ";
-
-            while (true) {
-
-                String line = reader.readLine(prompt);
-
-                reader.getHistory().add(line);
-
-                if (line.equals("/h") || line.equals("/help")) {
-                    Tools.showHelp();
-                    System.out.println();
-                    continue;
-                }
-
-                try {
-                    Context.getInstance().setCompleteQuery(line);
-                    EvalRPQWithAlgebra();   
-                }
-                catch (OutOfMemoryError e) {
-                    System.out.println("Out of memory error. Try again with more memory.\n");
-                }
-                catch (VariableNotFoundException e) {
-                    System.out.println(e.toString());
-                }
-                catch (Exception e) {
-                    System.out.println(e);
-                }
-
-            }
-
-        }
-        catch (IOException e) {
-            System.out.println(e.toString());
-        }
-        catch (UserInterruptException e) {
-            System.out.println("\nExiting...");
-            System.exit(0);
-        }
-    }
-
-    public static LogicalOperator addFilter(LogicalOperator lo) {
-        return new LogicalOpSelection(lo, Context.getInstance().getCondition());
     }
 
 }

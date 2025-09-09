@@ -1,13 +1,14 @@
-package com.gdblab.algebra.returncontent;
+package com.gdblab.response.content.impl;
 
 import com.gdblab.execution.Context;
 import com.gdblab.graph.schema.Path;
+import com.gdblab.response.content.Content;
 
-public class ReturnVariable extends ReturnContent {
+public class ContentVariable extends Content {
 
     String variableName;
 
-    public ReturnVariable(String variableName, String returnName) {
+    public ContentVariable(String variableName, String returnName) {
         super(returnName);
         this.variableName = variableName;
     }

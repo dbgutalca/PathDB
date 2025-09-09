@@ -61,10 +61,10 @@ public class Path extends GraphObject {
     }
     
     public Path(final String id, final boolean reverse, final List<GraphObject> sequence, final Integer length) {
-         super(id, length);
-         this.sequence = new ArrayList<GraphObject>(sequence);
-         Collections.reverse(this.sequence);
-     }
+        super(id, length);
+        this.sequence = new ArrayList<GraphObject>(sequence);
+        Collections.reverse(this.sequence);
+    }
 
     public List<GraphObject> getSequence() {
         return sequence;
