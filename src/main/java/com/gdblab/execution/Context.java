@@ -14,7 +14,6 @@ public final class Context {
     private Integer totalPathsObtained;
     private Integer semantic;
     private Integer limit;
-    private Integer totalPathsToShow;
 
     private String leftVarName;
     private String rightVarName;
@@ -30,7 +29,6 @@ public final class Context {
         totalPathsObtained = 0;
         semantic = 2;
         limit = 100;
-        totalPathsToShow = Integer.MAX_VALUE;
 
         leftVarName = "";
         rightVarName = "";
@@ -87,14 +85,6 @@ public final class Context {
 
     public Integer getLimit() {
         return limit;
-    }
-
-    public void setTotalPathsToShow(Integer totalPathsToShow) {
-        this.totalPathsToShow = totalPathsToShow;
-    }
-
-    public Integer getTotalPathsToShow() {
-        return totalPathsToShow;
     }
 
     public void setCondition(Condition condition) {
