@@ -173,7 +173,7 @@ MATCH ACYCLIC p = (x)-[HasCreator?.Knows*]{..6}->(y) WHERE x.name = "Moe" OR x.t
 ---
 
 ## Financiamiento
-Este desarrollo fue financiado por el proyecto **FONDECYT** (número correspondiente).  
+Este desarrollo fue financiado por el proyecto **FONDECYT** 1221727.  
 
 ---
 
