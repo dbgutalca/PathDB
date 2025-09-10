@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
-
-import java.util.regex.Matcher;
 
 import com.gdblab.graph.DefaultGraph2;
 import com.gdblab.graph.Graph;
@@ -216,21 +215,34 @@ public final class Tools {
     }
 
     public static void showHelp() {
-        String[] help = {
-            "List of available commands:",
-            "   /h, /help                           Show this help.",
-            "   /ml <#>, /max_length <#>            Set the fix point of max path length (Default is 10).",
-            "   /mr, /max_recursion <#>             Set the max recursion depth (Default is 6).",
-            "   /pts <#>, </paths_to_show> <#>      Set the number of paths to show (Default is 10).",
-            "   /in, /information                   Show the information of the graph.",
-            "   /la, /labels                        Show a sample of each label in the graph.",
-            "   /q, /quit                           Quit the program."
-        };
-        for (String u : help) {
-            System.out.println(u);
-        }
-        System.out.println();
+    String[] help = {
+        "",
+        "PathDB - Console Help",
+        "--------------------",
+        "Available commands:",
+        "",
+        "  /h, /help           Show this help message.",
+        "  /in, /information   Display information about the current graph.",
+        "  /la, /labels        Show a sample of each label in the graph.",
+        "  /q, /quit           Exit the program.",
+        "",
+        "Running a query:",
+        "  Enter queries directly in the console using PathDB syntax.",
+        "  Example:",
+        "      MATCH TRAIL p = (x)-[Knows*]->(y) RETURN x.name, y.name LIMIT 2;",
+        "",
+        "Usage notes:",
+        "  - Commands are case-insensitive.",
+        "  - Use '/help' anytime to see this list.",
+        "  - End queries with a semicolon ';'.",
+        ""
+    };
+
+    for (String line : help) {
+        System.out.println(line);
     }
+}
+
 
     public static ArrayList<String> readRPQsFromFile(String rpqs_file) {
         ArrayList<String> rpqs = new ArrayList<>();
@@ -242,12 +254,11 @@ public final class Tools {
                 rpqs.add(line);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return rpqs;
     }
- 
+
     public static String getConditional(String evaluation) {
         if (evaluation == null) return "null";
     
@@ -264,7 +275,6 @@ public final class Tools {
         Context.getInstance().setTotalPathsObtained(0);
         Context.getInstance().setSemantic(2);
         Context.getInstance().setLimit(Integer.MAX_VALUE);
-        // Context.getInstance().setTotalPathsToShow(Integer.MAX_VALUE);
 
         Context.getInstance().setLeftVarName("");
         Context.getInstance().setRightVarName("");
