@@ -32,7 +32,7 @@ public class LogicalOpRecursive extends BinaryLogicalOp{
 
     @Override
     public String toString() {
-        return "RECURSIVE+("+leftChild+", "+rightChild+")";
+        return "RECURSIVE("+leftChild+", "+rightChild+")";
     }
 
     public boolean hasFirstFilter() {

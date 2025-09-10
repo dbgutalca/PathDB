@@ -5,8 +5,6 @@ import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.physical.PhysicalPlanVisitor;
 import com.gdblab.graph.schema.Path;
 
-import java.util.UUID;
-
 public class PhysicalOpReverse extends UnaryPhysicalOp {
 
     protected final LogicalOpReverse lop;
@@ -28,7 +26,8 @@ public class PhysicalOpReverse extends UnaryPhysicalOp {
         if ( slot != null ) return true;
         
         while ( getChild().hasNext() ){
-            slot = new Path( "", true, getChild().next().getSequence() );
+            Path next = getChild().next();
+            slot = new Path("", true, next.getSequence(), next.getLength());
             return true;
         }
         

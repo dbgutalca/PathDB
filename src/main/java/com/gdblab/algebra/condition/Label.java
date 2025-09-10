@@ -4,20 +4,47 @@
  */
 package com.gdblab.algebra.condition;
 
+import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.Node;
 import com.gdblab.graph.schema.Path;
 
 /**
  *
  * @author ramhg
  */
-public class Label  extends Condition{
+public class Label extends Condition{
     
     public String label;
+    public String type;
     public int pos;
 
-    public Label(String label, int pos) {
+    public Label(String label, String type, int pos) {
         this.label = label;
+        this.type = type;
         this.pos = pos;
+    }
+
+    @Override
+    public boolean eval(Path p) {
+        switch (this.type) {
+            case "node":
+                if (p.getNodeSequence().size() <= this.pos) return false;
+                Node n = null;
+                
+                if (this.pos == -1) n = p.last();
+                else n = p.getNodeAt(this.pos);
+
+                if (n == null) return false;
+
+                return n.getLabel().equals(this.label);
+
+            case "edge":
+                if (p.getEdgeSequence().size() <= this.pos) return false;
+                Edge e = p.getEdgeAt(this.pos); if (e == null) return false;
+                return e.getLabel().equals(this.label);
+            default:
+                return false;
+        }
     }
 
     public int getPos() {
@@ -28,23 +55,20 @@ public class Label  extends Condition{
         this.pos = pos;
     }
 
-   
-    
-
-    @Override
-    public boolean eval(Path p) {
-        if (p.getSequence().size() > pos)
-            return p.getSequence().get(pos).getLabel().equals(label);
-        else
-            return false;
-    }
-
     public String getLabel() {
         return label;
     }
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @Override

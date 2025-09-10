@@ -1,26 +1,19 @@
 package com.gdblab.algebra.queryplan.util;
 
-import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
-import com.gdblab.execution.Context;
-import com.gdblab.execution.Tools;
-import com.gdblab.graph.schema.Edge;
-import com.gdblab.graph.schema.GraphObject;
-import com.gdblab.graph.schema.Node;
-import com.gdblab.graph.schema.Path;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
+import com.gdblab.algebra.returncontent.ReturnContent;
+import com.gdblab.execution.Context;
+import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.Node;
+import com.gdblab.graph.schema.Path;
+
+import de.vandermeer.asciitable.AsciiTable;
+import de.vandermeer.asciitable.CWC_FixedWidth;
+import de.vandermeer.skb.interfaces.transformers.textformat.TextAlignment;
 
 public class Utils {
     
@@ -56,13 +49,16 @@ public class Utils {
 
     public static Path NodeLink (Path pathA, Path pathB) {
         
-        if (pathA.isNodeLinkable(pathB) && pathA.getSumEdges(pathB) <= Context.getInstance().getFixPoint()) {
+        if (pathA.isNodeLinkable(pathB) && pathA.getSumEdges(pathB) <= Context.getInstance().getMaxPathsLength()) {
 
             switch (Context.getInstance().getSemantic()) {
                 case 2:
                     if (!pathA.isTrail(pathB)) return null;
                     break;
                 case 3:
+                    if (!pathA.isAcyclic(pathB)) return null;
+                    break;
+                case 4:
                     if (!pathA.isSimplePath(pathB)) return null;
                     break;
             }
@@ -83,127 +79,53 @@ public class Utils {
     }
     
     public static int printAndCountPaths(PhysicalOperator po){
-        Integer counterMS = 1;
         Integer counterLP = 1;
 
-        Integer maxShowPaths = Context.getInstance().getShowPaths();
-        Integer limitCalculatePaths = Context.getInstance().getMaxPaths();
+        ArrayList<ReturnContent> returnContentList = Context.getInstance().getReturnedVariables();
+        Integer limitCalculatePaths = Context.getInstance().getLimit();
 
-        while (counterLP <= limitCalculatePaths && po.hasNext() ) {
+        AsciiTable table = new AsciiTable();
+
+        List<String> columnNames = returnContentList.stream()
+                .map(ReturnContent::getReturnName)
+                .toList();
+        
+        ArrayList<String> columnNamesWithLength = new ArrayList<>(columnNames);
+        columnNamesWithLength.add(0, "#");
+
+        CWC_FixedWidth cwc = new CWC_FixedWidth();
+        cwc.add(10);
+
+        for (int i = 0; i < columnNames.size(); i++) {
+            cwc.add(30);
+        }
+
+        table.getRenderer().setCWC(cwc);
+
+        table.addRule();
+        table.addRow(columnNamesWithLength).setTextAlignment(TextAlignment.CENTER);
+        table.addRule();
+
+        while (counterLP <= limitCalculatePaths && po.hasNext()) {
+            
             Path p = po.next();
 
-            if (counterMS <= maxShowPaths) {
-                System.out.print("Path #" + counterMS + " - ");
-                for (GraphObject go : p.getSequence()) {
-                    if (go instanceof Edge) {
-                        System.out.print( go.getId() + "(" + go.getLabel() + ")" + " ");
-                    }
-                    else {
-                        System.out.print( go.getId() + " ");
-                    }
-                    
-                }
-                System.out.println();
+            List<String> row = new ArrayList<>();
+            row.add(String.valueOf(counterLP));
+            for (ReturnContent returnContent : returnContentList) {
+                String content = returnContent.getContent(p);
+                row.add(content);
             }
-            if (counterMS == (maxShowPaths + 1)) {
-                System.out.println("...");
-            }
-            counterMS++;
+            table.addRow(row).setTextAlignment(TextAlignment.CENTER);
+            table.addRule();
+            
             counterLP++;
         }
+
+        System.out.println();
+        System.out.println(table.render());
 
         return counterLP;
     }
 
-    public static void writeAndCountPaths(PhysicalOperator po) {
-        int counter = 1;
-        // String filename = Context.getInstance().getResultFilename();
-        // Writer writer = null;
-
-        try {
-            // writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "utf-8"));
-            
-            // writeConfig(writer);
-
-            while (po.hasNext() && Context.getInstance().getMaxPaths() > counter) {
-                Path p = po.next();
-                // writer.write("Path #" + counter + " - ");
-                // for (GraphObject go : p.getSequence()) {
-                //     if (go instanceof Edge) {
-                //         writer.write(go.getId() + "(" + go.getLabel() + ") ");
-                //     }
-                //     else {
-                //         writer.write(go.getLabel() + " ");
-                //     }
-                // }
-                // writer.write("\n");
-                counter++;
-            }
-
-        } catch (Exception e) {
-        } finally {
-            // try {writer.close();} catch (Exception ex) {
-            //     ex.printStackTrace();
-            // }
-            Context.getInstance().setTotalPaths(counter);
-        }
-    }
-
-    public static void writeConfig(Writer writer) {
-        try {
-            // writer.write("=====================================\n");
-            // writer.write("Method: " + Tools.getSelectedMethod(Context.getInstance().getMethod()) + "\n");
-            // writer.write("Fix Point: " + Context.getInstance().getFixPoint() + "\n");
-            // writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
-            // writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
-            writer.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
-            // if (Context.getInstance().getMethod() == 1) writer.write("Optimized: " + Context.getInstance().isOptimize() + "\n");
-            writer.write("Total: <$TOTAL_PATHS$>\n");
-            writer.write("Time: <$TOTAL_TIME$> s\n");
-            writer.write("=====================================\n");
-        } catch (Exception e) {}
-    }
-
-    public static void writeTotalAndTime() {
-
-        writeOnSummary();
-
-        int total = Context.getInstance().getTotalPaths();
-        String time = Context.getInstance().getTime();
-        String filename = Context.getInstance().getResultFilename();
-        String tempFilename = "temp_" + filename;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(filename));
-            BufferedWriter writer = Files.newBufferedWriter(Paths.get(tempFilename), StandardOpenOption.CREATE)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.replace("<$TOTAL_PATHS$>", String.valueOf(total));
-                line = line.replace("<$TOTAL_TIME$>", time);
-                writer.write(line);
-                writer.newLine();
-            }
-        } catch (Exception e) {
-            System.err.println("Error al procesar el archivo: " + e.getMessage());
-            return;
-        }
-
-        try {
-            Files.move(Paths.get(tempFilename), Paths.get(filename), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        } catch (Exception e) {
-            System.err.println("Error al sobrescribir el archivo original: " + e.getMessage());
-        }
-    }
-
-    public static void writeOnSummary() {
-        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("summary.txt", true), "utf-8"))) {
-            writer.write("Method: " + Tools.getSelectedMethod(Context.getInstance().getMethod()) + "\n");
-            // writer.write("Start Node: " + Context.getInstance().getStartNode() + "\n");
-            // writer.write("End Node: " + Context.getInstance().getEndNode() + "\n");
-            writer.write("RPQ: " + Context.getInstance().getRPQ() + "\n");
-            writer.write("Total: " + Context.getInstance().getTotalPaths() + "\n");
-            writer.write("Time: " + Context.getInstance().getTime() + " s\n");
-            writer.write("=====================================\n");
-            writer.close();
-        } catch (Exception e) {}
-    }
 }

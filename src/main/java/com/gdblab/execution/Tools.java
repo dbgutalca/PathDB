@@ -5,13 +5,19 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.gdblab.algorithm.utils.LabelMap;
+import org.json.simple.JSONObject;
+
 import com.gdblab.graph.DefaultGraph2;
 import com.gdblab.graph.Graph;
 import com.gdblab.graph.interfaces.InterfaceGraph;
 import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.GraphObject;
 import com.gdblab.graph.schema.Node;
+import com.gdblab.graph.schema.Path;
 
 public final class Tools {
 
@@ -82,6 +88,7 @@ public final class Tools {
                 }
 
             }
+
         } catch (Exception e) {
             Tools.clearConsole();
             Tools.showUsageArgsErrorLoadingGraph(nodesFile, edgesFile);
@@ -90,32 +97,36 @@ public final class Tools {
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(edgesFile))) {
-            int i = 1;
             String line;
-            while ((line = br.readLine()) != null) {
-                    if (line.startsWith("@")) continue;
 
-                    String[] data = line.split("\\|");
-                    String _id_ = "E" + i++;
-                    String _label_ = data[0];
-                    String _from_ = data[2];
-                    String _to_ = data[3];
+            ArrayList<String> schemaEdge = new ArrayList<>();
+            while ((line = br.readLine()) != null) {
+
+                if (line.startsWith("@")) {
+                    schemaEdge = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                }
+                else {
+                    ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
+                    HashMap<String, String> properties = new HashMap<>();
+
+                    for (int j = 5; j < data.size() && j < schemaEdge.size(); j++) {
+                        properties.put(schemaEdge.get(j), data.get(j));
+                    }
 
                     Edge e = new Edge(
-                        _id_,
-                        _label_,
-                        Graph.getGraph().getNode(_from_),
-                        Graph.getGraph().getNode(_to_)
+                        data.get(0),
+                        data.get(1),
+                        Graph.getGraph().getNode(data.get(3)),
+                        Graph.getGraph().getNode(data.get(4)),
+                        properties
                     );
 
                     Graph.getGraph().insertEdge(e);
-                
+                }
             }
 
             Tools.clearConsole();
-            if (!Context.getInstance().isExperimental()) {
-                Tools.showUsageArgsLoadedCustomGraph(nodesFile, edgesFile);
-            }
+            Tools.showUsageArgsLoadedCustomGraph(nodesFile, edgesFile);
         } catch (Exception e) {
             Tools.clearConsole();
             Tools.showUsageArgsErrorLoadingGraph(nodesFile, edgesFile);
@@ -137,9 +148,6 @@ public final class Tools {
 
         Edge[] edges = DefaultGraph2.getDefaultEdges();
         for (Edge e : edges) {
-
-            if (!LabelMap.containsKey(e.getLabel())) LabelMap.put(e.getLabel());
-            
             graph.insertEdge(e);
         }
     }
@@ -207,130 +215,34 @@ public final class Tools {
     }
 
     public static void showHelp() {
-        String[] help = {
-            "List of available commands:",
-            "   /h, /help                                           Show this help.",
-            // "   /m <1-5>        Select evaluation method.",
-            // "                       1 - Algebra (Default).",
-            // "                       2 - Regex + DFS.",
-            // "                       3 - Regex + BFS.",
-            // "                       4 - Automaton + DFS.",
-            // "                       5 - Automaton + BFS.",
-            "   /ml <#>, /max_length <#>                            Set the fix point of max path length (Default is 10).",
-            "   /mr, /max_recursion <#>                             Set the max recursion depth (Default is 6).",
-            "   /sem <1-3> or /semantic <1-3>                       Select evaluation semantics.",
-            "                                                           1 - Arbitrary.",
-            "                                                           2 - Trail (Default).",
-            "                                                           3 - Simple Path.",
-            "   (X{prop:value})-[RE]->(Y);                          Query to evaluate.",
-            "                                                           X{prop:value} = The source node filtered by a property.",
-            "                                                           RE = Regular Expression to evaluate.",
-            "                                                           Y{prop:value} = The target node filtered by a property.",
-            "                                                           Example: (x)-[knows]->(y{name:John});",
-            "   /pts <#>, </paths_to_show> <#>                      Set the number of paths to show (Default is 10).",
-            "                                                           Note: Only show the first # paths but calculate all.",
-            "   /lim <#/all>, /limit <#/all>                        Set the limit of paths to calculate (Default calculate all).",
-            // "   /to <#><U>, /timeout<#><U>                          Set timeout for rpq executions.",
-            // "                                                           '#' is the amount, and 'U' is the unit (S=seconds, M=minutes and H=hours).",
-            // "                                                           Example: /to 30S (30 seconds) or /timeout 2M (2 minutes).",
-            "   /opt <true/false>, /optimization <true/false>       Set optimized option (Default is false).",
-            "   /i, /information                                    Show the information of the graph.",
-            "   /l, /labels                                         Show a sample of each label in the graph.",
-            "   /q, /quit                                           Quit the program."
-        };
-        for (String u : help) {
-            System.out.println(u);
-        }
-        System.out.println();
+    String[] help = {
+        "",
+        "PathDB - Console Help",
+        "--------------------",
+        "Available commands:",
+        "",
+        "  /h, /help           Show this help message.",
+        "  /in, /information   Display information about the current graph.",
+        "  /la, /labels        Show a sample of each label in the graph.",
+        "  /q, /quit           Exit the program.",
+        "",
+        "Running a query:",
+        "  Enter queries directly in the console using PathDB syntax.",
+        "  Example:",
+        "      MATCH TRAIL p = (x)-[Knows*]->(y) RETURN x.name, y.name LIMIT 2;",
+        "",
+        "Usage notes:",
+        "  - Commands are case-insensitive.",
+        "  - Use '/help' anytime to see this list.",
+        "  - End queries with a semicolon ';'.",
+        ""
+    };
+
+    for (String line : help) {
+        System.out.println(line);
     }
+}
 
-    public static void showMethods() {
-        String[] methods = {
-            "List of available methods:",
-            "   1 - Algebra",
-            "   2 - Regex + DFS",
-            "   3 - Regex + BFS",
-            "   4 - Automaton + DFS",
-            "   5 - Automaton + BFS"
-        };
-        for (String u : methods) {
-            System.out.println(u);
-        }
-        System.out.println();
-    }
-    
-    public static void showSemantics() {
-        String[] semantics = {
-            "List of available semantics:",
-            "   1 - Arbitrary",
-            "   2 - Trail",
-            "   3 - Simple Path"
-        };
-        for (String u : semantics) {
-            System.out.println(u);
-        }
-        System.out.println();
-    }
-
-    public static void showSelectedMethod(Integer m) {
-        switch (m) {
-            case 1:
-                System.out.println("Selected method: Algebra\n");
-                break;
-
-            case 2:
-                System.out.println("Selected method: Regex + DFS\n");
-                break;
-
-            case 3:
-                System.out.println("Selected method: Regex + BFS\n");
-                break;
-
-            case 4:
-                System.out.println("Selected method: Automaton + DFS\n");
-                break;
-
-            case 5:
-                System.out.println("Selected method: Automaton + BFS\n");
-                break;
-        }
-    }
-
-    public static void showSelectedSemantic(Integer e) {
-        switch (e) {
-            case 1:
-                System.out.println("Selected evaluation semantics: Arbitrary\n");
-                break;
-
-            case 2:
-                System.out.println("Selected evaluation semantics: Trail\n");
-                break;
-
-            case 3:
-                System.out.println("Selected evaluation semantics: Simple Path\n");
-                break;
-        }
-    }
-
-    public static String getSelectedMethod(Integer m) {
-        switch (m) {
-            case 1: return "Algebra";
-            case 2: return "Regex + DFS";
-            case 3: return "Regex + BFS";
-            case 4: return "Automaton + DFS";
-            case 5: return "Automaton + BFS";
-        }
-        return "";
-    }
-
-    public static String getSelectedSemantic(Integer e) {
-        switch (e) {
-            case 1: return "Arbitrary";
-            case 2: return "Trail";
-            case 3: return "Simple Path";
-        }
-        return "";
-    }
 
     public static ArrayList<String> readRPQsFromFile(String rpqs_file) {
         ArrayList<String> rpqs = new ArrayList<>();
@@ -342,10 +254,75 @@ public final class Tools {
                 rpqs.add(line);
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return rpqs;
     }
 
+    public static String getConditional(String evaluation) {
+        if (evaluation == null) return "null";
+    
+        String regex = "!=|<=|>=|<|>|=";
+        Pattern pattern = java.util.regex.Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(evaluation);
+    
+        return matcher.find() ? matcher.group() : "null";
+    }
+
+    public static void resetContext() {
+        Context.getInstance().setMaxPathsLength(10);
+        Context.getInstance().setMaxRecursion(4);
+        Context.getInstance().setTotalPathsObtained(0);
+        Context.getInstance().setSemantic(2);
+        Context.getInstance().setLimit(Integer.MAX_VALUE);
+
+        Context.getInstance().setLeftVarName("");
+        Context.getInstance().setRightVarName("");
+        Context.getInstance().setPathsName("");
+        Context.getInstance().setCondition(null);
+        Context.getInstance().setRegularExpression(null);
+        Context.getInstance().setCompleteQuery("");
+        Context.getInstance().setReturnedVariables(new ArrayList<>());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static JSONObject nodeToJson(Node node) {
+        JSONObject json = new JSONObject();
+        json.put("id", node.getId());
+        json.put("label", node.getLabel());
+        JSONObject propertiesJson = new JSONObject();
+        node.getProperties().forEach(propertiesJson::put);
+
+        json.put("properties", propertiesJson);
+        return json;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static JSONObject edgeToJson(Edge edge) {
+        JSONObject json = new JSONObject();
+        json.put("id", edge.getId());
+        json.put("label", edge.getLabel());
+        json.put("start", nodeToJson(edge.getSource()));
+        json.put("end", nodeToJson(edge.getTarget()));
+        return json;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static JSONObject pathToJson(Path path) {
+        JSONObject json = new JSONObject();
+        json.put("id", path.getId());
+        json.put("label", path.getLabel());
+
+        List<GraphObject> goList = path.getSequence();
+
+        for (GraphObject go : goList) {
+            if (go instanceof Node) {
+                json.put("start", nodeToJson((Node) go));
+            } else if (go instanceof Edge) {
+                json.put("end", edgeToJson((Edge) go));
+            }
+        }
+
+        return json;
+    }
 }

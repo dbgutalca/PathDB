@@ -5,22 +5,27 @@
  */
 package com.gdblab.graph.schema;
 
+import java.util.HashMap;
+
 /**
  *
  * @author ramhg
  */
 public class Edge extends GraphObject {
+
     private Node source;
     private Node target;
+    private HashMap<String, String> properties;
 
-    public Edge(String id, String label, Node source, Node target) {
-        super(id, label);
+    public Edge(String id, String label, Node source, Node target, HashMap<String, String> properties) {
+        super(id, label, 1);
         this.source = source;
         this.target = target;
+        this.properties = properties;
     }
     
     public Edge(String id, Node source, Node target) {
-        super(id);
+        super(id, 1);
         this.source = source;
         this.target = target;
     }
@@ -40,7 +45,36 @@ public class Edge extends GraphObject {
     public void setTarget(Node target) {
         this.target = target;
     }
+
+    public HashMap<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(HashMap<String, String> properties) {
+        this.properties = properties;
+    }
+
+    public String getProperty(String key) {
+        return properties.get(key);
+    }
+
+    public void setProperty(String key, String value) {
+        properties.put(key, value);
+    }
     
-    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append(" \"id\": \"").append(this.getId()).append("\",");
+        sb.append("\"label\": \"").append(this.getLabel()).append("\",");
+        sb.append("\"source\": ");
+        sb.append(this.source.toString());
+        sb.append(",");
+        sb.append("\"target\": ");
+        sb.append(this.target.toString());
+        sb.append("}");
+        return sb.toString();
+    }
     
 }

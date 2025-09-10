@@ -1,121 +1,182 @@
 # PathDB
 
-PathDB is a Java-based application which allows to evaluate regular path queries over a property graph loaded in main memory (RAM). The novel characteristic of PathDB is the use of a path algebra for query evaluation instead of ad-hoc algorithms (like most graph database systems do). Hence, PathDB generates evaluation trees that can be manipulated for query optimization.  
+PathDB is an application written in Java that allows **Regular Path Queries (RPQs)** to be evaluated on a directed graph with labels loaded in memory (RAM). The main feature of PathDB is the use of a **path algebra** for query evaluation instead of using common algorithms (as most graph database systems do). Therefore, PathDB generates evaluation trees that can be easily manipulated to perform optimizations.
 
-## Running PathDB
+---
 
-Before running PathDB, you must make sure you have the following requirements installed:
-* [Java 18](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html) (or above).
-* [Maven](https://maven.apache.org/download.cgi).
+## Getting Started (Hello Query in 3 Steps)
 
-Once the requirements are installed, you can download our latest release by [clicking here](). You will get a file with a `.jar` extension. To run it, open a terminal and navigate to where `PathDB.jar` is located.
+##### 1. Install Java 18 or higher
+You can download the minimum version by [clicking here](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html).
 
-PathDB has two execution arguments that are optional, but if provided, both must be included.
+##### 2. Download PathDB CLI
+Get the latest version from [this link](https://github.com/dbgutalca/PathDB/releases/tag/v0.2.1) and download the `PathDB.jar` file.
 
-If you do not have a test database and want to use the default one, simply run PathDB as follows:
+##### 3. Run PathDB with the example graph and try a query
 
 ```bash
 $ java -jar PathDB.jar
 ```
-If you have a database that follows the structure mentioned in the [preliminaries](#preliminaries), you can load it into PathDB using the following command:
+
+Basic query example:
+
+```
+MATCH TRAIL p = (x)-[Knows*]->(y) RETURN LABEL(FIRST()), LABEL(LAST()), x.name, y.name LIMIT 2;
+```
+
+Expected result:
+
+```
+┌──────────┬───────────────┬───────────────┬──────────────┬──────────────┐
+│    #     │ LABEL(FIRST())│ LABEL(LAST()) │    x.name    │    y.name    │
+├──────────┼───────────────┼───────────────┼──────────────┤wsda
+│    1     │    Person     │    Person     │     Moe      │     Moe      │
+│    2     │    Person     │    Person     │     Bart     │     Bart     │
+└──────────┴───────────────┴───────────────┴──────────────┴──────────────┘
+```
+
+---
+
+## Test graph included
+
+The test graph provided by PathDB is a very small representation of a social network. It has the following basic structure:
+- Node types: Person(name), Message(txt).
+- Edge types: Knows(Person, Person), Likes(Person, Message), and Has_Creator(Message, Person).
+
+The graph contains a total of **7 nodes** and **11 edges** and looks like this:
+<div align="center">
+  <img src="readmeAssets/DefaultGraph.png" alt="Social network simulating property graph">
+</div>
+
+---
+
+## Basic query examples
+
+Although PathDB has its own language, it is based on **GQL**. Some basic query examples to try are as follows:
+
+```
+MATCH p = (a)-[Knows*]->(b) RETURN a.name, b.name;
+
+MATCH p = (x)-[Knows.Likes]->(y) WHERE x.name = "Bart" LIMIT 1;
+```
+
+More complex examples are shown below:
+
+```
+MATCH WALK p = (x)-[HasCreator?.Knows*.Likes]->(y) WHERE p.LENGTH < 4 AND NODE(2).name = "Bart" RETURN p;
+
+MATCH ACYCLIC p = (x)-[HasCreator?.Knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p;
+```
+
+---
+
+## Upload your graph
+
+If you want to use your own data, you must prepare the files in **PGDF format** (one for nodes and another for edges).
+
+Example of nodes (`nodes.pgdf`):
+
+```
+@id|@label|name
+n1|Person|Moe
+n2|Person|Bart
+n3|Person|Lisa
+```
+
+Example of edges (`edges.pgdf`):
+
+```
+@id|@label|@dir|@out|@in
+e1|Knows|T|n1|n2
+e2|Knows|T|n2|n3
+```
+
+Load the graph with:
 
 ```bash
-$ java -jar PathDB.jar -n NodesFile -e EdgesFile
+$ java -jar PathDB.jar -n nodes.pgdf -e edges.pgdf
 ```
 
-PathDB contains several options that can be observed by using the command `/help`.
+*Note: At this time, the order of the files as parameters is important for PathDB to run correctly.*
 
-```plaintext
-PathDB> /help
+---
+
+## Lenguaje de consultas (detailed)
+
+A complete query accepted by PathDB consists of the following parts:
+
+```
+MATCH <RestrictionStatement> PathPattern <ConditionStatement> ReturnStatement <LimitStatement> ;
 ```
 
-PathDB contains a default property graph representing a small social network. The schema of the graph is the following:
-- Types of Nodes: Person(name), Message(txt).
-- Types of Edges: Knows (Person, Person), Likes (Person, Message), Has_Creator (Message, Person).
+##### 1. MATCH (required)
+Every query made in PathDB must begin with the reserved word `MATCH`. This indicates that you want to perform a pattern search in the graph.
 
-The property graph contains **7 nodes** and **11 edges** and looks as follows:
-<div align="center">
-  <img src="readmeAssets/image-3.png" alt="Social network simulating property graph">
-</div>
+##### 2. RestrictionStatement (optional)
+After `MATCH`, you can indicate which restriction the paths obtained must satisfy. Currently, PathDB supports the following semantics:
 
-A simple example of recursive property graph query is the following:
+- **WALK** → Allows nodes and edges to be repeated.
+- **TRAIL** → Allows nodes to be repeated, but **not edges**.  
+- **ACYCLIC** → The path cannot have cycles (no node is repeated).
+- **SIMPLE** → No node is repeated except for the first and last, which may be the same.  
 
-***Query:***
-```plaintext
-PathDB> (x{name:Moe})-[knows+]->(y);
+##### 3. PathPattern (required)
+It is defined as follows:
+
+```
+pathName = (startNode)-[edgeLabel]{..n}->(endNode)
 ```
 
-***Results:***
-- Path #1: p1 E1(knows) p2  
-- Path #2: p1 E1(knows) p2 E2(knows) p3  
-- Path #3: p1 E1(knows) p2 E4(knows) p4  
-- Path #4: p1 E1(knows) p2 E2(knows) p3 E3(knows) p2  
-- Path #5: p1 E1(knows) p2 E2(knows) p3 E3(knows) p2 E4(knows) p4  
+- `(node)` → A node identified by a variable.  
+- `-[label]->` → An edge, which can have a **name** or a **regular expression** to combine several types of edges.  
+- `{..n}` → Number of repetitions of recursive operators (optional and default 4).
 
-A more complex example is the following:
+#### 4. ConditionStatement (optional)
+PathDB allows you to define conditions that the components of a path must meet in order for the results to be valid. All conditions have the following form:
 
-***Query:***
-```plaintext
-PathDB> (x{name:Moe})-[(likes.hasCreator)+]->(y);
+```
+Function <operator> Value
 ```
 
-***Results:***
-- Path #1: p1 E5(likes) m1 E9(hasCreator) p3  
-- Path #2: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4  
-- Path #3: p1 E5(likes) m1 E9(hasCreator) p3 E6(likes) m2 E10(hasCreator) p4 E7(likes) m3 E11(hasCreator) p1  
+The variable depends on the name given to the path, start node, and end node.
 
+The functions supported by PathDB are: `FIRST().property`, `LAST().property`, `NODE(#).property`, `EDGE(#).property`, `LABEL(FIRST())`, `LABEL(LAST())`, `LABEL(NODE(#))` and `LABEL(EDGE(#))`.
 
-## Demo 2: Co-author network (DBLP)
+Value comparison operators can be: `=`, `!=`, `>`, `>=`, `<`, `<=`.
 
-The graph represents a co-authorship network created with data obtained from [DBLP](https://dblp.org). Specifically, the nodes are **authors** and the edges represent the **co-authorship** relation. Two authors are connected by an edge if they co-authored the same article. The schema of the graph is shown in the following figure:
+Path conditions can be grouped using parentheses and Boolean operators such as `AND` and `OR`. A complete example from this section could be:
 
-<div align="center">
-  <img src="readmeAssets/image-2.png" alt="DBLPGraph">
-</div>
-
-The data was extracted from the dataset **"DBLP-Citation-network V12"**, this set contains articles up to the year 2020, accessible through DBLP, and is available at  [AMiner](https://www.aminer.cn/citation). A **subgraph** was processed, containing only co-authorship relationships. You can download it clicking [here](https://drive.google.com/file/d/1e4vtARAzhwEuTehOSE3-YFmecyx65wwS/view?usp=sharing). This graph contains **2,155,848 nodes** and **14,531,802 edges**.
-
-
-An interesting query for this dataset involves calculating the **Erdős distance** or **Erdős number**, which describes the collaborative distance between two authors. PathDB allows retrieving the **shortest path** and its length to determine the Erdős distance.
-
-For example, to calculate the Erdős distance for the author **Renzo Angles**:
-1. Configure PathDB to limit results to 1:  
-   ```plaintext
-   PathDB> /lim 1
-   ```
-2. Set the maximum recursion depth to 5:  
-   ```plaintext
-   PathDB> /mr 5
-   ```
-3. Execute the query:  
-   ```plaintext
-   PathDB> (x{name:Renzo Angles})-[COAUTHOR+]->(y{name:Paul Erdős});
-   ```
-
-***Result:***  
-```plaintext
-Path #1 - 1970866537 E486243(COAUTHOR) 2106576185 E14464(COAUTHOR)  
-          1969282344 E7069515(COAUTHOR) 2289364316 E2339853(COAUTHOR)  
-          2156312790 E1662154(COAUTHOR) 1337865506
+```...
+ WHERE (FIRST().property = "something" AND LAST().property >= 100) OR LABEL(NODE(2)) = "Person" ...
 ```
-The result is a path between "Renzo Angles" and "Paul Erdős" with a length of 5.
+
+#### 5. ReturnStatement (required)
+Information can be extracted from the path using variables, properties, and functions. PathDB supports the following calls: `variable`, `variable.property`, `FIRST()`, `FIRST().property`, `LAST()`, `LAST().property`, `NODE(unsignedInteger)`, `NODE(unsignedInteger).property`, `EDGE(unsignedInteger)`, `EDGE(unsignedInteger.property`, `LABEL(NODE(unsignedInteger))`, `LABEL(EDGE(unsignedInteger))`, `LABEL(FIRST())`, `LABEL(LAST())'`.
+
+#### 6. LimitStatement (optional)
+It is possible to limit the number of results you want to obtain. To do this, simply write `LIMIT #`, where `#` is a positive integer. 
+
+#### Complete example
+A complete example looks like this:
+```
+MATCH ACYCLIC p = (x)-[HasCreator?.Knows*]{..6}->(y) WHERE x.name = “Moe” OR x.txt = “Msg1” RETURN p LIMIT 100;
+```
+
+---
 
 ## Contributors
-* Renzo Angles.
-* Roberto García.
-* Sebastian Ferrada.
-* Vicente Rojas.
+* Renzo Angles, Universidad de Talca, Chile.
+* Roberto García, Universidad de Talca, Chile.
+* Sebastián Ferrada, Universidad de Chile, Chile.
+* Vicente Rojas, Universidad de Talca, Chile.
+
+---
+
+## Funding
+This development was funded by the **FONDECYT** project (corresponding number).  
+
+---
 
 ## License
-
- This software is released in open source under the Apache License, 
- Version 2.0 (the "License"); you may not use this file except in 
- compliance with the License. You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+This software is distributed under the **Apache License 2.0**.  
+More information at: [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.gdblab.algorithm.utils.LabelMap;
-
 /**
  *
  * @author ramhg
@@ -26,55 +24,47 @@ public class Path extends GraphObject {
     // y habría que modificar demasiado codigo para implementar solo
     // la lista de Edges en vez de una lista de Nodes y Edges.
     private List<GraphObject> sequence;
-    private Integer length;
 
-    public Path(final String id, final String label) {
-        super(id, label);
+    public Path(final String id, final String label, final Integer length) {
+        super(id, label, length);
         this.sequence = new ArrayList<>();
-        this.length = 0;
     }
 
     public Path(final String id) {
-        super(id);
+        super(id, 0);
         this.sequence = new ArrayList<>();
-        this.length = 0;
     }
 
     public Path(final String id, Integer length) {
-        super(id);
+        super(id, length);
         this.sequence = new ArrayList<>();
-        this.length = length;
     }
     
     public Path (final String id, final Edge edge) {
-        super(id); 
+        super(id, 1); 
         this.sequence = new ArrayList<>();
         this.insertEdge(edge);
-        this.length = 1;
     }
     
     public Path(final String id, final Node node) {
-        super(id);
+        super(id, 0);
         this.sequence = new ArrayList<>();
         this.insertNode(node);
-        this.length = 0;
     }
 
     public Path(final String id, final List<Edge> edges) {
-        super(id);
+        super(id, edges.size());
         this.sequence = new ArrayList<>();
         for (final Edge e : edges) {
             this.insertEdge(e);
         }
-        this.length = edges.size();
     }
     
-    public Path(final String id, final boolean reverse, final List<GraphObject> sequence) {
-        super(id);
-        this.sequence = new ArrayList<GraphObject>(sequence);
-        Collections.reverse(this.sequence);
-        this.length = this.getEdgeSequence().size();
-    }
+    public Path(final String id, final boolean reverse, final List<GraphObject> sequence, final Integer length) {
+         super(id, length);
+         this.sequence = new ArrayList<GraphObject>(sequence);
+         Collections.reverse(this.sequence);
+     }
 
     public List<GraphObject> getSequence() {
         return sequence;
@@ -136,17 +126,6 @@ public class Path extends GraphObject {
         }
         return edges;
     }
-
-    public String getStringEdgeSequenceAscii() {;
-        String seq = "";
-        for (int i = 0; i < sequence.size(); i++) {
-            if (sequence.get(i) instanceof Edge edge) {
-                seq += LabelMap.getByLabel(edge.getLabel());
-            }
-        }
-        return seq;
-    }
-    
     public String getStringSequence() {
         String seq = "";
         for (int i = 0; i < sequence.size(); i++) {
@@ -169,7 +148,7 @@ public class Path extends GraphObject {
 
     public Node getNodeAt(final int pos) {
         final List<Node> seq = this.getNodeSequence();
-        if (seq.size() >= pos) {
+        if (pos >= 0 && pos < seq.size()) {
             return seq.get(pos);
         }
         return null;
@@ -187,7 +166,7 @@ public class Path extends GraphObject {
         final Node first = getNodeAt(i);
         final Node last = getNodeAt(j);
         final ArrayList<Edge> seq = this.getEdgeSequence();
-        final Path new_path = new Path(UUID.randomUUID().toString(), "path");
+        final Path new_path = new Path(UUID.randomUUID().toString(), "path", seq.size());
 
         boolean last_reached = false;
         boolean first_reached = false;
@@ -301,22 +280,57 @@ public class Path extends GraphObject {
         return this.getListIDEdgeSequence().stream().noneMatch(pathB.getListIDEdgeSequence()::contains);
     }
 
-    public boolean isSimplePath (Path pathB) {
-
+    public boolean isAcyclic (Path pathB) {
         List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size());
-
         return this.getListIDNodeSequence().stream().noneMatch(res::contains);
     }
 
-    public boolean isSelfSimplePath() {
+    public boolean isSelfAcyclic() {
         return this.getListIDNodeSequence().stream().distinct().count() == this.getListIDNodeSequence().size();
     }
+
+    public boolean isSimplePath (Path pathB) {
+        ArrayList<String> pathBNodeSequence = pathB.getListIDNodeSequence();
+
+        if (pathBNodeSequence.size() > 1) {
+            List<String> res = pathB.getListIDNodeSequence().subList(1, pathB.getListIDNodeSequence().size() - 1);
+            return this.getListIDNodeSequence().stream().noneMatch(res::contains);
+        }
+        else {
+            return this.isSelfSimplePath();
+        }
+    }
+
+    public boolean isSelfSimplePath() {
+        return this.getListIDNodeSequence().stream().distinct().count() == (this.getListIDNodeSequence().size() - 1);
+    }
+
 
     public Integer getSumEdges(Path pathB) {
         return this.getEdgeLength() + pathB.getEdgeLength();
     }
 
     public Integer getEdgeLength() {
-        return this.length;
+        return this.getLength();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"sequence\": [");
+
+        List<GraphObject> seq = this.getSequence();
+        for (int i = 0; i < seq.size(); i++) {
+            sb.append("    ").append(seq.get(i).toString());
+            if (i < seq.size() - 1) {
+                sb.append(",");
+            }
+            sb.append("");
+        }
+
+        sb.append("]");
+        sb.append("}");
+        return sb.toString();
     }
 }

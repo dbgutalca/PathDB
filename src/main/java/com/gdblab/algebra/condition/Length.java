@@ -13,15 +13,36 @@ import com.gdblab.graph.schema.Path;
 public class Length  extends Condition{
     
     public int length;
+    public String condition;
 
-    public Length(int length) {
+    public Length(int length, String condition) {
         this.length = length;
+        this.condition = condition;
     }
     
 
     @Override
     public boolean eval(Path p) {
-        return p.lenght() == this.getLength();
+        if (p != null) {
+            int pathLength = p.getLength();
+            switch (this.condition) {
+                case "=":
+                    return pathLength == this.length;
+                case "!=":
+                    return pathLength != this.length;
+                case "<":
+                    return pathLength < this.length;
+                case "<=":
+                    return pathLength <= this.length;
+                case ">":
+                    return pathLength > this.length;
+                case ">=":
+                    return pathLength >= this.length;
+                default:
+                    return false;
+            }
+        }
+        return false;
     }
 
     public int getLength() {
