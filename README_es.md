@@ -10,7 +10,7 @@ PathDB es una aplicación escrita en Java que permite evaluar **Regular Path Que
    Puede descargar la versión mínima haciendo [clic aquí](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html).
 
 ##### 2. Descargar PathDB CLI
-   Obtén la última versión desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/v0.2.1) y descarga el archivo `PathDB.jar`.
+   Obtén la última versión desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) y descarga el archivo `PathDB.jar`.
 
 ##### 3. Ejecutar PathDB con el grafo de ejemplo y probar una consulta
 
