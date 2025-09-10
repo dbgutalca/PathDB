@@ -101,7 +101,7 @@ $ java -jar PathDB.jar -n nodes.pgdf -e edges.pgdf
 
 ---
 
-## Lenguaje de consultas (detailed)
+## Query Language (detailed)
 
 A complete query accepted by PathDB consists of the following parts:
 
