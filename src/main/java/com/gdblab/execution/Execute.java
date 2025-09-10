@@ -1,6 +1,7 @@
 package com.gdblab.execution;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -23,6 +24,8 @@ import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.algebra.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.util.Utils;
+import com.gdblab.graph.Graph;
+import com.gdblab.graph.schema.Edge;
 import com.gdlab.parser.RPQGrammarLexer;
 import com.gdlab.parser.RPQGrammarParser;
 
@@ -114,21 +117,46 @@ public final class Execute {
                 if (line.equals("/h") || line.equals("/help")) {
                     Tools.showHelp();
                     System.out.println();
-                    continue;
                 }
 
-                try {
-                    Context.getInstance().setCompleteQuery(line);
-                    EvalRPQWithAlgebra();   
+                else if (line.equals("/in") || line.equals("/information")) {
+                    System.out.println("Graph Information:");
+                    System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
+                    System.out.println("Total edges: " + Graph.getGraph().getEdgesQuantity());
+                    System.out.println("Total label: " +
+                    Graph.getGraph().getDifferetEdgesQuantity());
+                    System.out.println("Edges per label: " +
+                    Graph.getGraph().getEdgesByLabelQuantity().toString());
+                    System.out.println("");
                 }
-                catch (OutOfMemoryError e) {
-                    System.out.println("Out of memory error. Try again with more memory.\n");
+
+                else if (line.equals("/la") || line.equals("/labels")) {
+                    System.out.println("Samples: ");
+                    ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
+                    for (Edge e : edges) {
+                        System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
+                    }
+                    System.out.println("");
                 }
-                catch (VariableNotFoundException e) {
-                    System.out.println(e.toString());
+
+                else if (line.endsWith(";")) {
+                    try {
+                        Context.getInstance().setCompleteQuery(line);
+                        EvalRPQWithAlgebra();   
+                    }
+                    catch (OutOfMemoryError e) {
+                        System.out.println("Out of memory error. Try again with more memory.\n");
+                    }
+                    catch (VariableNotFoundException e) {
+                        System.out.println(e.toString());
+                    }
+                    catch (Exception e) {
+                        System.out.println(e);
+                    }
                 }
-                catch (Exception e) {
-                    System.out.println(e);
+
+                else {
+
                 }
 
             }
