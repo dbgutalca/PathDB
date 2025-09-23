@@ -9,8 +9,9 @@ PathDB is an application written in Java that allows **Regular Path Queries (RPQ
 ##### 1. Install Java 18 or higher
 You can download the minimum version by [clicking here](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html).
 
-##### 2. Download PathDB CLI
-Get the latest version from [this link](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) and download the `PathDB.jar` file.
+##### 2. Download the PathDB executable
+The current version of PathDB works as a command-line application.
+The executable `PathDB.jar` of the latest release can be donwloaded from [this link](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) .
 
 ##### 3. Run PathDB with the example graph and try a query
 
