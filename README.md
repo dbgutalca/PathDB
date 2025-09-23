@@ -1,6 +1,6 @@
 # PathDB
 
-PathDB is an application written in Java that allows **Regular Path Queries (RPQs)** to be evaluated on a directed graph with labels loaded in memory (RAM). The main feature of PathDB is the use of a **path algebra** for query evaluation instead of using common algorithms (as most graph database systems do). Therefore, PathDB generates evaluation trees that can be easily manipulated to perform optimizations.
+PathDB is an application written in Java that allows **Regular Path Queries (RPQs)** to be evaluated on property graphs loaded in main memory (RAM). The main feature of PathDB is the use of a **path algebra** for query evaluation instead of using common algorithms (as most graph database systems do). Therefore, PathDB generates evaluation trees that can be easily manipulated to perform optimizations.
 
 ---
 
