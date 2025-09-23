@@ -7,33 +7,33 @@ PathDB es una aplicación escrita en Java que permite evaluar **Regular Path Que
 ## Primeros pasos (Hello Query en 3 pasos)
 
 ##### 1. Instalar Java 18 o superior
-   Puede descargar la versión mínima haciendo [clic aquí](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html).
+Puede descargar la versión mínima haciendo [clic aquí](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html).
 
 ##### 2. Descargar PathDB CLI
-   Obtén la última versión desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) y descarga el archivo `PathDB.jar`.
+Obtén la última versión desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) y descarga el archivo `PathDB.jar`.
 
 ##### 3. Ejecutar PathDB con el grafo de ejemplo y probar una consulta
 
-   ```bash
-   $ java -jar PathDB.jar
-   ```
+```bash
+$ java -jar PathDB.jar
+```
 
-   Ejemplo de consulta básica:
+Ejemplo de consulta básica:
 
-   ```
-   MATCH TRAIL p = (x)-[Knows*]->(y) RETURN LABEL(FIRST()), LABEL(LAST()), x.name, y.name LIMIT 2;
-   ```
+```
+MATCH TRAIL p = (x)-[Knows*]->(y) RETURN LABEL(FIRST()), LABEL(LAST()), x.name, y.name LIMIT 2;
+```
 
-   Resultado esperado:
+Resultado esperado:
 
-   ```
-   ┌──────────┬───────────────┬───────────────┬──────────────┬──────────────┐
-   │    #     │ LABEL(FIRST())│ LABEL(LAST()) │    x.name    │    y.name    │
-   ├──────────┼───────────────┼───────────────┼──────────────┼──────────────┤
-   │    1     │    Person     │    Person     │     Moe      │     Moe      │
-   │    2     │    Person     │    Person     │     Bart     │     Bart     │
-   └──────────┴───────────────┴───────────────┴──────────────┴──────────────┘
-   ```
+```
+┌──────────┬───────────────┬───────────────┬──────────────┬──────────────┐
+│    #     │ LABEL(FIRST())│ LABEL(LAST()) │    x.name    │    y.name    │
+├──────────┼───────────────┼───────────────┼──────────────┼──────────────┤
+│    1     │    Person     │    Person     │     Moe      │     Moe      │
+│    2     │    Person     │    Person     │     Bart     │     Bart     │
+└──────────┴───────────────┴───────────────┴──────────────┴──────────────┘
+```
 
 ---
 
