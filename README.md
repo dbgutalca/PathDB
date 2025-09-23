@@ -136,7 +136,7 @@ It is defined as follows:
 - `<RegExp>` → A regular expression that defines the structure of the paths to be matched. 
 - `{..n}` → Number of repetitions of recursive operators (optional and default 4).
 
-Basic regular expression are an edge label (e.g. `knows`) or a negated edge label (e.g. `!knows`). Complex regular expression are concatenation (e.g. `(Knows . Likes)`), alternation `(Knows | Likes)`, Kleene star `(Knows)*`, positive closure `(Knows)+`, and optional `(Knows)?`.   
+Basic regular expression are an edge label (e.g. `knows`) or a negated edge label (e.g. `!knows`). Complex regular expression are concatenation (e.g. `(Knows . Likes)`), alternation (e.g. `(Knows | Likes)`), Kleene star (e.g. `(Knows)*`), positive closure (e.g. `(Knows)+`), and optional (e.g. `(Knows)?`).   
 
 #### 4. <ConditionStatement> (optional)
 PathDB allows you to define conditions that the components of a path must meet in order for the results to be valid. All conditions have the following form:
