@@ -1,0 +1,12 @@
+@id|@label|@dir|@out|@in
+e1|Knows|T|p1|p2
+e2|Knows|T|p2|p3
+e3|Knows|T|p3|p2
+e4|Knows|T|p2|p4
+e5|Likes|T|p2|m3
+e6|Likes|T|p4|m3
+e7|Likes|T|p3|m2
+e8|Likes|T|p1|m1
+e9|HasCreator|T|m3|p1
+e10|HasCreator|T|m2|p4
+e11|HasCreator|T|m1|p3

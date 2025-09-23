@@ -1,0 +1,9 @@
+@id|@label|name
+n1|Person|Moe
+n2|Person|Bart
+n3|Person|Lisa
+n4|Person|Apu
+@id|@label|txt
+n5|Message|Msg1
+n6|Message|Msg2
+n7|Message|Msg3
