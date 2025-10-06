@@ -28,10 +28,9 @@ public class Utils {
         return String.format("%.3f", durationInSeconds);
     }
 
-    public static Path NodeLink(Path pathA, Path pathB) {
+    public static Path Join(Path pathA, Path pathB) {
 
-        if (pathA.isLinkeableByNodeWith(pathB)
-                && pathA.getSumOfEdgesWith(pathB) <= Context.getInstance().getMaxPathsLength()) {
+        if (pathA.isLinkeableByNodeWith(pathB) && pathA.getSumOfEdgesWith(pathB) <= Context.getInstance().getMaxPathsLength()) {
 
             switch (Context.getInstance().getSemantic()) {
                 case 2:
@@ -49,11 +48,11 @@ public class Utils {
             }
 
             if (pathA.getQuantityOfNodes() == 1 && pathB.getQuantityOfNodes() == 1) {
-                return new Path(pathA.getFirst());
+                return new Path(pathA.getFirst().toString());
             } else if (pathA.getQuantityOfNodes() == 1) {
-                return new Path(pathB);
+                return pathB;
             } else if (pathB.getQuantityOfNodes() == 1) {
-                return new Path(pathA);
+                return pathA;
             } else {
                 return new Path(pathA, pathB);
             }
@@ -79,48 +78,46 @@ public class Utils {
     public static int printAndCountPaths(PhysicalOperator po) {
         Integer counterLP = 1;
 
-        ArrayList<ReturnContent> returnContentList = Context.getInstance().getReturnedVariables();
+        // ArrayList<ReturnContent> returnContentList = Context.getInstance().getReturnedVariables();
         Integer limitCalculatePaths = Context.getInstance().getLimit();
 
-        AsciiTable table = new AsciiTable();
+        // AsciiTable table = new AsciiTable();
 
-        List<String> columnNames = returnContentList.stream().map(ReturnContent::getReturnName).toList();
+        // List<String> columnNames = returnContentList.stream().map(ReturnContent::getReturnName).toList();
 
-        ArrayList<String> columnNamesWithLength = new ArrayList<>(columnNames);
-        columnNamesWithLength.add(0, "#");
+        // ArrayList<String> columnNamesWithLength = new ArrayList<>(columnNames);
+        // columnNamesWithLength.add(0, "#");
 
-        CWC_FixedWidth cwc = new CWC_FixedWidth();
-        cwc.add(10);
+        // CWC_FixedWidth cwc = new CWC_FixedWidth();
+        // cwc.add(10);
 
-        for (int i = 0; i < columnNames.size(); i++) {
-            cwc.add(30);
-        }
+        // for (int i = 0; i < columnNames.size(); i++) {
+        //     cwc.add(30);
+        // }
 
-        table.getRenderer().setCWC(cwc);
+        // table.getRenderer().setCWC(cwc);
 
-        table.addRule();
-        table.addRow(columnNamesWithLength).setTextAlignment(TextAlignment.CENTER);
-        table.addRule();
+        // table.addRule();
+        // table.addRow(columnNamesWithLength).setTextAlignment(TextAlignment.CENTER);
+        // table.addRule();
 
         while (counterLP <= limitCalculatePaths && po.hasNext()) {
             Path p = po.next();
 
-            List<String> row = new ArrayList<>();
-            row.add(String.valueOf(counterLP));
-            for (ReturnContent returnContent : returnContentList) {
-                String content = returnContent.getContent(p);
-                row.add(content);
-            }
-            table.addRow(row).setTextAlignment(TextAlignment.CENTER);
-            table.addRule();
+            // List<String> row = new ArrayList<>();
+            // row.add(String.valueOf(counterLP));
+            // for (ReturnContent returnContent : returnContentList) {
+            //     String content = returnContent.getContent(p);
+            //     row.add(content);
+            // }
+            // table.addRow(row).setTextAlignment(TextAlignment.CENTER);
+            // table.addRule();
 
             counterLP++;
         }
 
-        // Set center alignment for all columns
-
-        System.out.println();
-        System.out.println(table.render());
+        // System.out.println();
+        // System.out.println(table.render());
 
         return counterLP - 1;
     }

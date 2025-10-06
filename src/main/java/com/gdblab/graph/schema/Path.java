@@ -1,9 +1,9 @@
 package com.gdblab.graph.schema;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import com.gdblab.graph.Graph;
@@ -24,50 +24,63 @@ import com.gdblab.graph.Graph;
  */
 public class Path {
 
-    private final LinkedList<String> edges;
-    private final ArrayDeque<String> nodes;
+    private final Integer nodesQuantity;        // Nodes quantity for restrictions
+    private final Integer edgesQuantity;        // Edges quantity for restrictions
+    private final StringBuilder sourceId;       // String for sourceId    \__ For
+    private final StringBuilder targetId;       // String for targetId    /   joins
+    private final StringBuilder nodesIds;       // Complete String for list of Nodes Ids 
+    private final StringBuilder edgesIds;       // Complete String for list of Edges Ids
 
     // #region Constructors
-    public Path() {
-        this.edges = new LinkedList<>();
-        this.nodes = new ArrayDeque<>();
-    }
-
     public Path(String nodeId) {
-        this.edges = new LinkedList<>();
-        this.nodes = new ArrayDeque<>();
-        this.nodes.add(nodeId);
+        this.sourceId = new StringBuilder(nodeId);
+        this.nodesIds = new StringBuilder(nodeId);
+        this.edgesIds = new StringBuilder();
+        this.targetId = new StringBuilder(nodeId);
+        this.nodesQuantity = 1;
+        this.edgesQuantity = 0;
     }
 
     public Path(String sourceNode, String edge, String targetNode) {
-        this.edges = new LinkedList<>();
-        this.nodes = new ArrayDeque<>();
-        this.nodes.add(sourceNode);
-        this.edges.add(edge);
-        this.nodes.add(targetNode);
-    }
-
-    public Path(Path otherPath) {
-        this.edges = new LinkedList<>(otherPath.getEdges());
-        this.nodes = new ArrayDeque<>(otherPath.getNodes());
+        this.sourceId = new StringBuilder(sourceNode);
+        this.nodesIds = new StringBuilder(sourceNode + ";" + targetNode);
+        this.edgesIds = new StringBuilder(edge);
+        this.targetId = new StringBuilder(targetNode);
+        this.nodesQuantity = 2;
+        this.edgesQuantity = 1;
     }
 
     public Path(Path pathA, Path pathB) {
-        this.nodes = new ArrayDeque<>(pathA.getNodes());
-        pathB.getNodes().removeFirst();
-        this.nodes.addAll(pathB.getNodes());
-        this.edges = new LinkedList<>(pathA.getEdges());
-        this.edges.addAll(pathB.getEdges());
+        this.sourceId = pathA.getFirst();
+        this.targetId = pathB.getLast();
+        this.nodesQuantity = pathA.getQuantityOfNodes() + pathB.getQuantityOfNodes() - 1;
+        this.edgesQuantity = pathA.getQuantityOfEdges() + pathB.getQuantityOfEdges();
+
+        List<String> nodesPathA = new ArrayList<>(Arrays.asList(pathA.getNodes().toString().split(";")));
+        List<String> nodesPathB = new ArrayList<>(Arrays.asList(pathB.getNodes().toString().split(";")));
+
+        nodesPathA.remove(nodesPathA.size() - 1);
+
+        StringBuilder newNodesIds = new StringBuilder(String.join(";", nodesPathA));
+        newNodesIds.append(";");
+        newNodesIds.append(String.join(";", nodesPathB));
+        this.nodesIds = newNodesIds;
+
+        StringBuilder newEdgesIds = new StringBuilder(pathA.getEdges());
+        newEdgesIds.append(";");
+        newEdgesIds.append(pathB.getEdges());
+
+        this.edgesIds = newEdgesIds;
     }
     // #endregion
 
     // #region PathUtils
-    public String getFirst() {
-        return this.nodes.getFirst();
+    public StringBuilder getFirst() {
+        return this.sourceId;
     }
 
-    public String getLast() {
-        return this.nodes.getLast();
+    public StringBuilder getLast() {
+        return this.targetId;
     }
 
     public Integer getPathLength() {
@@ -75,7 +88,7 @@ public class Path {
     }
 
     public boolean isLinkeableByNodeWith(Path otherPath) {
-        return this.nodes.getLast().equals(otherPath.nodes.getFirst());
+        return this.targetId.toString().equals(otherPath.getFirst().toString());
     }
 
     public Integer getSumOfEdgesWith(Path otherPath) {
@@ -83,134 +96,91 @@ public class Path {
     }
 
     public Integer getQuantityOfNodes() {
-        if (this.nodes.isEmpty() || this.nodes == null)
-            return 0;
-        return this.nodes.size();
+        return this.nodesQuantity;
     }
 
     public Integer getQuantityOfEdges() {
-        if (this.edges.isEmpty() || this.edges == null)
-            return 0;
-        return this.edges.size();
+        return this.edgesQuantity;
     }
     // #endregion
 
-    // #region Semantic Checks
+    // #region Semantic Checksdaws
     public boolean isTrailWith(Path otherPath) {
-        Set<String> edgeSet = new HashSet<>(this.edges);
-        for (String edge : otherPath.edges) {
-            if (!edgeSet.add(edge))
-                return false;
+        Set<String> edgeSet = new HashSet<>(Arrays.asList(this.getEdges().toString().split(";")));
+        for (String edge : otherPath.getEdges().toString().split(";")) {
+            if (!edgeSet.add(edge)) return false;
         }
         return true;
     }
 
     public boolean isSimplePathWith(Path otherPath) {
-        Set<String> nodeSet = new HashSet<>(this.nodes);
-        for (String node : otherPath.nodes) {
-            if (!nodeSet.add(node))
-                return false;
+        Set<String> nodeSet = new HashSet<>(Arrays.asList(this.getNodes().toString().split(";")));
+        for(String node : otherPath.getNodes().toString().split(";")) {
+            if (!nodeSet.add(node)) return false;
         }
         return true;
     }
 
     public boolean isAcyclicWith(Path otherPath) {
-        Set<String> nodeSet = new HashSet<>(this.nodes);
-        nodeSet.remove(this.nodes.getFirst());
-        for (String node : otherPath.nodes) {
-            if (!nodeSet.add(node))
-                return false;
+        Set<String> nodeSet = new HashSet<>(Arrays.asList(this.getNodes().toString().split(";")));
+        nodeSet.remove(this.getFirst().toString());
+        for(String node : otherPath.getNodes().toString().split(";")) {
+            if (!nodeSet.add(node)) return false;
         }
         return true;
     }
 
     public boolean isSelfSimplePath() {
-        if (this.nodes.isEmpty() || this.nodes.size() < 2)
-            return false;
-        Set<String> nodeSet = new HashSet<>(this.nodes);
-        return nodeSet.size() == this.nodes.size();
+        List<String> nodesSplit = Arrays.asList(this.getNodes().toString().split(";"));
+        if (nodesSplit.size() == 1) return false;
+
+        Set<String> nodeSet = new HashSet<>(nodesSplit);
+        return nodesSplit.size() == nodeSet.size();
     }
 
     public boolean isSelfAcyclic() {
-        if (this.nodes.isEmpty() || this.nodes.size() < 2)
-            return false;
-        Set<String> nodeSet = new HashSet<>(this.nodes);
-        nodeSet.remove(this.nodes.getFirst());
-        return nodeSet.size() == this.nodes.size() - 1;
+        List<String> nodesSplit = Arrays.asList(this.getNodes().toString().split(";"));
+        nodesSplit.remove(this.getFirst().toString());
+        if (nodesSplit.size() == 1) return false;
+
+        Set<String> nodeSet = new HashSet<>(nodesSplit);
+        return nodesSplit.size() == nodeSet.size();
     }
     // #endregion
 
     // #region Path Components Crud
-    public LinkedList<String> getEdges() {
-        return this.edges;
+    public StringBuilder getEdges() {
+        return this.edgesIds;
     }
 
-    public ArrayDeque<String> getNodes() {
-        return this.nodes;
-    }
-
-    public void insertNode(String node) {
-        this.nodes.add(node);
-    }
-
-    public void insertEdge(String sourceNode, String edge, String targetNode) {
-        if (this.nodes.isEmpty()) {
-            this.nodes.add(sourceNode);
-            this.edges.add(edge);
-            this.nodes.add(targetNode);
-        } else {
-            this.edges.add(edge);
-            this.nodes.add(targetNode);
-        }
-
+    public StringBuilder getNodes() {
+        return this.nodesIds;
     }
     // #endregion
 
     // #region Path Return Methods
     public String getEdge(int position) {
-        if (this.edges.isEmpty() || this.edges.size() <= position) return "";
-
-        Object[] edgesArray = this.edges.toArray();
-
-        if (position < 0 || position >= edgesArray.length) return null;
-
-        String edgeIDToSearch = (String) edgesArray[position];
-
-        String edge = Graph.getGraph().getEdge(edgeIDToSearch);
-
+        String[] edges = this.getEdges().toString().split(";");
+        if (edges.length == 0 || position >= edges.length) return "";
+        String edge = Graph.getGraph().getEdge(edges[position]);
         return edge == null ? "" : edge;
     }
 
     public String getNode(int position) {
-        if (this.nodes.isEmpty() || this.nodes.size() <= position) return "";
-        if (position == -1) position = this.nodes.size() - 1;
 
-        Object[] nodeArray = this.nodes.toArray();
-        
-        if (position < 0 || position >= nodeArray.length) return null;
-
-        String nodeIDToSearch = (String) nodeArray[position];
-
-        String node = Graph.getGraph().getNode(nodeIDToSearch);
-
+        String[] nodes = this.getNodes().toString().split(";");
+        if (position == -1) position = nodes.length - 1;
+        if (nodes.length == 0 || position >= nodes.length) return "";
+        String node = Graph.getGraph().getNode(nodes[position]);
         return node == null ? "" : node;
     }
 
     public String getPropertyValueOfNodeAtPosition(int position, String propertyToSearch) {
-        if (this.nodes.isEmpty() || this.nodes.size() <= position) return null;
-        if (position == -1) position = this.nodes.size() - 1;
+        String node = this.getNode(position);
 
-        Object[] nodeArray = this.nodes.toArray();
+        if (node.equals("")) return "";
 
-        if (position < 0 || position >= nodeArray.length) return null;
-
-        String nodeID = (String) nodeArray[position];
-
-        String nodeData = Graph.getGraph().getNode(nodeID);
-        if (nodeData == null)
-            return null;
-
-        String[] nodeProperties = nodeData.split("\\|");
+        String[] nodeProperties = node.split("\\|");
         for (String property : nodeProperties) {
             if (property.startsWith(propertyToSearch + ":")) {
                 return property.split(":")[1];
@@ -221,20 +191,11 @@ public class Path {
     }
 
     public String getPropertyValueOfEdgeAtPosition(int position, String propertyToSearch) {
-        if (this.edges.isEmpty() || this.edges.size() <= position) return null;
+        String edge = this.getEdge(position);
 
-        Object[] edgeArray = this.edges.toArray();
+        if (edge.equals("")) return "";
 
-        if (position < 0 || position >= edgeArray.length)
-            return null;
-
-        String edgeID = (String) edgeArray[position];
-
-        String edgeData = Graph.getGraph().getEdge(edgeID);
-        if (edgeData == null)
-            return null;
-
-        String[] edgeProperties = edgeData.split("\\|");
+        String[] edgeProperties = edge.split("\\|");
         for (String property : edgeProperties) {
             if (property.startsWith(propertyToSearch + ":")) {
                 return property.split(":")[1];
@@ -257,13 +218,13 @@ public class Path {
         ArrayList<String> nodesData = new ArrayList<>();
         ArrayList<String> edgesData = new ArrayList<>();
 
-        for (String string : this.getNodes()) {
+        for (String string : this.getNodes().toString().split(";")) {
             String nodeData = Graph.getGraph().getNode(string);
             if (nodeData != null)
                 nodesData.add(nodeData);
         }
 
-        for (String string : this.getEdges()) {
+        for (String string : this.getEdges().toString().split(";")) {
             String edgeData = Graph.getGraph().getEdge(string);
             if (edgeData != null)
                 edgesData.add(edgeData);

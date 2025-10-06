@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpRecursive;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
@@ -80,7 +81,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
 
             if (this.rightList.isEmpty()) return null;
 
-            if (this.currentRecursion == this.maxRecursion) return null;
+            if (Objects.equals(this.currentRecursion, this.maxRecursion)) return null;
     
             if (this.rightIterator == null) { 
                 this.rightIterator = this.rightList.iterator();
@@ -92,12 +93,12 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
                 }
 
                 if (this.leftIterator == null) { 
-                    this.leftIterator = this.HashTable.get(this.nextRight.getFirst()).iterator();
+                    this.leftIterator = this.HashTable.get(this.nextRight.getFirst().toString()).iterator();
                 }
     
                 while (this.leftIterator.hasNext()) {
                     final Path leftPath = this.leftIterator.next();
-                    final Path result = Utils.NodeLink(leftPath, this.nextRight);
+                    final Path result = Utils.Join(leftPath, this.nextRight);
 
                     if (result != null) {
                         this.resultsList.add(result);
@@ -125,16 +126,15 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
             
             while (this.leftChild.hasNext()) {
                 final Path path = this.leftChild.next();
-    
+
                 if (path.getPathLength() <= Context.getInstance().getMaxPathsLength()) {
                     this.leftList.add(path);
                     return path;
                 }
             }
-
             if (this.leftList.isEmpty()) return null;
 
-            if (this.currentRecursion == this.maxRecursion) return null;
+            if (Objects.equals(this.currentRecursion, this.maxRecursion)) return null;
     
             if (this.leftIterator == null) { 
                 this.leftIterator = this.leftList.iterator();
@@ -146,7 +146,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
                 }
 
                 if (this.rightIterator == null) {
-                    List<Path> r = this.HashTable.get(this.nextLeft.getLast());
+                    List<Path> r = this.HashTable.get(this.nextLeft.getLast().toString());
                     if (r != null) {
                         this.rightIterator = r.iterator();
                     }
@@ -155,7 +155,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
     
                 while (this.rightIterator != null && this.rightIterator.hasNext()) {
                     final Path rightPath = this.rightIterator.next();
-                    final Path result = Utils.NodeLink(this.nextLeft, rightPath);
+                    final Path result = Utils.Join(this.nextLeft, rightPath);
 
                     if (result != null) {
                         this.resultsList.add(result);
@@ -181,14 +181,14 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
         while (op.hasNext()) {
             final Path path = op.next();
             if (path.getPathLength() <= Context.getInstance().getMaxPathsLength()) {
-                final String key = path.getFirst();
+                final String key = path.getFirst().toString();
                 if (!this.HashTable.containsKey(key)) {
                     this.HashTable.put(key, new ArrayList<>());
                 }
                 this.HashTable.get(key).add(path);
             }
-            
         }
+
         
     }
     
@@ -196,7 +196,7 @@ public class PhysicalOpRecursive extends BinaryPhysicalOp {
         while (op.hasNext()) {
             final Path path = op.next();
             if (path.getPathLength() <= Context.getInstance().getMaxPathsLength()) {
-                final String key = path.getLast();
+                final String key = path.getLast().toString();
                 if (!this.HashTable.containsKey(key)) {
                     this.HashTable.put(key, new ArrayList<>());
                 }

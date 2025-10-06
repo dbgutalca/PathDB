@@ -17,7 +17,7 @@ public class ReturnNode extends ReturnContent {
             this.nodePos = p.getQuantityOfNodes() - 1;
 
         if (nodePos < p.getQuantityOfNodes() && nodePos >= 0)
-            return p.getNode(nodePos).toString();
+            return p.getNode(nodePos);
         return "";
     }
 

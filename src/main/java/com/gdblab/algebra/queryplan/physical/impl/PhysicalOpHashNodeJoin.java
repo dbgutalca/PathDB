@@ -24,7 +24,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
         // a smarter implementation would hash the smaller input, but we don't have an optimizer yet
         while (leftChild.hasNext()) {
             final Path current = leftChild.next();
-            final String key = current.getLast();
+            final String key = current.getLast().toString();
             
             if (!hashTable.containsKey(key)) hashTable.put(key, new ArrayList<>()); 
             hashTable.get(key).add(current);
@@ -56,7 +56,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
                     return null;
             }
             if (partialLeft == null) {
-                List<Path> left = hashTable.get(nextRight.getFirst());
+                List<Path> left = hashTable.get(nextRight.getFirst().toString());
                 if (left == null) {
                     nextRight = null;
                     continue;
@@ -65,7 +65,7 @@ public class PhysicalOpHashNodeJoin extends BinaryPhysicalOp {
             }
             if (partialLeft.hasNext()) {
                 Path pl = partialLeft.next();
-                Path result =  Utils.NodeLink(pl, nextRight);
+                Path result =  Utils.Join(pl, nextRight);
                 if (result == null) {
                     continue;
                 }

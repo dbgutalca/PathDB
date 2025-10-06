@@ -3,8 +3,8 @@ package com.gdblab.main;
 import com.gdblab.execution.Execute;
 
 public class Main {
-    //O.(X.O)*X?
-    //MATCH TRAIL p = (x)-[Knows]->(y) RETURN x LIMIT 1;
+    // O.(X.O)*X?
+    // MATCH WALK p = (x)-[knows*]->(y) WHERE x.id="m1003606" RETURN p LIMIT 1;
 
     public static void main(String[] args) {
 

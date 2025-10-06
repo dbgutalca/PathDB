@@ -1,5 +1,7 @@
 package com.gdblab.algebra.returncontent;
 
+import com.gdblab.algebra.parser.error.ErrorDetails;
+import com.gdblab.algebra.parser.error.VariableNotFoundException;
 import com.gdblab.execution.Context;
 import com.gdblab.graph.schema.Path;
 
@@ -25,7 +27,8 @@ public class ReturnVariable extends ReturnContent {
         } else if (!rightVariableName.equals("") && rightVariableName.equals(this.variableName)) {
             return p.getNode(-1);
         } else {
-            return "";
+            ErrorDetails ed = new ErrorDetails(0, this.variableName, "Variable " + this.variableName + " is not present.");
+            throw new VariableNotFoundException(ed);
         }
     }
 
