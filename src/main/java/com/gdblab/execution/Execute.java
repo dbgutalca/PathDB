@@ -1,6 +1,11 @@
 package com.gdblab.execution;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -16,8 +21,6 @@ import org.jline.terminal.TerminalBuilder;
 import com.gdblab.algebra.parser.RPQErrorListener;
 import com.gdblab.algebra.parser.RPQExpression;
 import com.gdblab.algebra.parser.RPQGrammarListener;
-import com.gdblab.algebra.parser.error.SyntaxErrorException;
-import com.gdblab.algebra.parser.error.VariableNotFoundException;
 import com.gdblab.algebra.parser.impl.RPQtoAlgebraVisitor;
 import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
@@ -32,7 +35,7 @@ public final class Execute {
 
     private static final String prefix = "/";
 
-    public static void EvalRPQWithAlgebra() {
+    public static String EvalRPQWithAlgebra() {
         long start = System.nanoTime();
         int counter = 1;
 
@@ -80,20 +83,21 @@ public final class Execute {
 
             long end = System.nanoTime();
 
-            System.out.println("\nTotal paths: " + counter + " paths");
-            System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
-            System.out.println("");
             Tools.resetContext();
             
             po = null;
 
+            return "RPQ: " + Context.getInstance().getCompleteQuery() + "Total paths: " + counter + " paths @" + "@ Execution time: " + Utils.getTime(start, end) + " seconds";
+
         } catch (RecognitionException see) {
             Tools.resetContext();
+            return "RPQ: " + Context.getInstance().getCompleteQuery() + "Total paths: 0 paths @@ Execution time: 999.999 seconds";
         } catch (OutOfMemoryError e) {
             emergencyMemory = null;
             System.gc();
             po = null;
             Tools.resetContext();
+            return "RPQ: " + Context.getInstance().getCompleteQuery() + "Total paths: 0 paths @@ Execution time: 999.999 seconds";
         }
     }
 
@@ -116,157 +120,161 @@ public final class Execute {
             String prompt = "PathDB> ";
 
             //#region Server
-            // ServerSocket ss = new ServerSocket(12000);
-            // System.out.println("Server started on port 12000. Waiting for client connections...");
-
-            // while (true) {
-            //     try (Socket clientSocket = ss.accept();
-            //         BufferedReader in = new BufferedReader(new
-            //         InputStreamReader(clientSocket.getInputStream()));
-            //         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
-            //         String input = in.readLine();
-            //         System.out.println("Received: " + input);
-            //         Context.getInstance().setCompleteQuery(input);
-            //         String res = EvalRPQWithAlgebra();
-            //         out.println(res);
-            //     }
-            // }
-            //#endregion
+            ServerSocket ss = new ServerSocket(12000);
+            System.out.println("Server started on port 12000. Waiting for client connections...");
 
             while (true) {
-
-                String line = reader.readLine(prompt);
-
-                if (line == null || line.equalsIgnoreCase(prefix + "q") || line.equalsIgnoreCase(prefix + "quit")) {
-                    System.out.println("Terminated execution.");
-                    break;
+                System.out.println("ASD");
+                try (Socket clientSocket = ss.accept(); BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+                    System.out.println("1");
+                    String input = in.readLine();
+                    System.out.println("1");
+                    System.out.println("Received: " + input);
+                    System.out.println("1");
+                    Context.getInstance().setCompleteQuery(input);
+                    System.out.println("1");
+                    String res = EvalRPQWithAlgebra();
+                    System.out.println("1");
+                    out.println(res);
+                    System.out.println("1");
                 }
-
-                reader.getHistory().add(line);
-
-                if (line.equals(prefix + "h") || line.equals(prefix + "help")) {
-                    Tools.showHelp();
-                    System.out.println();
-                }
-
-                else if (line.startsWith(prefix + "ml ") || line.startsWith(prefix + "max_length ")) {
-                    String[] parts = line.split(" ");
-
-                    if (parts.length != 2) {
-                        // clearConsole();
-                        System.out.println("Invalid command. Use /ml <#> or /max_length <#> to set max the length of generated paths.\n");
-                        continue;
-                    }
-
-                    try {
-                        Integer.valueOf(parts[1]);
-                    } catch (NumberFormatException e) {
-                        // clearConsole();
-                        System.out.println("Invalid command. # must be a positive number greater than 0.\n");
-                        continue;
-                    }
-
-                    Context.getInstance().setMaxPathsLength(Integer.valueOf(parts[1]));
-                    System.out.println("Set max length of paths to: " + parts[1] + "\n");
-                }
-
-                else if (line.startsWith(prefix + "mr ") || line.startsWith(prefix + "max_recursion ")) {
-                    String[] parts = line.split(" ");
-
-                    if (parts.length != 2) {
-                        // clearConsole();
-                        System.out.println(
-                                "Invalid command. Use /mr <#> or /max_recursion <#> to set max recursion of each recursive operation.\n");
-                        continue;
-                    }
-
-                    try {
-                        Integer.valueOf(parts[1]);
-                    } catch (NumberFormatException e) {
-                        // clearConsole();
-                        System.out.println("Invalid command. # must be a positive number greater or equals to 0.\n");
-                        continue;
-                    }
-
-                    if (Integer.parseInt(parts[1]) < 0) {
-                        // clearConsole();
-                        System.out.println("Invalid command. # must be a positive number greater or equals to 0.\n");
-                        continue;
-                    }
-
-                    Context.getInstance().setMaxRecursion(Integer.valueOf(parts[1]));
-                    System.out.println("Set max recursion to: " + parts[1] + "\n");
-                }
-
-                else if (line.startsWith(prefix + "pts ") || line.startsWith(prefix + "paths_to_show ")) {
-                    String[] parts = line.split(" ");
-
-                    if (parts.length != 2) {
-                        System.out.println(
-                                "Invalid command. Use /pts <#> or /paths_to_show <#> to set the number of paths to show.\n");
-                        continue;
-                    }
-
-                    try {
-                        Integer.valueOf(parts[1]);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid command. Use /p <#> or /paths_to_show <#> to set the number of paths to show.\n");
-                        continue;
-                    }
-
-                    if (Integer.parseInt(parts[1]) < 0) {
-                        System.out.println("Invalid command. <#> must be a positive number greater than 0.\n");
-                        continue;
-                    }
-
-                    Context.getInstance().setTotalPathsToShow(Integer.valueOf(parts[1]));
-                    System.out.println("Set show paths configuration to: " + parts[1] + "\n");
-                }
-
-                else if (line.endsWith(";")) {
-                    try {
-                        Context.getInstance().setCompleteQuery(line);
-                        EvalRPQWithAlgebra();
-                    } catch (OutOfMemoryError e) {
-                        System.out.println("Out of memory error. Try again with more memory.\n");
-                    } catch (SyntaxErrorException see) {
-                        System.out.println(see.toString());
-                    } catch (VariableNotFoundException e) {
-                        System.out.println(e.toString());
-                    } catch (Exception e) {
-                        System.out.println("An error occurred inside.");
-                    }
-                }
-
-                // else if (line.equals(prefix + "in") || line.equals(prefix + "information")) {
-                // // clearConsole();
-                // System.out.println("Graph Information:");
-                // System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
-                // System.out.println("Total edges: " + Graph.getGraph().getEdgesQuantity());
-                // System.out.println("Total label: " +
-                // Graph.getGraph().getDifferetEdgesQuantity());
-                // System.out.println("Edges per label: " +
-                // Graph.getGraph().getEdgesByLabelQuantity().toString());
-                // System.out.println("\n");
-                // continue;
-                // }
-
-                // else if (line.equals(prefix + "la") || line.equals(prefix + "labels")) {
-                // System.out.println("Samples: ");
-                // ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
-                // for (Edge e : edges) {
-                // System.out.println(e.getId() + ": " + e.getSource().getId() + "," +
-                // e.getLabel() + "," + e.getTarget().getId());
-                // }
-                // System.out.println("\n");
-                // continue;
-                // }
-
-                else {
-                    System.out.println("Invalid command. For help, type /h.\n\n");
-                }
-
             }
+            //#endregion
+
+            // while (true) {
+
+            //     String line = reader.readLine(prompt);
+
+            //     if (line == null || line.equalsIgnoreCase(prefix + "q") || line.equalsIgnoreCase(prefix + "quit")) {
+            //         System.out.println("Terminated execution.");
+            //         break;
+            //     }
+
+            //     reader.getHistory().add(line);
+
+            //     if (line.equals(prefix + "h") || line.equals(prefix + "help")) {
+            //         Tools.showHelp();
+            //         System.out.println();
+            //     }
+
+            //     else if (line.startsWith(prefix + "ml ") || line.startsWith(prefix + "max_length ")) {
+            //         String[] parts = line.split(" ");
+
+            //         if (parts.length != 2) {
+            //             // clearConsole();
+            //             System.out.println("Invalid command. Use /ml <#> or /max_length <#> to set max the length of generated paths.\n");
+            //             continue;
+            //         }
+
+            //         try {
+            //             Integer.valueOf(parts[1]);
+            //         } catch (NumberFormatException e) {
+            //             // clearConsole();
+            //             System.out.println("Invalid command. # must be a positive number greater than 0.\n");
+            //             continue;
+            //         }
+
+            //         Context.getInstance().setMaxPathsLength(Integer.valueOf(parts[1]));
+            //         System.out.println("Set max length of paths to: " + parts[1] + "\n");
+            //     }
+
+            //     else if (line.startsWith(prefix + "mr ") || line.startsWith(prefix + "max_recursion ")) {
+            //         String[] parts = line.split(" ");
+
+            //         if (parts.length != 2) {
+            //             // clearConsole();
+            //             System.out.println(
+            //                     "Invalid command. Use /mr <#> or /max_recursion <#> to set max recursion of each recursive operation.\n");
+            //             continue;
+            //         }
+
+            //         try {
+            //             Integer.valueOf(parts[1]);
+            //         } catch (NumberFormatException e) {
+            //             // clearConsole();
+            //             System.out.println("Invalid command. # must be a positive number greater or equals to 0.\n");
+            //             continue;
+            //         }
+
+            //         if (Integer.parseInt(parts[1]) < 0) {
+            //             // clearConsole();
+            //             System.out.println("Invalid command. # must be a positive number greater or equals to 0.\n");
+            //             continue;
+            //         }
+
+            //         Context.getInstance().setMaxRecursion(Integer.valueOf(parts[1]));
+            //         System.out.println("Set max recursion to: " + parts[1] + "\n");
+            //     }
+
+            //     else if (line.startsWith(prefix + "pts ") || line.startsWith(prefix + "paths_to_show ")) {
+            //         String[] parts = line.split(" ");
+
+            //         if (parts.length != 2) {
+            //             System.out.println(
+            //                     "Invalid command. Use /pts <#> or /paths_to_show <#> to set the number of paths to show.\n");
+            //             continue;
+            //         }
+
+            //         try {
+            //             Integer.valueOf(parts[1]);
+            //         } catch (NumberFormatException e) {
+            //             System.out.println("Invalid command. Use /p <#> or /paths_to_show <#> to set the number of paths to show.\n");
+            //             continue;
+            //         }
+
+            //         if (Integer.parseInt(parts[1]) < 0) {
+            //             System.out.println("Invalid command. <#> must be a positive number greater than 0.\n");
+            //             continue;
+            //         }
+
+            //         Context.getInstance().setTotalPathsToShow(Integer.valueOf(parts[1]));
+            //         System.out.println("Set show paths configuration to: " + parts[1] + "\n");
+            //     }
+
+            //     else if (line.endsWith(";")) {
+            //         try {
+            //             Context.getInstance().setCompleteQuery(line);
+            //             EvalRPQWithAlgebra();
+            //         } catch (OutOfMemoryError e) {
+            //             System.out.println("Out of memory error. Try again with more memory.\n");
+            //         } catch (SyntaxErrorException see) {
+            //             System.out.println(see.toString());
+            //         } catch (VariableNotFoundException e) {
+            //             System.out.println(e.toString());
+            //         } catch (Exception e) {
+            //             System.out.println("An error occurred inside.");
+            //         }
+            //     }
+
+            //     // else if (line.equals(prefix + "in") || line.equals(prefix + "information")) {
+            //     // // clearConsole();
+            //     // System.out.println("Graph Information:");
+            //     // System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
+            //     // System.out.println("Total edges: " + Graph.getGraph().getEdgesQuantity());
+            //     // System.out.println("Total label: " +
+            //     // Graph.getGraph().getDifferetEdgesQuantity());
+            //     // System.out.println("Edges per label: " +
+            //     // Graph.getGraph().getEdgesByLabelQuantity().toString());
+            //     // System.out.println("\n");
+            //     // continue;
+            //     // }
+
+            //     // else if (line.equals(prefix + "la") || line.equals(prefix + "labels")) {
+            //     // System.out.println("Samples: ");
+            //     // ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
+            //     // for (Edge e : edges) {
+            //     // System.out.println(e.getId() + ": " + e.getSource().getId() + "," +
+            //     // e.getLabel() + "," + e.getTarget().getId());
+            //     // }
+            //     // System.out.println("\n");
+            //     // continue;
+            //     // }
+
+            //     else {
+            //         System.out.println("Invalid command. For help, type /h.\n\n");
+            //     }
+
+            // }
 
         } catch (IOException | NumberFormatException | EndOfFileException e) {
             System.out.println("An error occurred.");
