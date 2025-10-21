@@ -1,6 +1,6 @@
 grammar RPQGrammar;
 
-query: 'MATCH' restrictorsStatement? pathPattern returnStatement limitStatement? ';' EOF;
+query: MATCH restrictorsStatement? pathPattern returnStatement limitStatement? ';' EOF;
 
 restrictorsStatement: 'WALK' | 'TRAIL' | 'ACYCLIC' | 'SIMPLE';
 pathPattern: pathName '=' nodePatternLeft edgePattern nodePatternRight conditionalExpression?;
@@ -84,6 +84,7 @@ unsignedInteger: DIGIT+;
 integer: '-'? DIGIT+ ;
 decimal: '-'? DIGIT+ ('.' DIGIT+)?;
 
+MATCH: [Mm][Aa][Tt][Cc][Hh];
 STRING: '"' (~["\\] | '\\' .)* '"' ;
 LETTER: [a-zA-Z];
 DIGIT: [0-9];
