@@ -88,8 +88,8 @@ Example of edges (`edges.pgdf`):
 
 ```
 @id|@label|@dir|@out|@in
-e1|Knows|T|n1|n2
-e2|Knows|T|n2|n3
+e1|knows|T|n1|n2
+e2|knows|T|n2|n3
 ```
 
 Load the graph with:
@@ -113,7 +113,7 @@ MATCH <PathRestrictor> <PathPattern> <ConditionStatement> <ReturnStatement> <Lim
 ##### 1. MATCH (required)
 Every PathDB query must begin with the reserved word `MATCH`. This indicates that you want to perform a pattern search in the graph.
 
-##### 2. <PathRestrictor> (optional)
+##### 2. PathRestrictor (optional)
 After `MATCH`, you can include any of the following restrictor clauses:
 
 - **WALK** → No restriction. Allows nodes and edges to be repeated.
@@ -123,7 +123,7 @@ After `MATCH`, you can include any of the following restrictor clauses:
 
 A path restrictor clause allows to filter the paths computed by a query. It is important to mention that WALK is a dangerous option when a graph contains cycles as a query evaluation can be infinite.   
 
-##### 3. <PathPattern> (required)
+##### 3. PathPattern (required)
 It is defined as follows:
 
 ```
@@ -136,13 +136,13 @@ It is defined as follows:
 - `<RegExp>` → A regular expression that defines the structure of the paths to be matched. 
 - `{..n}` → Number of repetitions of recursive operators (optional and default 4).
 
-Basic regular expression are an edge label (e.g. `knows`) or a negated edge label (e.g. `!knows`). Complex regular expression are concatenation (e.g. `(Knows . Likes)`), alternation (e.g. `(Knows | Likes)`), Kleene star (e.g. `(Knows)*`), positive closure (e.g. `(Knows)+`), and optional (e.g. `(Knows)?`).   
+Basic regular expression are an edge label (e.g. `knows`) or a negated edge label (e.g. `!knows`). Complex regular expression are concatenation (e.g. `(knows . likes)`), alternation (e.g. `(knows | likes)`), Kleene star (e.g. `(knows)*`), positive closure (e.g. `(knows)+`), and optional (e.g. `(knows)?`).
 
-#### 4. <ConditionStatement> (optional)
+##### 4. ConditionStatement (optional)
 PathDB allows you to define conditions that the components of a path must meet in order for the results to be valid. All conditions have the following form:
 
 ```
-Function <operator> Value
+Variable | Function <operator> Value
 ```
 
 The variable depends on the name given to the path, start node, and end node.
@@ -153,8 +153,8 @@ Value comparison operators can be: `=`, `!=`, `>`, `>=`, `<`, `<=`.
 
 Path conditions can be grouped using parentheses and Boolean operators such as `AND` and `OR`. A complete example from this section could be:
 
-```...
- WHERE (FIRST().property = "something" AND LAST().property >= 100) OR LABEL(NODE(2)) = "Person" ...
+```
+... WHERE (FIRST().property = "something" AND LAST().property >= 100) OR LABEL(NODE(2)) = "Person" ...
 ```
 
 #### 5. ReturnStatement (required)

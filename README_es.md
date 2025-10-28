@@ -1,6 +1,6 @@
 # PathDB
 
-PathDB es una aplicación escrita en Java que permite evaluar **Regular Path Queries (RPQs)** sobre un grafo dirigido con etiquetas cargado en memoria (RAM). La característica principal de PathDB es el uso de una **algebra de caminos** para la evaluación de las consultas en vez de usar algoritmos comunes (como lo hacen la mayoría de los sistemas de bases de datos de grafos). Por lo tanto, PathDB genera arboles de evaluación que pueden ser fácilmente manipulados para realizar optimizaciones.
+PathDB es una aplicación escrita en Java que permite evaluar **Regular Path Queries (RPQ)** en **grafos de propiedades** cargados en la memoria principal (RAM). La característica principal de PathDB es el uso de un **path algebra** para la evaluación de consultas en lugar de utilizar algoritmos comunes (como hacen la mayoría de los sistemas de bases de datos de grafos). Por lo tanto, PathDB genera árboles de evaluación que pueden manipularse fácilmente para realizar optimizaciones.
 
 ---
 
@@ -9,8 +9,9 @@ PathDB es una aplicación escrita en Java que permite evaluar **Regular Path Que
 ##### 1. Instalar Java 18 o superior
 Puede descargar la versión mínima haciendo [clic aquí](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html).
 
-##### 2. Descargar PathDB CLI
-Obtén la última versión desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) y descarga el archivo `PathDB.jar`.
+##### 2. Descargar el ejecutable de PathDB
+La versión actual de PathDB funciona como una aplicación de línea de comandos.
+El ejecutable `PathDB.jar` de la última versión se puede descargar desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) .
 
 ##### 3. Ejecutar PathDB con el grafo de ejemplo y probar una consulta
 
@@ -87,8 +88,8 @@ Ejemplo de aristas (`edges.pgdf`):
 
 ```
 @id|@label|@dir|@out|@in
-e1|Knows|T|n1|n2
-e2|Knows|T|n2|n3
+e1|knows|T|n1|n2
+e2|knows|T|n2|n3
 ```
 
 Carga el grafo con:
@@ -101,41 +102,47 @@ $ java -jar PathDB.jar -n nodes.pgdf -e edges.pgdf
 
 ---
 
-## Lenguaje de consultas (detallado)
+## Lenguaje de Consultas de PathDB (sintaxis y semántica)
 
 Una consulta completa aceptada por PathDB consta de las siguientes partes:
 
 ```
-MATCH <RestrictionStatement> PathPattern <ConditionStatement> ReturnStatement <LimitStatement> ;
+MATCH <PathRestrictor> <PathPattern> <ConditionStatement> <ReturnStatement> <LimitStatement> ;
 ```
 
 ##### 1. MATCH (obligatorio)
 Toda consulta realizada en PathDB debe comenzar con la palabra reservada `MATCH`. Esto indica que quiere realizar una búsqueda de un patrón en el grafo.
 
-##### 2. RestrictionStatement (opcional)
+##### 2. PathRestrictor (opcional)
 Después del `MATCH` puede indicar que restricción debe cumplir los caminos obtenidos. Actualmente, PathDB soporta las siguientes semánticas:
 
 - **WALK** → Permite repetir nodos y aristas.  
 - **TRAIL** → Permite repetir nodos, pero **no aristas**.  
 - **ACYCLIC** → El camino no puede tener ciclos (no se repite ningún nodo).  
-- **SIMPLE** → No se repite ningún nodo a excepción del primero y ultimo que podrían ser el mismo.  
+- **SIMPLE** → No se repite ningún nodo a excepción del primero y ultimo que podrían ser el mismo.
+
+Una cláusula de restricción de rutas permite filtrar las rutas calculadas por una consulta. Es importante mencionar que WALK es una opción peligrosa cuando un gráfico contiene ciclos, ya que la evaluación de la consulta puede ser infinita.   
 
 ##### 3. PathPattern (obligatorio)
 Se define de la forma:
 
 ```
-nombreCamino = (nodoInicial)-[etiquetaDeArista]{..n}->(nodoFinal)
+<pathVar> = (<startNode>)-[<RegExp>]{..n}->(<endNode>)
 ```
 
-- `(nodo)` → Un nodo identificado por una variable.  
-- `-[etiqueta]->` → Una arista, que puede tener un **nombre** o una **expresión regular** para combinar varios tipos de aristas.  
-- `{..n}` → Cantidad de repeticiones de los operadores recursivos (opcional y por defecto 4).
+- `<pathVar>` → Una variable para identificar el conjunto de caminos devueltos por la consulta. Una variable es una cadena sin espacios.
+- `<startNode>` → Una variable para identificar el nodo inicial del patrón del camino.
+- `<endNode>` → Una variable para identificar el nodo final del patrón del camino.
+- `<RegExp>` → Una expresión regular que define la estructura de las rutas que se van a comparar.
+- `{..n}` → Número de repeticiones de operadores recursivos (esto es opcional y viene por defecto con el valor 4).
+
+Las expresiones regulares básicas son: etiqueta de una arista (ej. `knows`) o una etiqueta de una arista negada (ej. `!knows`). Expresiones regulares más complejas son: Concatenación (ej. `(knows . likes)`), disyunción (ej. `(knows | likes)`), estrella de Kleene (ej. `(knows)*`), cláusula positiva (ej. `(knows)+`) y opcional (ej. `(knows)?`)
 
 #### 4. ConditionStatement (opcional)
 PathDB permite definir condiciones que deben cumplir los componentes de un camino para que los resultados sean validos. Todas las condiciones tienen la siguiente forma:
 
 ```
-Variable|Funcion <operador> Valor
+Variable | Funcion <operador> Valor
 ```
 
 La variable depende del nombre entregado al camino, nodo inicial y nodo final.

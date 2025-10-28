@@ -226,7 +226,7 @@ public final class Tools {
             "Running a query:",
             "  Enter queries directly in the console using PathDB syntax.",
             "  Example:",
-            "      MATCH TRAIL p = (x)-[Knows*]->(y) RETURN x.name, y.name LIMIT 2;",
+            "      MATCH TRAIL p = (x)-[knows*]->(y) RETURN x.name, y.name LIMIT 2;",
             "",
             "Usage notes:",
             "  - Commands are case-insensitive.",
