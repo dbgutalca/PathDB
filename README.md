@@ -21,7 +21,7 @@ $ java -jar PathDB.jar
 Basic query example:
 
 ```
-MATCH TRAIL p = (x)-[Knows*]->(y) RETURN LABEL(FIRST()), LABEL(LAST()), x.name, y.name LIMIT 2;
+MATCH TRAIL p = (x)-[knows*]->(y) RETURN LABEL(FIRST()), LABEL(LAST()), x.name, y.name LIMIT 2;
 ```
 
 Expected result:
@@ -29,7 +29,7 @@ Expected result:
 ```
 ┌──────────┬───────────────┬───────────────┬──────────────┬──────────────┐
 │    #     │ LABEL(FIRST())│ LABEL(LAST()) │    x.name    │    y.name    │
-├──────────┼───────────────┼───────────────┼──────────────┤wsda
+├──────────┼───────────────┼───────────────┼──────────────┼──────────────┤
 │    1     │    Person     │    Person     │     Moe      │     Moe      │
 │    2     │    Person     │    Person     │     Bart     │     Bart     │
 └──────────┴───────────────┴───────────────┴──────────────┴──────────────┘
@@ -41,11 +41,11 @@ Expected result:
 
 The test graph provided by PathDB is a very small representation of a social network. It has the following basic structure:
 - Node types: Person(name), Message(txt).
-- Edge types: Knows(Person, Person), Likes(Person, Message), and Has_Creator(Message, Person).
+- Edge types: knows(Person, Person), likes(Person, Message), and hasCreator(Message, Person).
 
 The graph contains a total of **7 nodes** and **11 edges** and looks like this:
 <div align="center">
-  <img src="readmeAssets/DefaultGraph.png" alt="Social network simulating property graph">
+  <img src="readmeAssets/DefaultGraph.jpg" alt="Social network simulating property graph">
 </div>
 
 ---
@@ -55,17 +55,17 @@ The graph contains a total of **7 nodes** and **11 edges** and looks like this:
 Although PathDB has its own language, it is based on **GQL**. Some basic query examples to try are as follows:
 
 ```
-MATCH p = (a)-[Knows*]->(b) RETURN a.name, b.name;
+MATCH p = (a)-[knows*]->(b) RETURN a.name, b.name;
 
-MATCH p = (x)-[Knows.Likes]->(y) WHERE x.name = "Bart" LIMIT 1;
+MATCH p = (x)-[knows.likes]->(y) WHERE x.name = "Bart" RETURN x.name, y.name LIMIT 1;
 ```
 
 More complex examples are shown below:
 
 ```
-MATCH WALK p = (x)-[HasCreator?.Knows*.Likes]->(y) WHERE p.LENGTH < 4 AND NODE(2).name = "Bart" RETURN p;
+MATCH WALK p = (x)-[hasCreator?.knows*.likes]->(y) WHERE p.LENGTH < 4 AND NODE(2).name = "Bart" RETURN p;
 
-MATCH ACYCLIC p = (x)-[HasCreator?.Knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p;
+MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p;
 ```
 
 ---
@@ -159,7 +159,7 @@ It is possible to limit the number of results you want to obtain. To do this, si
 #### Complete example
 A complete example looks like this:
 ```
-MATCH ACYCLIC p = (x)-[HasCreator?.Knows*]{..6}->(y) WHERE x.name = “Moe” OR x.txt = “Msg1” RETURN p LIMIT 100;
+MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = “Moe” OR x.txt = “Msg1” RETURN p LIMIT 100;
 ```
 
 ---

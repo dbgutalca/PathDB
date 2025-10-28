@@ -21,7 +21,7 @@ PathDB es una aplicación escrita en Java que permite evaluar **Regular Path Que
    Ejemplo de consulta básica:
 
    ```
-   MATCH TRAIL p = (x)-[Knows*]->(y) RETURN LABEL(FIRST()), LABEL(LAST()), x.name, y.name LIMIT 2;
+   MATCH TRAIL p = (x)-[knows*]->(y) RETURN LABEL(FIRST()), LABEL(LAST()), x.name, y.name LIMIT 2;
    ```
 
    Resultado esperado:
@@ -41,11 +41,11 @@ PathDB es una aplicación escrita en Java que permite evaluar **Regular Path Que
 
 El grafo de prueba que posee PathDB es una representación muy pequeña de una red social. Teniendo el siguiente esquema base:
 - Tipos de nodos: Person(name), Message(text).
-- Tipos de aristas: Knows(Person, Person), Likes(Person, Message) y Has_Creator(Message, Person).
+- Tipos de aristas: knows(Person, Person), likes(Person, Message) y hasCreator(Message, Person).
 
 El grafo contiene un total de **7 nodos** y **11 aristas** y se ve de la siguiente manera:
 <div align="center">
-  <img src="readmeAssets/DefaultGraph.png" alt="Social network simulating property graph">
+  <img src="readmeAssets/DefaultGraph.jpg" alt="Social network simulating property graph">
 </div>
 
 ---
@@ -55,17 +55,17 @@ El grafo contiene un total de **7 nodos** y **11 aristas** y se ve de la siguien
 Si bien, PathDB posee su propio lenguaje, este está basado en **GQL**. Algunos ejemplos básicos de consultas para probar son las siguientes:
 
 ```
-MATCH p = (a)-[Knows*]->(b) RETURN a.name, b.name;
+MATCH p = (a)-[knows*]->(b) RETURN a.name, b.name;
 
-MATCH p = (x)-[Knows.Likes]->(y) WHERE x.name = "Bart" LIMIT 1;
+MATCH p = (x)-[knows.likes]->(y) WHERE x.name = "Bart" RETURN x.name, y.name LIMIT 1;
 ```
 
 También, otros ejemplos más complejos se ven de la siguiente forma:
 
 ```
-MATCH WALK p = (x)-[HasCreator?.Knows*.Likes]->(y) WHERE p.LENGTH < 4 AND NODE(2).name = "Bart" RETURN p;
+MATCH WALK p = (x)-[hasCreator?.knows*.likes]->(y) WHERE p.LENGTH < 4 AND NODE(2).name = "Bart" RETURN p;
 
-MATCH ACYCLIC p = (x)-[HasCreator?.Knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p;
+MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p;
 ```
 
 ---
@@ -159,7 +159,7 @@ Es posible limitar la cantidad de resultados que se desean obtener. Para esto ba
 #### Ejemplo completo
 Un ejemplo completo se ve de la siguiente forma:
 ```
-MATCH ACYCLIC p = (x)-[HasCreator?.Knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p LIMIT 100;
+MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p LIMIT 100;
 ```
 
 ---
