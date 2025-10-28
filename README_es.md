@@ -57,7 +57,7 @@ Si bien, PathDB posee su propio lenguaje, este está basado en **GQL**. Algunos 
 ```
 MATCH p = (a)-[knows*]->(b) RETURN a.name, b.name;
 
-MATCH p = (x)-[knows.likes]->(y) WHERE x.name = "Bart" RETURN x.name, y.name LIMIT 1;
+MATCH p = (x)-[knows.likes]->(y) WHERE x.name = "Bart" RETURN x.name, y.txt LIMIT 1;
 ```
 
 También, otros ejemplos más complejos se ven de la siguiente forma:
