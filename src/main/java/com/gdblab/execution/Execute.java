@@ -31,7 +31,7 @@ import com.gdlab.parser.RPQGrammarParser;
 
 public final class Execute {
 
-    public static void EvalRPQWithAlgebra(){
+    public static void EvalRPQWithAlgebra() {
         long start = System.nanoTime();
         int counter = 1;
 
@@ -56,7 +56,6 @@ public final class Execute {
 
             LogicalOperator lo = visitor.getRoot();
 
-            
             if (Context.getInstance().getCondition() != null) {
                 lo = addFilter(lo);
             }
@@ -64,25 +63,22 @@ public final class Execute {
             LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
             lo.acceptVisitor(visitor2);
             po = visitor2.getPhysicalPlan().getRootOperator();
-            
+
             counter = Utils.printAndCountPaths(po);
-                
+
             long end = System.nanoTime();
             System.out.println("\nTotal paths: " + (counter - 1) + " paths");
             System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
             System.out.println("");
             Tools.resetContext();
-        }
-        catch (SyntaxErrorException syntaxError) {
+        } catch (SyntaxErrorException syntaxError) {
             System.out.println(syntaxError.toString());
             Tools.resetContext();
-        }
-        catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError e) {
             emergencyMemory = null;
             System.gc();
             Tools.resetContext();
-        }
-        catch (RecognitionException e) {
+        } catch (RecognitionException e) {
             Tools.resetContext();
         }
     }
@@ -100,8 +96,7 @@ public final class Execute {
             if (args.length == 0) {
                 Tools.showUsageNoArgs();
                 Tools.loadDefaultGraph();
-            }
-            else {
+            } else {
                 Tools.showUsageArgsLoadingCustomGraph(args[0], args[1]);
                 Tools.loadCustomGraphFiles(args[0], args[1]);
             }
@@ -114,58 +109,46 @@ public final class Execute {
 
                 reader.getHistory().add(line);
 
-                if (line.equals("/h") || line.equals("/help")) {
+                if (line.equalsIgnoreCase("/h") || line.equalsIgnoreCase("/help")) {
                     Tools.showHelp();
                     System.out.println();
-                }
-
-                else if (line.equals("/in") || line.equals("/information")) {
+                } else if (line.equalsIgnoreCase("/in") || line.equalsIgnoreCase("/information")) {
                     System.out.println("Graph Information:");
                     System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
                     System.out.println("Total edges: " + Graph.getGraph().getEdgesQuantity());
-                    System.out.println("Total label: " +
-                    Graph.getGraph().getDifferetEdgesQuantity());
-                    System.out.println("Edges per label: " +
-                    Graph.getGraph().getEdgesByLabelQuantity().toString());
+                    System.out.println("Total label: " + Graph.getGraph().getDifferetEdgesQuantity());
+                    System.out.println("Edges per label: " + Graph.getGraph().getEdgesByLabelQuantity().toString());
                     System.out.println("");
-                }
-
-                else if (line.equals("/la") || line.equals("/labels")) {
+                } else if (line.equalsIgnoreCase("/la") || line.equalsIgnoreCase("/labels")) {
                     System.out.println("Samples: ");
                     ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
                     for (Edge e : edges) {
                         System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
                     }
                     System.out.println("");
-                }
-
-                else if (line.endsWith(";")) {
+                } else if (line.equalsIgnoreCase("/q") || line.equalsIgnoreCase("/quit")) {
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                } else if (line.endsWith(";")) {
                     try {
                         Context.getInstance().setCompleteQuery(line);
-                        EvalRPQWithAlgebra();   
-                    }
-                    catch (OutOfMemoryError e) {
+                        EvalRPQWithAlgebra();
+                    } catch (OutOfMemoryError e) {
                         System.out.println("Out of memory error. Try again with more memory.\n");
-                    }
-                    catch (VariableNotFoundException e) {
+                    } catch (VariableNotFoundException e) {
                         System.out.println(e.toString());
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         System.out.println(e);
                     }
-                }
-
-                else {
+                } else {
 
                 }
 
             }
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println(e.toString());
-        }
-        catch (UserInterruptException e) {
+        } catch (UserInterruptException e) {
             System.out.println("\nExiting...");
             System.exit(0);
         }

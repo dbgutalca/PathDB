@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
-import com.gdblab.graph.DefaultGraph2;
+import com.gdblab.graph.DefaultGraph;
 import com.gdblab.graph.Graph;
 import com.gdblab.graph.interfaces.InterfaceGraph;
 import com.gdblab.graph.schema.Edge;
@@ -24,7 +24,7 @@ public final class Tools {
     public static void clearConsole() {
         try {
             String os = System.getProperty("os.name");
-    
+
             if (os.contains("Windows")) {
                 // Ejecutar comando cls en Windows
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -34,21 +34,22 @@ public final class Tools {
                 System.out.flush();
             }
             initMessage();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
     public static void initMessage() {
         System.out.println();
         String[] logo = {
-        "       ╔═════════════════════════════════════════════════════╗",
-        "       ║    _____            _     _       _____    ____     ║",
-        "       ║   |  __ \\          | |   | |     |  __ \\  |  _ \\    ║",
-        "       ║   | |__) |   __ _  | |_  | |__   | |  | | | |_) |   ║",
-        "       ║   |  ___/   / _` | | __| | '_ \\  | |  | | |  _ <    ║",
-        "       ║   | |      | (_| | | |_  | | | | | |__| | | |_) |   ║",
-        "       ║   |_|       \\__,_|  \\__| |_| |_| |_____/  |____/    ║",
-        "       ║                                                v1.0 ║",
-        "       ╚═════════════════════════════════════════════════════╝"
+            "       ╔═════════════════════════════════════════════════════╗",
+            "       ║    _____            _     _       _____    ____     ║",
+            "       ║   |  __ \\          | |   | |     |  __ \\  |  _ \\    ║",
+            "       ║   | |__) |   __ _  | |_  | |__   | |  | | | |_) |   ║",
+            "       ║   |  ___/   / _` | | __| | '_ \\  | |  | | |  _ <    ║",
+            "       ║   | |      | (_| | | |_  | | | | | |__| | | |_) |   ║",
+            "       ║   |_|       \\__,_|  \\__| |_| |_| |_____/  |____/    ║",
+            "       ║                                                v1.0 ║",
+            "       ╚═════════════════════════════════════════════════════╝"
         };
 
         for (String u : logo) {
@@ -64,14 +65,12 @@ public final class Tools {
 
             ArrayList<String> schemaNode = new ArrayList<>();
             while ((line = br.readLine()) != null) {
-                
+
                 if (line.startsWith("@")) {
                     schemaNode = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                }
-
-                else {
+                } else {
                     ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                    
+
                     HashMap<String, String> properties = new HashMap<>();
 
                     for (int i = 2; i < data.size() && i < schemaNode.size(); i++) {
@@ -79,9 +78,9 @@ public final class Tools {
                     }
 
                     Node node = new Node(
-                        data.get(0),
-                        data.get(1),
-                        properties
+                            data.get(0),
+                            data.get(1),
+                            properties
                     );
 
                     Graph.getGraph().insertNode(node);
@@ -104,8 +103,7 @@ public final class Tools {
 
                 if (line.startsWith("@")) {
                     schemaEdge = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                }
-                else {
+                } else {
                     ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
                     HashMap<String, String> properties = new HashMap<>();
 
@@ -114,11 +112,11 @@ public final class Tools {
                     }
 
                     Edge e = new Edge(
-                        data.get(0),
-                        data.get(1),
-                        Graph.getGraph().getNode(data.get(3)),
-                        Graph.getGraph().getNode(data.get(4)),
-                        properties
+                            data.get(0),
+                            data.get(1),
+                            Graph.getGraph().getNode(data.get(3)),
+                            Graph.getGraph().getNode(data.get(4)),
+                            properties
                     );
 
                     Graph.getGraph().insertEdge(e);
@@ -135,18 +133,17 @@ public final class Tools {
             return;
         }
 
-
-
-
     }
 
     public static void loadDefaultGraph() {
         InterfaceGraph graph = Graph.getGraph();
 
-        Node[] nodes = DefaultGraph2.getDefaultNodes();
-        for (Node n : nodes) { graph.insertNode(n); }
+        Node[] nodes = DefaultGraph.getDefaultNodes();
+        for (Node n : nodes) {
+            graph.insertNode(n);
+        }
 
-        Edge[] edges = DefaultGraph2.getDefaultEdges();
+        Edge[] edges = DefaultGraph.getDefaultEdges();
         for (Edge e : edges) {
             graph.insertEdge(e);
         }
@@ -215,34 +212,33 @@ public final class Tools {
     }
 
     public static void showHelp() {
-    String[] help = {
-        "",
-        "PathDB - Console Help",
-        "--------------------",
-        "Available commands:",
-        "",
-        "  /h, /help           Show this help message.",
-        "  /in, /information   Display information about the current graph.",
-        "  /la, /labels        Show a sample of each label in the graph.",
-        "  /q, /quit           Exit the program.",
-        "",
-        "Running a query:",
-        "  Enter queries directly in the console using PathDB syntax.",
-        "  Example:",
-        "      MATCH TRAIL p = (x)-[Knows*]->(y) RETURN x.name, y.name LIMIT 2;",
-        "",
-        "Usage notes:",
-        "  - Commands are case-insensitive.",
-        "  - Use '/help' anytime to see this list.",
-        "  - End queries with a semicolon ';'.",
-        ""
-    };
+        String[] help = {
+            "",
+            "PathDB - Console Help",
+            "--------------------",
+            "Available commands:",
+            "",
+            "  /h, /help           Show this help message.",
+            "  /in, /information   Display information about the current graph.",
+            "  /la, /labels        Show a sample of each label in the graph.",
+            "  /q, /quit           Exit the program.",
+            "",
+            "Running a query:",
+            "  Enter queries directly in the console using PathDB syntax.",
+            "  Example:",
+            "      MATCH TRAIL p = (x)-[Knows*]->(y) RETURN x.name, y.name LIMIT 2;",
+            "",
+            "Usage notes:",
+            "  - Commands are case-insensitive.",
+            "  - Use '/help' anytime to see this list.",
+            "  - End queries with a semicolon ';'.",
+            ""
+        };
 
-    for (String line : help) {
-        System.out.println(line);
+        for (String line : help) {
+            System.out.println(line);
+        }
     }
-}
-
 
     public static ArrayList<String> readRPQsFromFile(String rpqs_file) {
         ArrayList<String> rpqs = new ArrayList<>();
@@ -250,7 +246,9 @@ public final class Tools {
         try (BufferedReader br = new BufferedReader(new FileReader(rpqs_file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.startsWith("#")) continue;
+                if (line.startsWith("#")) {
+                    continue;
+                }
                 rpqs.add(line);
             }
         } catch (Exception e) {
@@ -260,12 +258,14 @@ public final class Tools {
     }
 
     public static String getConditional(String evaluation) {
-        if (evaluation == null) return "null";
-    
+        if (evaluation == null) {
+            return "null";
+        }
+
         String regex = "!=|<=|>=|<|>|=";
         Pattern pattern = java.util.regex.Pattern.compile(regex);
         Matcher matcher = pattern.matcher(evaluation);
-    
+
         return matcher.find() ? matcher.group() : "null";
     }
 
