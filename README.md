@@ -1,6 +1,6 @@
 # PathDB
 
-PathDB is an application written in Java that allows **Regular Path Queries (RPQs)** to be evaluated on a directed graph with labels loaded in memory (RAM). The main feature of PathDB is the use of a **path algebra** for query evaluation instead of using common algorithms (as most graph database systems do). Therefore, PathDB generates evaluation trees that can be easily manipulated to perform optimizations.
+PathDB is an application written in Java that allows **Regular Path Queries (RPQs)** to be evaluated on **property graphs** loaded in main memory (RAM). The main feature of PathDB is the use of a **path algebra** for query evaluation instead of using common algorithms (as most graph database systems do). Therefore, PathDB generates evaluation trees that can be easily manipulated to perform optimizations.
 
 ---
 
@@ -9,8 +9,9 @@ PathDB is an application written in Java that allows **Regular Path Queries (RPQ
 ##### 1. Install Java 18 or higher
 You can download the minimum version by [clicking here](https://www.oracle.com/java/technologies/javase/jdk18-archive-downloads.html).
 
-##### 2. Download PathDB CLI
-Get the latest version from [this link](https://github.com/dbgutalca/PathDB/releases/tag/v0.2.1) and download the `PathDB.jar` file.
+##### 2. Download the PathDB executable
+The current version of PathDB works as a command-line application.
+The executable `PathDB.jar` of the latest release can be donwloaded from [this link](https://github.com/dbgutalca/PathDB/releases/tag/V0.3) .
 
 ##### 3. Run PathDB with the example graph and try a query
 
@@ -101,37 +102,43 @@ $ java -jar PathDB.jar -n nodes.pgdf -e edges.pgdf
 
 ---
 
-## Query Language (detailed)
+## PathDB Query Language (Syntax and semantics)
 
 A complete query accepted by PathDB consists of the following parts:
 
 ```
-MATCH <RestrictionStatement> PathPattern <ConditionStatement> ReturnStatement <LimitStatement> ;
+MATCH <PathRestrictor> <PathPattern> <ConditionStatement> <ReturnStatement> <LimitStatement> ;
 ```
 
 ##### 1. MATCH (required)
-Every query made in PathDB must begin with the reserved word `MATCH`. This indicates that you want to perform a pattern search in the graph.
+Every PathDB query must begin with the reserved word `MATCH`. This indicates that you want to perform a pattern search in the graph.
 
-##### 2. RestrictionStatement (optional)
-After `MATCH`, you can indicate which restriction the paths obtained must satisfy. Currently, PathDB supports the following semantics:
+##### 2. <PathRestrictor> (optional)
+After `MATCH`, you can include any of the following restrictor clauses:
 
-- **WALK** → Allows nodes and edges to be repeated.
-- **TRAIL** → Allows nodes to be repeated, but **not edges**.  
+- **WALK** → No restriction. Allows nodes and edges to be repeated.
+- **TRAIL** → Allows nodes to be repeated, but **not edges**. This is the default restrictor.  
 - **ACYCLIC** → The path cannot have cycles (no node is repeated).
 - **SIMPLE** → No node is repeated except for the first and last, which may be the same.  
 
-##### 3. PathPattern (required)
+A path restrictor clause allows to filter the paths computed by a query. It is important to mention that WALK is a dangerous option when a graph contains cycles as a query evaluation can be infinite.   
+
+##### 3. <PathPattern> (required)
 It is defined as follows:
 
 ```
-pathName = (startNode)-[edgeLabel]{..n}->(endNode)
+<pathVar> = (<startNode>)-[<RegExp>]{..n}->(<endNode>)
 ```
 
-- `(node)` → A node identified by a variable.  
-- `-[label]->` → An edge, which can have a **name** or a **regular expression** to combine several types of edges.  
+- `<pathVar>` → A variable to identify the set of paths returned by the path query. A variable is a string without spaces.
+- `<startNode>` → A variable to identify the start node of the path pattern. 
+- `<endNode>` → A variable to identify the end node of the path pattern.  
+- `<RegExp>` → A regular expression that defines the structure of the paths to be matched. 
 - `{..n}` → Number of repetitions of recursive operators (optional and default 4).
 
-#### 4. ConditionStatement (optional)
+Basic regular expression are an edge label (e.g. `knows`) or a negated edge label (e.g. `!knows`). Complex regular expression are concatenation (e.g. `(Knows . Likes)`), alternation (e.g. `(Knows | Likes)`), Kleene star (e.g. `(Knows)*`), positive closure (e.g. `(Knows)+`), and optional (e.g. `(Knows)?`).   
+
+#### 4. <ConditionStatement> (optional)
 PathDB allows you to define conditions that the components of a path must meet in order for the results to be valid. All conditions have the following form:
 
 ```
@@ -173,7 +180,7 @@ MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = “Moe” OR
 ---
 
 ## Funding
-This development was funded by the **FONDECYT** project (corresponding number).  
+This development was funded by the **FONDECYT** project 1221727.  
 
 ---
 
