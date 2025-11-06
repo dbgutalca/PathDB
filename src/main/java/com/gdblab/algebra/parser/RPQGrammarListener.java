@@ -127,7 +127,7 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
 
     @Override
     public void exitLimitStatement(final RPQGrammarParser.LimitStatementContext ctx) {
-        String limit = ctx.getText().replace("LIMIT", "");
+        String limit = ctx.getText().toUpperCase().replace("LIMIT", "");
         int limitValue = Integer.parseInt(limit);
         Context.getInstance().setLimit(limitValue);
     }

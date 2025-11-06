@@ -86,7 +86,7 @@ decimal: '-'? DIGIT+ ('.' DIGIT+)?;
 
 MATCH: [Mm][Aa][Tt][Cc][Hh];
 RETURN: [Rr][Ee][Tt][Uu][Rr][Nn];
-LIMIT: [Ll][Ii][Mm][Ii][Tt];
+LIMIT: ' '[Ll][Ii][Mm][Ii][Tt]' ';
 WHERE: [Ww][Hh][Ee][Rr][Ee];
 AND: ' '[Aa][Nn][Dd]' ';
 OR: ' '[Oo][Rr]' ';
