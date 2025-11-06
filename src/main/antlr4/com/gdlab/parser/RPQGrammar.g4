@@ -2,7 +2,7 @@ grammar RPQGrammar;
 
 query: MATCH restrictorsStatement? pathPattern returnStatement limitStatement? ';' EOF;
 
-restrictorsStatement: 'WALK' | 'TRAIL' | 'ACYCLIC' | 'SIMPLE';
+restrictorsStatement: WALK | TRAIL | ACYCLIC | SIMPLE;
 pathPattern: pathName '=' nodePatternLeft edgePattern nodePatternRight conditionalExpression?;
 returnStatement: RETURN returnOption (',' returnOption)*;
 returnOption: variable # returnVariable
@@ -85,6 +85,10 @@ integer: '-'? DIGIT+ ;
 decimal: '-'? DIGIT+ ('.' DIGIT+)?;
 
 MATCH: [Mm][Aa][Tt][Cc][Hh];
+WALK: [Ww][Aa][Ll][Kk];
+TRAIL: [Tt][Rr][Aa][Ii][Ll];
+ACYCLIC: [Aa][Cc][Yy][Cc][Ll][Ii][Cc];
+SIMPLE: [Ss][Ii][Mm][Pp][Ll][Ee];
 RETURN: [Rr][Ee][Tt][Uu][Rr][Nn];
 LIMIT: ' '[Ll][Ii][Mm][Ii][Tt]' ';
 WHERE: [Ww][Hh][Ee][Rr][Ee];
