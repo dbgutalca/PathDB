@@ -13,6 +13,10 @@ import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import com.gdblab.algebra.condition.And;
+import com.gdblab.algebra.condition.Condition;
+import com.gdblab.algebra.condition.First;
+import com.gdblab.algebra.condition.Last;
 import com.gdblab.algebra.parser.RPQErrorListener;
 import com.gdblab.algebra.parser.RPQExpression;
 import com.gdblab.algebra.parser.RPQGrammarListener;
@@ -22,6 +26,7 @@ import com.gdblab.algebra.parser.impl.RPQtoAlgebraVisitor;
 import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.algebra.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
+import com.gdblab.algebra.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.graph.Graph;
@@ -56,9 +61,8 @@ public final class Execute {
 
             LogicalOperator lo = visitor.getRoot();
 
-            if (Context.getInstance().getCondition() != null) {
-                lo = addFilter(lo);
-            }
+            Condition condition = Context.getInstance().getCondition();
+            lo = checkAndAddFilter(lo, condition);
 
             LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
             lo.acceptVisitor(visitor2);
@@ -154,8 +158,58 @@ public final class Execute {
         }
     }
 
-    public static LogicalOperator addFilter(LogicalOperator lo) {
-        return new LogicalOpSelection(lo, Context.getInstance().getCondition());
+    private static LogicalOperator checkAndAddFilter(LogicalOperator lo, Condition condition) {
+        if (condition == null) {
+            // Caso sin condiciones
+            return lo;
+        }
+        if (condition instanceof And) {
+            // Significa que es un And compuesto
+            Condition leftCond = ((And) condition).getC1();
+            Condition rightCond = ((And) condition).getC2();
+
+            if (leftCond instanceof First && rightCond instanceof First) {
+                lo = new LogicalOpSelection(lo, condition);
+                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+                lo.acceptVisitor(v);
+                lo = v.getRoot();
+                return lo;
+            }
+
+            if (leftCond instanceof First && rightCond instanceof Last) {
+                lo = new LogicalOpSelection(lo, leftCond);
+                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+                lo.acceptVisitor(v);
+                lo = v.getRoot();
+                return new LogicalOpSelection(lo, rightCond);
+            }
+
+            if (leftCond instanceof Last && rightCond instanceof First) {
+                lo = new LogicalOpSelection(lo, rightCond);
+                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+                lo.acceptVisitor(v);
+                lo = v.getRoot();
+                return new LogicalOpSelection(lo, leftCond);
+            }
+
+            if (leftCond instanceof Last && rightCond instanceof Last) {
+                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+                lo.acceptVisitor(v);
+                lo = v.getRoot();
+                return lo;
+            }
+
+        }
+        if (condition instanceof First || condition instanceof Last) {
+            // Significa que es un First o Last y simplemente se baja
+            PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+            lo.acceptVisitor(v);
+            lo = v.getRoot();
+            return lo;
+        }
+
+        // Caso en que sea cualquiera otra condicion no se puede bajar
+        return new LogicalOpSelection(lo, condition);
     }
 
 }
