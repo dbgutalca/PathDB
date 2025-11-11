@@ -37,8 +37,8 @@ conditionalExpression: WHERE conditionals;
 conditionals: '(' conditionals ')' # parenthesisConditionals
         | conditionals AND conditionals # andConditionals
         | conditionals OR conditionals # orConditionals
-        | conditionalsEvaluation # conditionalsEval
         | conditionalsFunction # conditionalsEvalFunction
+        | conditionalsEvaluation # conditionalsEval
         ;
 
 conditionalsEvaluation: variable '.' property ( comparisonString | comparisonNumber);
