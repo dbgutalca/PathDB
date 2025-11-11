@@ -13,7 +13,6 @@ import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
-import com.gdblab.algebra.condition.And;
 import com.gdblab.algebra.condition.Condition;
 import com.gdblab.algebra.condition.First;
 import com.gdblab.algebra.condition.Last;
@@ -163,45 +162,42 @@ public final class Execute {
             // Caso sin condiciones
             return lo;
         }
-        if (condition instanceof And) {
-            // Significa que es un And compuesto
-            Condition leftCond = ((And) condition).getC1();
-            Condition rightCond = ((And) condition).getC2();
-
-            if (leftCond instanceof First && rightCond instanceof First) {
-                lo = new LogicalOpSelection(lo, condition);
-                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-                lo.acceptVisitor(v);
-                lo = v.getRoot();
-                return lo;
-            }
-
-            if (leftCond instanceof First && rightCond instanceof Last) {
-                lo = new LogicalOpSelection(lo, leftCond);
-                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-                lo.acceptVisitor(v);
-                lo = v.getRoot();
-                return new LogicalOpSelection(lo, rightCond);
-            }
-
-            if (leftCond instanceof Last && rightCond instanceof First) {
-                lo = new LogicalOpSelection(lo, rightCond);
-                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-                lo.acceptVisitor(v);
-                lo = v.getRoot();
-                return new LogicalOpSelection(lo, leftCond);
-            }
-
-            if (leftCond instanceof Last && rightCond instanceof Last) {
-                PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
-                lo.acceptVisitor(v);
-                lo = v.getRoot();
-                return lo;
-            }
-
-        }
+        // if (condition instanceof And) {
+        //     // Significa que es un And compuesto
+        //     Condition leftCond = ((And) condition).getC1();
+        //     Condition rightCond = ((And) condition).getC2();
+        //     if (leftCond instanceof First && rightCond instanceof First) {
+        //         lo = new LogicalOpSelection(lo, condition);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return lo;
+        //     }
+        //     if (leftCond instanceof First && rightCond instanceof Last) {
+        //         lo = new LogicalOpSelection(lo, leftCond);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return new LogicalOpSelection(lo, rightCond);
+        //     }
+        //     if (leftCond instanceof Last && rightCond instanceof First) {
+        //         lo = new LogicalOpSelection(lo, rightCond);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return new LogicalOpSelection(lo, leftCond);
+        //     }
+        //     if (leftCond instanceof Last && rightCond instanceof Last) {
+        //         lo = new LogicalOpSelection(lo, condition);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return lo;
+        //     }
+        // }
         if (condition instanceof First || condition instanceof Last) {
             // Significa que es un First o Last y simplemente se baja
+            lo = new LogicalOpSelection(lo, condition);
             PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
             lo.acceptVisitor(v);
             lo = v.getRoot();
