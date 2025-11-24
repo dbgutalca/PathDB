@@ -35,7 +35,7 @@ import com.gdlab.parser.RPQGrammarParser;
 
 public final class Execute {
 
-    public static String EvalRPQWithAlgebra() {
+    public static void EvalRPQWithAlgebra() {
         long start = System.nanoTime();
         int counter = 1;
 
@@ -75,15 +75,17 @@ public final class Execute {
             System.out.println("");
 
             Tools.resetContext();
-            return Context.getInstance().getCompleteQuery() + Utils.getTime(start, end);
+            // return Context.getInstance().getCompleteQuery() + Utils.getTime(start, end);
         } catch (SyntaxErrorException | RecognitionException syntaxError) {
             Tools.resetContext();
-            return Context.getInstance().getCompleteQuery() + "999.999";
+            System.out.println(syntaxError.toString());
+            // return Context.getInstance().getCompleteQuery() + "999.999";
         } catch (OutOfMemoryError e) {
             emergencyMemory = null;
             System.gc();
             Tools.resetContext();
-            return Context.getInstance().getCompleteQuery() + "999.999";
+            System.out.println("Out of memory error. Try again with more memory.\n");
+            // return Context.getInstance().getCompleteQuery() + "999.999";
         }
     }
 
