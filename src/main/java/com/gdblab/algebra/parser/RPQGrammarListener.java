@@ -60,6 +60,7 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     //#region Regular Expression
     @Override
     public void exitRegularExpressionRule(final RPQGrammarParser.RegularExpressionRuleContext ctx) {
+        Context.getInstance().setRegularExpression(this.regularExpressionRoot);
         try {
             this.regularExpressionRoot = this.regularExpressionStack.pop();
         } catch (EmptyStackException ese) {

@@ -35,7 +35,7 @@ import com.gdlab.parser.RPQGrammarParser;
 
 public final class Execute {
 
-    public static void EvalRPQWithAlgebra() {
+    public static String EvalRPQWithAlgebra() {
         long start = System.nanoTime();
         int counter = 1;
 
@@ -73,16 +73,17 @@ public final class Execute {
             System.out.println("\nTotal paths: " + (counter - 1) + " paths");
             System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
             System.out.println("");
+
             Tools.resetContext();
-        } catch (SyntaxErrorException syntaxError) {
-            System.out.println(syntaxError.toString());
+            return Context.getInstance().getCompleteQuery() + Utils.getTime(start, end);
+        } catch (SyntaxErrorException | RecognitionException syntaxError) {
             Tools.resetContext();
+            return Context.getInstance().getCompleteQuery() + "999.999";
         } catch (OutOfMemoryError e) {
             emergencyMemory = null;
             System.gc();
             Tools.resetContext();
-        } catch (RecognitionException e) {
-            Tools.resetContext();
+            return Context.getInstance().getCompleteQuery() + "999.999";
         }
     }
 
@@ -106,12 +107,20 @@ public final class Execute {
 
             String prompt = "PathDB> ";
 
+            // ServerSocket ss = new ServerSocket(12000);
+            // System.out.println("Server started on port 12000. Waiting for client connections...");
+            // while (true) {
+            //     try (Socket clientSocket = ss.accept(); BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+            //         String input = in.readLine();
+            //         System.out.println("Received: " + input);
+            //         Context.getInstance().setCompleteQuery(input);
+            //         String res = EvalRPQWithAlgebra();
+            //         out.println(res);
+            //     }
+            // }
             while (true) {
-
                 String line = reader.readLine(prompt);
-
                 reader.getHistory().add(line);
-
                 if (line.equalsIgnoreCase("/h") || line.equalsIgnoreCase("/help")) {
                     Tools.showHelp();
                     System.out.println();
@@ -144,11 +153,8 @@ public final class Execute {
                         System.out.println(e);
                     }
                 } else {
-
                 }
-
             }
-
         } catch (IOException e) {
             System.out.println(e.toString());
         } catch (UserInterruptException e) {
