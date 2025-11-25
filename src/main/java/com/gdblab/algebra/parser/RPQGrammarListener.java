@@ -60,6 +60,7 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     //#region Regular Expression
     @Override
     public void exitRegularExpressionRule(final RPQGrammarParser.RegularExpressionRuleContext ctx) {
+        Context.getInstance().setRegularExpression(this.regularExpressionRoot);
         try {
             this.regularExpressionRoot = this.regularExpressionStack.pop();
         } catch (EmptyStackException ese) {
@@ -128,7 +129,7 @@ public class RPQGrammarListener extends RPQGrammarBaseListener {
     @Override
     public void exitLimitStatement(final RPQGrammarParser.LimitStatementContext ctx) {
         String limit = ctx.getText().toUpperCase().replace("LIMIT", "");
-        int limitValue = Integer.parseInt(limit);
+        int limitValue = Integer.parseInt(limit.trim());
         Context.getInstance().setLimit(limitValue);
     }
     //#endregion Limit & Range

@@ -13,6 +13,9 @@ import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 
+import com.gdblab.algebra.condition.Condition;
+import com.gdblab.algebra.condition.First;
+import com.gdblab.algebra.condition.Last;
 import com.gdblab.algebra.parser.RPQErrorListener;
 import com.gdblab.algebra.parser.RPQExpression;
 import com.gdblab.algebra.parser.RPQGrammarListener;
@@ -22,6 +25,7 @@ import com.gdblab.algebra.parser.impl.RPQtoAlgebraVisitor;
 import com.gdblab.algebra.queryplan.logical.LogicalOperator;
 import com.gdblab.algebra.queryplan.logical.impl.LogicalOpSelection;
 import com.gdblab.algebra.queryplan.logical.visitor.LogicalToBFPhysicalVisitor;
+import com.gdblab.algebra.queryplan.logical.visitor.PredicatePushdownLogicalPlanVisitor;
 import com.gdblab.algebra.queryplan.physical.PhysicalOperator;
 import com.gdblab.algebra.queryplan.util.Utils;
 import com.gdblab.graph.Graph;
@@ -56,9 +60,8 @@ public final class Execute {
 
             LogicalOperator lo = visitor.getRoot();
 
-            if (Context.getInstance().getCondition() != null) {
-                lo = addFilter(lo);
-            }
+            Condition condition = Context.getInstance().getCondition();
+            lo = checkAndAddFilter(lo, condition);
 
             LogicalToBFPhysicalVisitor visitor2 = new LogicalToBFPhysicalVisitor();
             lo.acceptVisitor(visitor2);
@@ -70,16 +73,19 @@ public final class Execute {
             System.out.println("\nTotal paths: " + (counter - 1) + " paths");
             System.out.println("Execution time: " + Utils.getTime(start, end) + " seconds");
             System.out.println("");
+
             Tools.resetContext();
-        } catch (SyntaxErrorException syntaxError) {
+            // return Context.getInstance().getCompleteQuery() + Utils.getTime(start, end);
+        } catch (SyntaxErrorException | RecognitionException syntaxError) {
+            Tools.resetContext();
             System.out.println(syntaxError.toString());
-            Tools.resetContext();
+            // return Context.getInstance().getCompleteQuery() + "999.999";
         } catch (OutOfMemoryError e) {
             emergencyMemory = null;
             System.gc();
             Tools.resetContext();
-        } catch (RecognitionException e) {
-            Tools.resetContext();
+            System.out.println("Out of memory error. Try again with more memory.\n");
+            // return Context.getInstance().getCompleteQuery() + "999.999";
         }
     }
 
@@ -103,12 +109,20 @@ public final class Execute {
 
             String prompt = "PathDB> ";
 
+            // ServerSocket ss = new ServerSocket(12000);
+            // System.out.println("Server started on port 12000. Waiting for client connections...");
+            // while (true) {
+            //     try (Socket clientSocket = ss.accept(); BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)) {
+            //         String input = in.readLine();
+            //         System.out.println("Received: " + input);
+            //         Context.getInstance().setCompleteQuery(input);
+            //         String res = EvalRPQWithAlgebra();
+            //         out.println(res);
+            //     }
+            // }
             while (true) {
-
                 String line = reader.readLine(prompt);
-
                 reader.getHistory().add(line);
-
                 if (line.equalsIgnoreCase("/h") || line.equalsIgnoreCase("/help")) {
                     Tools.showHelp();
                     System.out.println();
@@ -141,11 +155,8 @@ public final class Execute {
                         System.out.println(e);
                     }
                 } else {
-
                 }
-
             }
-
         } catch (IOException e) {
             System.out.println(e.toString());
         } catch (UserInterruptException e) {
@@ -154,8 +165,55 @@ public final class Execute {
         }
     }
 
-    public static LogicalOperator addFilter(LogicalOperator lo) {
-        return new LogicalOpSelection(lo, Context.getInstance().getCondition());
+    private static LogicalOperator checkAndAddFilter(LogicalOperator lo, Condition condition) {
+        if (condition == null) {
+            // Caso sin condiciones
+            return lo;
+        }
+        // if (condition instanceof And) {
+        //     // Significa que es un And compuesto
+        //     Condition leftCond = ((And) condition).getC1();
+        //     Condition rightCond = ((And) condition).getC2();
+        //     if (leftCond instanceof First && rightCond instanceof First) {
+        //         lo = new LogicalOpSelection(lo, condition);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return lo;
+        //     }
+        //     if (leftCond instanceof First && rightCond instanceof Last) {
+        //         lo = new LogicalOpSelection(lo, leftCond);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return new LogicalOpSelection(lo, rightCond);
+        //     }
+        //     if (leftCond instanceof Last && rightCond instanceof First) {
+        //         lo = new LogicalOpSelection(lo, rightCond);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return new LogicalOpSelection(lo, leftCond);
+        //     }
+        //     if (leftCond instanceof Last && rightCond instanceof Last) {
+        //         lo = new LogicalOpSelection(lo, condition);
+        //         PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+        //         lo.acceptVisitor(v);
+        //         lo = v.getRoot();
+        //         return lo;
+        //     }
+        // }
+        if (condition instanceof First || condition instanceof Last) {
+            // Significa que es un First o Last y simplemente se baja
+            lo = new LogicalOpSelection(lo, condition);
+            PredicatePushdownLogicalPlanVisitor v = new PredicatePushdownLogicalPlanVisitor();
+            lo.acceptVisitor(v);
+            lo = v.getRoot();
+            return lo;
+        }
+
+        // Caso en que sea cualquiera otra condicion no se puede bajar
+        return new LogicalOpSelection(lo, condition);
     }
 
 }
