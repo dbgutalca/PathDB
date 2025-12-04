@@ -75,7 +75,7 @@ MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.t
 
 ## Cargar tu propio grafo
 
-Si deseas usar tus propios datos, debes preparar los archivos en **formato PGDF** (uno para nodos y otro para aristas).
+Si deseas usar tus propios datos, debes preparar los archivos en [formato PGDF](https://github.com/dbgutalca/pgdf) (uno para nodos y otro para aristas).
 
 Ejemplo de nodos (`nodes.pgdf`):
 

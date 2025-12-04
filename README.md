@@ -75,7 +75,7 @@ MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.t
 
 ## Upload your graph
 
-If you want to use your own data, you must prepare the files in **PGDF format** (one for nodes and another for edges).
+If you want to use your own data, you must prepare the files in [PGDF format](https://github.com/dbgutalca/pgdf) (one for nodes and another for edges).
 
 Example of nodes (`nodes.pgdf`):
 
