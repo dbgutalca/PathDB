@@ -48,28 +48,26 @@ public class CSRVPMin implements InterfaceGraph {
 
             Iterator<LinkedList<Edge>> valuesIt = edges.values().iterator();
             Iterator<Edge> currentIt = null;
-            
+
             @Override
             public boolean hasNext() {
-                for(;;){
+                for (;;) {
 
                     if (currentIt == null) {
 
                         if (valuesIt.hasNext()) {
                             currentIt = valuesIt.next().iterator();
-                        }
-
-                        else {
+                        } else {
                             return false;
                         }
                     }
-    
+
                     if (currentIt.hasNext()) {
                         slot = currentIt.next();
                         return true;
+                    } else {
+                        currentIt = null;
                     }
-    
-                    else currentIt = null;
                 }
             }
 
@@ -85,13 +83,15 @@ public class CSRVPMin implements InterfaceGraph {
     @Override
     public Iterator<Edge> getEdgeIteratorByLabel(final String label) {
         LinkedList<Edge> list = edges.get(label);
-        if (list == null) return new LinkedList<Edge>().iterator();
+        if (list == null) {
+            return new LinkedList<Edge>().iterator();
+        }
         return edges.get(label).iterator();
     }
 
     @Override
     public Node insertNode(Node node) {
-        if (! nodes.containsKey(node.getId())){
+        if (!nodes.containsKey(node.getId())) {
             nodes.put(node.getId(), node);
             return node;
         }
@@ -100,13 +100,12 @@ public class CSRVPMin implements InterfaceGraph {
 
     @Override
     public Edge insertEdge(Edge edge) {
-        if (!edges.containsKey(edge.getLabel())){
+        if (!edges.containsKey(edge.getLabel())) {
             final LinkedList<Edge> edgesByLabel = new LinkedList<>();
             edges.put(edge.getLabel(), edgesByLabel);
             edgesByLabel.add(edge);
             return edge;
-        }
-        else{
+        } else {
             final LinkedList<Edge> edgesByLabel = edges.get(edge.getLabel());
             edgesByLabel.add(edge);
             return edge;
@@ -133,7 +132,7 @@ public class CSRVPMin implements InterfaceGraph {
     public Integer getDifferetEdgesQuantity() {
         return edges.size();
     }
-    
+
     @Override
     public HashMap<String, Integer> getEdgesByLabelQuantity() {
         HashMap<String, Integer> edgesByLabel = new HashMap<>();
@@ -149,9 +148,21 @@ public class CSRVPMin implements InterfaceGraph {
     }
 
     @Override
+    public HashMap<String, Integer> getNodesByLabelQuantity() {
+        HashMap<String, Integer> nodesByLabel = new HashMap<>();
+
+        for (Node node : nodes.values()) {
+            String label = node.getLabel();
+            nodesByLabel.put(label, nodesByLabel.getOrDefault(label, 0) + 1);
+        }
+
+        return nodesByLabel;
+    }
+
+    @Override
     public ArrayList<Edge> getSampleOfEachlabel() {
         ArrayList<Edge> sample = new ArrayList<>();
-        
+
         for (LinkedList<Edge> list : edges.values()) {
             sample.add(list.get((int) (Math.random() * (list.size() - 1))));
         }
@@ -162,10 +173,11 @@ public class CSRVPMin implements InterfaceGraph {
     @Override
     public HashSet<Edge> getNeighbours(final String id) {
         final HashSet<Edge> nodesTemp = new HashSet<>();
-        for (final Iterator<Edge> edgeIt = getEdgeIterator() ; edgeIt.hasNext();){
-            final Edge edge = edgeIt.next(); 
-            if (edge.getSource().getId().equals(id))
+        for (final Iterator<Edge> edgeIt = getEdgeIterator(); edgeIt.hasNext();) {
+            final Edge edge = edgeIt.next();
+            if (edge.getSource().getId().equals(id)) {
                 nodesTemp.add(edge);
+            }
         }
         return nodesTemp;
     }

@@ -127,12 +127,7 @@ public final class Execute {
                     Tools.showHelp();
                     System.out.println();
                 } else if (line.equalsIgnoreCase("/in") || line.equalsIgnoreCase("/information")) {
-                    System.out.println("Graph Information:");
-                    System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
-                    System.out.println("Total edges: " + Graph.getGraph().getEdgesQuantity());
-                    System.out.println("Total label: " + Graph.getGraph().getDifferetEdgesQuantity());
-                    System.out.println("Edges per label: " + Graph.getGraph().getEdgesByLabelQuantity().toString());
-                    System.out.println("");
+                    Tools.showInformation();
                 } else if (line.equalsIgnoreCase("/la") || line.equalsIgnoreCase("/labels")) {
                     System.out.println("Samples: ");
                     ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
@@ -155,6 +150,7 @@ public final class Execute {
                         System.out.println(e);
                     }
                 } else {
+                    System.out.println("Invalid command. Type /h or /help for help.\n");
                 }
             }
         } catch (IOException e) {

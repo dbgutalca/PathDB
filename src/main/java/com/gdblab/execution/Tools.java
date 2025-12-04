@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -283,6 +284,44 @@ public final class Tools {
         Context.getInstance().setRegularExpression(null);
         Context.getInstance().setCompleteQuery("");
         Context.getInstance().setReturnedVariables(new ArrayList<>());
+    }
+
+    public static void showInformation() {
+        System.out.println("Graph Information");
+
+        int nodesQuantity = Graph.getGraph().getNodesQuantity();
+        System.out.println("Number of nodes: " + nodesQuantity);
+
+        int edgesQuantity = Graph.getGraph().getEdgesQuantity();
+        System.out.println("Number of edges: " + edgesQuantity);
+
+        HashMap<String, Integer> nodesByLabel = Graph.getGraph().getNodesByLabelQuantity();
+        StringBuilder sbNodes = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : nodesByLabel.entrySet()) {
+            if (sbNodes.length() > 0) {
+                sbNodes.append(", ");
+            }
+            sbNodes.append(entry.getKey())
+                    .append("(")
+                    .append(entry.getValue())
+                    .append(")");
+        }
+        System.out.println("Nodes by label: " + sbNodes.toString());
+
+        HashMap<String, Integer> edgesByLabel = Graph.getGraph().getEdgesByLabelQuantity();
+        StringBuilder sbEdges = new StringBuilder();
+        for (Map.Entry<String, Integer> entry : edgesByLabel.entrySet()) {
+            if (sbEdges.length() > 0) {
+                sbEdges.append(", ");
+            }
+            sbEdges.append(entry.getKey())
+                    .append("(")
+                    .append(entry.getValue())
+                    .append(")");
+        }
+        System.out.println("Edges by label: " + sbEdges.toString());
+
+        System.out.println("");
     }
 
     @SuppressWarnings("unchecked")

@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import com.gdblab.graph.schema.*;
+import com.gdblab.graph.schema.Edge;
+import com.gdblab.graph.schema.Node;
 
 public interface InterfaceGraph {
 
@@ -24,14 +25,15 @@ public interface InterfaceGraph {
     public HashSet<Edge> getNeighbours(final String nodeID);
 
     // Statistics methods
-
     public Integer getNodesQuantity();
 
     public Integer getEdgesQuantity();
 
     public Integer getDifferetEdgesQuantity();
-    
+
     public HashMap<String, Integer> getEdgesByLabelQuantity();
+
+    public HashMap<String, Integer> getNodesByLabelQuantity();
 
     public ArrayList<Edge> getSampleOfEachlabel();
 
