@@ -11,7 +11,7 @@ You can download the minimum version by [clicking here](https://www.oracle.com/j
 
 ##### 2. Download the PathDB executable
 The current version of PathDB works as a command-line application.
-The executable `PathDB.jar` of the latest release can be donwloaded from [this link](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.3).
+The executable `PathDB.jar` of the latest release can be donwloaded from [this link](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.4).
 
 ##### 3. Run PathDB with the example graph and try a query
 

@@ -11,7 +11,7 @@ Puede descargar la versión mínima haciendo [clic aquí](https://www.oracle.com
 
 ##### 2. Descargar el ejecutable de PathDB
 La versión actual de PathDB funciona como una aplicación de línea de comandos.
-El ejecutable `PathDB.jar` de la última versión se puede descargar desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.3).
+El ejecutable `PathDB.jar` de la última versión se puede descargar desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.4).
 
 ##### 3. Ejecutar PathDB con el grafo de ejemplo y probar una consulta
 
