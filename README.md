@@ -11,7 +11,7 @@ You can download the minimum version by [clicking here](https://www.oracle.com/j
 
 ##### 2. Download the PathDB executable
 The current version of PathDB works as a command-line application.
-The executable `PathDB.jar` of the latest release can be donwloaded from [this link](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.3) .
+The executable `PathDB.jar` of the latest release can be donwloaded from [this link](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.3).
 
 ##### 3. Run PathDB with the example graph and try a query
 
@@ -57,7 +57,8 @@ Although PathDB has its own language, it is based on **GQL**. Some basic query e
 
 ```
 MATCH p = (a)-[knows*]->(b) RETURN a.name, b.name;
-
+```
+```
 MATCH p = (x)-[knows.likes]->(y) WHERE x.name = "Bart" RETURN x.name, y.txt LIMIT 1;
 ```
 
@@ -65,7 +66,8 @@ More complex examples are shown below:
 
 ```
 MATCH WALK p = (x)-[hasCreator?.knows*.likes]->(y) WHERE p.LENGTH < 4 AND NODE(2).name = "Bart" RETURN p;
-
+```
+```
 MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p;
 ```
 
@@ -123,6 +125,8 @@ After `MATCH`, you can include any of the following restrictor clauses:
 
 A path restrictor clause allows to filter the paths computed by a query. It is important to mention that WALK is a dangerous option when a graph contains cycles as a query evaluation can be infinite.   
 
+If no semantic is specified in the query, PathDB applies the **TRAIL** semantic by default.
+
 ##### 3. PathPattern (required)
 It is defined as follows:
 
@@ -161,12 +165,14 @@ Path conditions can be grouped using parentheses and Boolean operators such as `
 Information can be extracted from the path using variables, properties, and functions. PathDB supports the following calls: `variable`, `variable.property`, `FIRST()`, `FIRST().property`, `LAST()`, `LAST().property`, `NODE(unsignedInteger)`, `NODE(unsignedInteger).property`, `EDGE(unsignedInteger)`, `EDGE(unsignedInteger.property`, `LABEL(NODE(unsignedInteger))`, `LABEL(EDGE(unsignedInteger))`, `LABEL(FIRST())`, `LABEL(LAST())'`.
 
 #### 6. LimitStatement (optional)
-It is possible to limit the number of results you want to obtain. To do this, simply write `LIMIT #`, where `#` is a positive integer. 
+It is possible to limit the number of results you want to obtain. To do this, simply write `LIMIT #`, where `#` is a positive integer.
+
+If there is no defined limit in the query, PathDB sets the limit to 100 paths by default.
 
 #### Complete example
 A complete example looks like this:
 ```
-MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = “Moe” OR x.txt = “Msg1” RETURN p LIMIT 100;
+MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p LIMIT 100;
 ```
 
 ---

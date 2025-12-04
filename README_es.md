@@ -11,7 +11,7 @@ Puede descargar la versión mínima haciendo [clic aquí](https://www.oracle.com
 
 ##### 2. Descargar el ejecutable de PathDB
 La versión actual de PathDB funciona como una aplicación de línea de comandos.
-El ejecutable `PathDB.jar` de la última versión se puede descargar desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.3) .
+El ejecutable `PathDB.jar` de la última versión se puede descargar desde [este enlace](https://github.com/dbgutalca/PathDB/releases/tag/v0.3.3).
 
 ##### 3. Ejecutar PathDB con el grafo de ejemplo y probar una consulta
 
@@ -57,7 +57,8 @@ Si bien, PathDB posee su propio lenguaje, este está basado en **GQL**. Algunos 
 
 ```
 MATCH p = (a)-[knows*]->(b) RETURN a.name, b.name;
-
+```
+```
 MATCH p = (x)-[knows.likes]->(y) WHERE x.name = "Bart" RETURN x.name, y.txt LIMIT 1;
 ```
 
@@ -65,7 +66,8 @@ También, otros ejemplos más complejos se ven de la siguiente forma:
 
 ```
 MATCH WALK p = (x)-[hasCreator?.knows*.likes]->(y) WHERE p.LENGTH < 4 AND NODE(2).name = "Bart" RETURN p;
-
+```
+```
 MATCH ACYCLIC p = (x)-[hasCreator?.knows*]{..6}->(y) WHERE x.name = "Moe" OR x.txt = "Msg1" RETURN p;
 ```
 
@@ -121,7 +123,9 @@ Después del `MATCH` puede indicar que restricción debe cumplir los caminos obt
 - **ACYCLIC** → El camino no puede tener ciclos (no se repite ningún nodo).  
 - **SIMPLE** → No se repite ningún nodo a excepción del primero y ultimo que podrían ser el mismo.
 
-Una cláusula de restricción de rutas permite filtrar las rutas calculadas por una consulta. Es importante mencionar que WALK es una opción peligrosa cuando un gráfico contiene ciclos, ya que la evaluación de la consulta puede ser infinita.   
+Una cláusula de restricción de rutas permite filtrar las rutas calculadas por una consulta. Es importante mencionar que WALK es una opción peligrosa cuando un gráfico contiene ciclos, ya que la evaluación de la consulta puede ser infinita.
+
+Si no se especifica ninguna semántica en la consulta, por defecto PathDB aplica la semántica de **TRAIL**.
 
 ##### 3. PathPattern (obligatorio)
 Se define de la forma:
@@ -161,7 +165,9 @@ Las condiciones de un camino pueden ser agrupadas por paréntesis y operadores b
 Para extraer información del camino se puede hacer mediante variables, propiedades y funciones. PathDB soporta las siguientes llamadas:`variable`, `variable.property`, `FIRST()`, `FIRST().property`, `LAST()`, `LAST().property`, `NODE(unsignedInteger)`, `NODE(unsignedInteger).property`, `EDGE(unsignedInteger)`, `EDGE(unsignedInteger.property`, `LABEL(NODE(unsignedInteger))`, `LABEL(EDGE(unsignedInteger))`, `LABEL(FIRST())`, `LABEL(LAST())'`.
 
 #### 6. LimitStatement (opcional)
-Es posible limitar la cantidad de resultados que se desean obtener. Para esto basta con escribir `LIMIT #`, donde `#` es un numero entero positivo. 
+Es posible limitar la cantidad de resultados que se desean obtener. Para esto basta con escribir `LIMIT #`, donde `#` es un numero entero positivo.
+
+Si no hay un limite definido en la consulta, PathDB define el limite en 100 caminos por defecto.
 
 #### Ejemplo completo
 Un ejemplo completo se ve de la siguiente forma:
