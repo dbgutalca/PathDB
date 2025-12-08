@@ -3,13 +3,14 @@ package com.gdblab.execution;
 import java.util.concurrent.TimeUnit;
 
 public final class Context {
+
     private static Context INSTANCE;
 
     private Integer method;
     private Integer fixPoint;
     private Integer maxRecursion;
     private Integer limit;
-    
+
     private String startNodeID;
     private String startNodeProp;
     private String startNodeValue;
@@ -35,10 +36,10 @@ public final class Context {
     private Integer maxPaths;
 
     private Context() {
-        method = 2;
-        fixPoint = 1000000;
+        method = 4;
+        fixPoint = 10;
         maxRecursion = 4;
-        limit = 1000000;
+        limit = 100;
 
         startNodeID = "";
         startNodeProp = "";
@@ -55,10 +56,10 @@ public final class Context {
         isExperimental = false;
         resultFilename = "";
         optimize = true;
-        semantic = 1;
+        semantic = 2;
         timeoutDuration = 2;
         timeoutTimeUnit = TimeUnit.MINUTES;
-        showPaths = 10;
+        showPaths = Integer.MAX_VALUE;
 
         activateMaxRecursion = false;
         activateFixpoint = false;

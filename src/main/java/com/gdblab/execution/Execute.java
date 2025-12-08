@@ -12,6 +12,9 @@ import org.jline.terminal.TerminalBuilder;
 import com.gdblab.algorithm.translator.RPQtoER;
 import com.gdblab.algorithm.utils.Time;
 import com.gdblab.algorithm.versions.utils.Algorithm;
+import com.gdblab.algorithm.versions.v1.BFSRegex;
+import com.gdblab.algorithm.versions.v1.DFSRegex;
+import com.gdblab.algorithm.versions.v2.BFSAutomaton;
 import com.gdblab.algorithm.versions.v2.DFSAutomaton;
 import com.gdblab.graph.Graph;
 import com.gdblab.graph.schema.Edge;
@@ -25,14 +28,23 @@ public final class Execute {
 
         String er = RPQtoER.Translate(Context.getInstance().getRPQ());
 
-        Algorithm algorithm = new DFSAutomaton(er);
+        int method = Context.getInstance().getMethod();
+        Algorithm algorithm = null;
 
-        // switch (method) {
-        //     case 1: algorithm = new BFSRegex(er); break;
-        //     case 2: algorithm = new DFSRegex(er); break;
-        //     case 3: algorithm = new BFSAutomaton(er); break;
-        //     case 4: algorithm = new DFSAutomaton(er); break;
-        // }
+        switch (method) {
+            case 1:
+                algorithm = new BFSRegex(er);
+                break;
+            case 2:
+                algorithm = new DFSRegex(er);
+                break;
+            case 3:
+                algorithm = new BFSAutomaton(er);
+                break;
+            case 4:
+                algorithm = new DFSAutomaton(er);
+                break;
+        }
 
         algorithm.execute();
 
@@ -53,8 +65,7 @@ public final class Execute {
             if (args.length == 0) {
                 Tools.showUsageNoArgs();
                 Tools.loadDefaultGraph();
-            }
-            else {
+            } else {
                 Tools.showUsageArgsLoadingCustomGraph(args[0], args[1]);
                 Tools.loadCustomGraphFiles(args[0], args[1]);
             }
@@ -77,9 +88,7 @@ public final class Execute {
                     Tools.showHelp();
                     System.out.println();
                     continue;
-                }
-
-                else if (line.startsWith(prefix + "me ") || line.startsWith(prefix + "method ")) {
+                } else if (line.startsWith(prefix + "me ") || line.startsWith(prefix + "method ")) {
                     String[] parts = line.split(" ");
                     if (parts.length != 2) {
                         // clearConsole();
@@ -101,9 +110,7 @@ public final class Execute {
                     Context.getInstance().setMethod(Integer.parseInt(parts[1]));
                     Tools.showSelectedMethod(Integer.parseInt(parts[1]));
                     continue;
-                }
-
-                else if (line.startsWith(prefix + "ml ") || line.startsWith(prefix + "max_length ")) {
+                } else if (line.startsWith(prefix + "ml ") || line.startsWith(prefix + "max_length ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -123,9 +130,7 @@ public final class Execute {
                     Context.getInstance().setFixPoint(Integer.parseInt(parts[1]));
                     System.out.println("Set max length of paths to: " + parts[1] + "\n");
                     continue;
-                }
-
-                else if(line.startsWith(prefix + "mr ") || line.startsWith(prefix + "max_recursion ")) {
+                } else if (line.startsWith(prefix + "mr ") || line.startsWith(prefix + "max_recursion ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -151,9 +156,7 @@ public final class Execute {
                     Context.getInstance().setMaxRecursion(Integer.parseInt(parts[1]));
                     System.out.println("Set max recursion to: " + parts[1] + "\n");
                     continue;
-                }
-
-                else if (line.startsWith(prefix + "sem ") || line.startsWith(prefix + "semantic ")) {
+                } else if (line.startsWith(prefix + "sem ") || line.startsWith(prefix + "semantic ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -176,9 +179,7 @@ public final class Execute {
                     Context.getInstance().setSemantic(Integer.parseInt(parts[1]));
                     Tools.showSelectedSemantic(Integer.parseInt(parts[1]));
                     continue;
-                }
-
-                else if (line.startsWith(prefix + "pts ") || line.startsWith(prefix + "paths_to_show ")) {
+                } else if (line.startsWith(prefix + "pts ") || line.startsWith(prefix + "paths_to_show ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -201,9 +202,7 @@ public final class Execute {
                     Context.getInstance().setShowPaths(Integer.parseInt(parts[1]));
                     System.out.println("Set show paths configuration to: " + parts[1] + "\n");
                     continue;
-                }
-
-                else if (line.startsWith(prefix + "lim ") || line.startsWith(prefix + "limit ")) {
+                } else if (line.startsWith(prefix + "lim ") || line.startsWith(prefix + "limit ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -229,12 +228,10 @@ public final class Execute {
                         continue;
                     }
 
-                    Context.getInstance().setMaxPaths(Integer.parseInt(parts[1]));
+                    Context.getInstance().setLimit(Integer.parseInt(parts[1]));
                     System.out.println("Set show paths configuration to: " + parts[1] + "\n");
                     continue;
-                }
-
-                else if (line.startsWith(prefix + "opt ") || line.startsWith(prefix + "optimize ")) {
+                } else if (line.startsWith(prefix + "opt ") || line.startsWith(prefix + "optimize ")) {
                     String[] parts = line.split(" ");
 
                     if (parts.length != 2) {
@@ -246,19 +243,15 @@ public final class Execute {
                     if (parts[1].equalsIgnoreCase("true")) {
                         Context.getInstance().setOptimize(true);
                         System.out.println("Optimization set to: true.\n");
-                    }
-                    else if (parts[1].equalsIgnoreCase("false")) {
+                    } else if (parts[1].equalsIgnoreCase("false")) {
                         Context.getInstance().setOptimize(false);
                         System.out.println("Optimization set to: false.\n");
-                    }
-                    else {
+                    } else {
                         // clearConsole();
                         System.out.println("Invalid command. Use /opt <true/false> or /optimization <true/false> to set optimization.\n");
                     }
                     continue;
-                }
-
-                else if (line.endsWith(";")) {
+                } else if (line.endsWith(";")) {
 
                     line = line.trim();
                     String[] parts = line.split("-");
@@ -275,19 +268,17 @@ public final class Execute {
                     if (matcher.find()) {
                         Context.getInstance().setStartNodeProp(matcher.group(1));
                         Context.getInstance().setStartNodeValue(matcher.group(2));
-                    }
-                    else {
+                    } else {
                         Context.getInstance().setStartNodeProp("");
                         Context.getInstance().setStartNodeValue("");
                     }
 
                     matcher = pattern.matcher(parts[2]);
-                    
+
                     if (matcher.find()) {
                         Context.getInstance().setEndNodeProp(matcher.group(1));
                         Context.getInstance().setEndNodeValue(matcher.group(2));
-                    }
-                    else {
+                    } else {
                         Context.getInstance().setEndNodeProp("");
                         Context.getInstance().setEndNodeValue("");
                     }
@@ -295,9 +286,7 @@ public final class Execute {
                     Context.getInstance().setRPQ(parts[1].substring(1, parts[1].length() - 1));
 
                     evalRPQ();
-                }
-
-                else if (line.equals(prefix + "i") || line.equals(prefix + "information")) {
+                } else if (line.equals(prefix + "i") || line.equals(prefix + "information")) {
                     // clearConsole();
                     System.out.println("Graph Information:");
                     System.out.println("Total nodes: " + Graph.getGraph().getNodesQuantity());
@@ -306,25 +295,20 @@ public final class Execute {
                     System.out.println("Edges per label: " + Graph.getGraph().getEdgesByLabelQuantity().toString());
                     System.out.println("\n");
                     continue;
-                }
-                
-                else if (line.equals(prefix + "l") || line.equals(prefix + "labels")) {
+                } else if (line.equals(prefix + "l") || line.equals(prefix + "labels")) {
                     System.out.println("Samples: ");
                     ArrayList<Edge> edges = Graph.getGraph().getSampleOfEachlabel();
                     for (Edge e : edges) {
-                    System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
+                        System.out.println(e.getId() + ": " + e.getSource().getId() + "," + e.getLabel() + "," + e.getTarget().getId());
                     }
                     System.out.println("\n");
                     continue;
-                }
-
-                else {
+                } else {
                     System.out.println("Invalid command. For help, type /h.\n\n");
                 }
             }
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -18,7 +18,7 @@ public final class Tools {
     public static void clearConsole() {
         try {
             String os = System.getProperty("os.name");
-    
+
             if (os.contains("Windows")) {
                 // Ejecutar comando cls en Windows
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -28,21 +28,22 @@ public final class Tools {
                 System.out.flush();
             }
             initMessage();
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
     }
 
     public static void initMessage() {
         System.out.println();
         String[] logo = {
-        "       ╔═════════════════════════════════════════════════════╗",
-        "       ║    _____            _     _       _____    ____     ║",
-        "       ║   |  __ \\          | |   | |     |  __ \\  |  _ \\    ║",
-        "       ║   | |__) |   __ _  | |_  | |__   | |  | | | |_) |   ║",
-        "       ║   |  ___/   / _` | | __| | '_ \\  | |  | | |  _ <    ║",
-        "       ║   | |      | (_| | | |_  | | | | | |__| | | |_) |   ║",
-        "       ║   |_|       \\__,_|  \\__| |_| |_| |_____/  |____/    ║",
-        "       ║                                                v1.0 ║",
-        "       ╚═════════════════════════════════════════════════════╝"
+            "       ╔═════════════════════════════════════════════════════╗",
+            "       ║    _____            _     _       _____    ____     ║",
+            "       ║   |  __ \\          | |   | |     |  __ \\  |  _ \\    ║",
+            "       ║   | |__) |   __ _  | |_  | |__   | |  | | | |_) |   ║",
+            "       ║   |  ___/   / _` | | __| | '_ \\  | |  | | |  _ <    ║",
+            "       ║   | |      | (_| | | |_  | | | | | |__| | | |_) |   ║",
+            "       ║   |_|       \\__,_|  \\__| |_| |_| |_____/  |____/    ║",
+            "       ║                                                v1.0 ║",
+            "       ╚═════════════════════════════════════════════════════╝"
         };
 
         for (String u : logo) {
@@ -58,14 +59,12 @@ public final class Tools {
 
             ArrayList<String> schemaNode = new ArrayList<>();
             while ((line = br.readLine()) != null) {
-                
+
                 if (line.startsWith("@")) {
                     schemaNode = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                }
-
-                else {
+                } else {
                     ArrayList<String> data = new ArrayList<>(Arrays.asList(line.split("\\|")));
-                    
+
                     HashMap<String, String> properties = new HashMap<>();
 
                     for (int i = 2; i < data.size() && i < schemaNode.size(); i++) {
@@ -73,9 +72,9 @@ public final class Tools {
                     }
 
                     Node node = new Node(
-                        data.get(0),
-                        data.get(1),
-                        properties
+                            data.get(0),
+                            data.get(1),
+                            properties
                     );
 
                     Graph.getGraph().insertNode(node);
@@ -93,23 +92,29 @@ public final class Tools {
             int i = 1;
             String line;
             while ((line = br.readLine()) != null) {
-                    if (line.startsWith("@")) continue;
+                if (line.startsWith("@")) {
+                    continue;
+                }
 
-                    String[] data = line.split("\\|");
-                    String _id_ = "E" + i++;
-                    String _label_ = data[0];
-                    String _from_ = data[2];
-                    String _to_ = data[3];
+                String[] data = line.split("\\|");
+                String _id_ = "E" + i++;
+                String _label_ = data[1];
+                String _from_ = data[3];
+                String _to_ = data[4];
 
-                    Edge e = new Edge(
+                Edge e = new Edge(
                         _id_,
                         _label_,
                         Graph.getGraph().getNode(_from_),
                         Graph.getGraph().getNode(_to_)
-                    );
+                );
 
-                    Graph.getGraph().insertEdge(e);
-                
+                if (!LabelMap.containsKey(e.getLabel())) {
+                    LabelMap.put(e.getLabel());
+                }
+
+                Graph.getGraph().insertEdge(e);
+
             }
 
             Tools.clearConsole();
@@ -122,22 +127,23 @@ public final class Tools {
             return;
         }
 
-
-
-
     }
 
     public static void loadDefaultGraph() {
         InterfaceGraph graph = Graph.getGraph();
 
         Node[] nodes = DefaultGraph2.getDefaultNodes();
-        for (Node n : nodes) { graph.insertNode(n); }
+        for (Node n : nodes) {
+            graph.insertNode(n);
+        }
 
         Edge[] edges = DefaultGraph2.getDefaultEdges();
         for (Edge e : edges) {
 
-            if (!LabelMap.containsKey(e.getLabel())) LabelMap.put(e.getLabel());
-            
+            if (!LabelMap.containsKey(e.getLabel())) {
+                LabelMap.put(e.getLabel());
+            }
+
             graph.insertEdge(e);
         }
     }
@@ -257,7 +263,7 @@ public final class Tools {
         }
         System.out.println();
     }
-    
+
     public static void showSemantics() {
         String[] semantics = {
             "List of available semantics:",
@@ -273,23 +279,20 @@ public final class Tools {
 
     public static void showSelectedMethod(Integer m) {
         switch (m) {
-            case 1:
-                System.out.println("Selected method: Algebra\n");
-                break;
 
-            case 2:
+            case 1:
                 System.out.println("Selected method: Regex + DFS\n");
                 break;
 
-            case 3:
+            case 2:
                 System.out.println("Selected method: Regex + BFS\n");
                 break;
 
-            case 4:
+            case 3:
                 System.out.println("Selected method: Automaton + DFS\n");
                 break;
 
-            case 5:
+            case 4:
                 System.out.println("Selected method: Automaton + BFS\n");
                 break;
         }
@@ -313,20 +316,28 @@ public final class Tools {
 
     public static String getSelectedMethod(Integer m) {
         switch (m) {
-            case 1: return "Algebra";
-            case 2: return "Regex + DFS";
-            case 3: return "Regex + BFS";
-            case 4: return "Automaton + DFS";
-            case 5: return "Automaton + BFS";
+            case 1:
+                return "Algebra";
+            case 2:
+                return "Regex + DFS";
+            case 3:
+                return "Regex + BFS";
+            case 4:
+                return "Automaton + DFS";
+            case 5:
+                return "Automaton + BFS";
         }
         return "";
     }
 
     public static String getSelectedSemantic(Integer e) {
         switch (e) {
-            case 1: return "Arbitrary";
-            case 2: return "Trail";
-            case 3: return "Simple Path";
+            case 1:
+                return "Arbitrary";
+            case 2:
+                return "Trail";
+            case 3:
+                return "Simple Path";
         }
         return "";
     }
@@ -337,7 +348,9 @@ public final class Tools {
         try (BufferedReader br = new BufferedReader(new FileReader(rpqs_file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (line.startsWith("#")) continue;
+                if (line.startsWith("#")) {
+                    continue;
+                }
                 rpqs.add(line);
             }
         } catch (Exception e) {
